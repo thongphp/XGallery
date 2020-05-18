@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Nhaccuatui\NhaccuatuiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::namespace('Nhaccuatui')
+Route::namespace('App\Http\Controllers\Nhaccuatui')
     ->prefix('v1/nhaccuatui')
     ->group(function () {
-        Route::get('/', 'IndexController@index')->name('get.nhaccuatui.index');
-        Route::get('/songs', 'IndexController@getSongs')->name('get.nhaccuatui.songs');
-        Route::put('/fetch', 'IndexController@fetchSongs')->name('put.nhaccuatui.songs');
+        Route::get('/', [NhaccuatuiController::class, 'index'])->name('nhaccuatui.dashboard.index');
+        Route::get('/songs', [NhaccuatuiController::class,'getSongs'])->name('nhaccuatui.songs.index');
+        Route::put('/fetch', [NhaccuatuiController::class,'fetchSongs'])->name('nhaccuatui.console.fetch');
     });

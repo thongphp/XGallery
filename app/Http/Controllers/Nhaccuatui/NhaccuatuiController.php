@@ -27,7 +27,7 @@ class NhaccuatuiController extends ApiController
      */
     public function index()
     {
-        return $this->respondOk(Nhaccuatui::all());
+        return $this->respondOk(Nhaccuatui::all()->toArray());
     }
 
     /**
@@ -42,7 +42,7 @@ class NhaccuatuiController extends ApiController
             $model = $model->where('name', 'LIKE', '%'.$title.'%');
         }
 
-        return $this->respondOk($model->get());
+        return $this->respondOk($model->get()->toArray());
     }
 
     /**
