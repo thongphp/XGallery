@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Nhaccuatui;
 
 use App\Http\Controllers\ApiController;
 use App\Models\Nhaccuatui;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,14 +20,14 @@ use Symfony\Component\HttpFoundation\Response;
  * Class IndexController
  * @package App\Http\Controllers\Nhaccuatui
  */
-class IndexController extends ApiController
+class NhaccuatuiController extends ApiController
 {
     /**
      * @return Response
      */
     public function index()
     {
-        return $this->apiSucceed(Nhaccuatui::all());
+        return $this->respondOk(Nhaccuatui::all());
     }
 
     /**
@@ -41,11 +42,12 @@ class IndexController extends ApiController
             $model = $model->where('name', 'LIKE', '%'.$title.'%');
         }
 
-        return $this->apiSucceed($model->get());
+        return $this->respondOk($model->get());
     }
 
     /**
      * @param  Request  $request
+     * @return JsonResponse
      */
     public function fetchSongs(Request $request)
     {
@@ -58,5 +60,7 @@ class IndexController extends ApiController
         }
 
         Artisan::queue('nhaccuatui', $args);
+
+        return $this->respondOk();
     }
 }

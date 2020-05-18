@@ -11,7 +11,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
 use App\Http\Traits\HasModel;
+use App\Traits\HasObject;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -21,14 +24,39 @@ use Symfony\Component\HttpFoundation\Response;
 class BaseController extends Controller
 {
     use HasMenu;
-    use HasModel;
+    use HasObject;
+
+    public function dashboard(Request $request)
+    {
+        $items = $this->repository->getItems($request->request->all());
+        return view(
+            $this->getName().'.index',
+            $this->getViewDefaultOptions([
+                'items' => $items,
+                'title' => ucfirst($this->getName()),
+            ])
+        );
+    }
 
     /**
-     * @param  Response  $response
-     * @return Response
+     * @return string
      */
-    protected function respondSucceed(Response $response)
+    protected function getName(): string
     {
-        return $response->setStatusCode(Response::HTTP_OK);
+        return strtolower(str_replace('Controller', '', $this->getShortClassname()));
+    }
+
+    /**
+     * @param  array  $options
+     * @return array
+     */
+    protected function getViewDefaultOptions(array $options): array
+    {
+        return array_merge(
+            [
+                'sidebar' => $this->getMenuItems(),
+            ],
+            $options
+        );
     }
 }

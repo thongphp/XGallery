@@ -33,12 +33,10 @@ class DashboardController extends BaseController
     {
         return view(
             'dashboard.index',
-            [
-                'sidebar' => $this->getMenuItems(),
+            $this->getViewDefaultOptions([
                 'endpoints' => CrawlerEndpoints::all(),
                 'title' => 'Dashboard',
-                'description' => ''
-            ]
+            ])
         );
     }
 }

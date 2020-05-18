@@ -31,19 +31,6 @@ class XiurenController extends BaseController
         $this->repository = $repository;
     }
 
-    public function dashboard()
-    {
-        return view(
-            'xiuren.index',
-            [
-                'items' => $this->repository->getItems(),
-                'sidebar' => $this->getMenuItems(),
-                'title' => 'Xiuren',
-                'description' => ''
-            ]
-        );
-    }
-
     public function item(string $id)
     {
         return view(
@@ -52,7 +39,6 @@ class XiurenController extends BaseController
                 'item' => $this->repository->find($id),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'Xiuren',
-                'description' => ''
             ]
         );
     }

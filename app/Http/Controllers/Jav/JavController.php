@@ -32,19 +32,29 @@ class JavController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    protected \App\Repositories\JavMovies $repository;
+
+    /**
+     * JavController constructor.
+     * @param  \App\Repositories\JavMovies  $repository
+     */
+    public function __construct(\App\Repositories\JavMovies $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * @param  Request  $request
-     * @param  \App\Repositories\JavMovies  $repository
      * @return Application|Factory|View
      */
-    public function dashboard(Request $request, \App\Repositories\JavMovies $repository)
+    public function dashboard(Request $request)
     {
-        $items = $repository->getItems($request->request->all());
+        $items = $this->repository->getItems($request->request->all());
 
         return view(
             'jav.index',
             [
-                'items' => $repository->getItems($request->request->all()),
+                'items' => $this->repository->getItems($request->request->all()),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$items->total().' Movies - '.$items->currentPage().' / '.$items->lastPage(),
             ]
@@ -85,7 +95,6 @@ class JavController extends BaseController
                 'items' => app(\App\Repositories\JavMovies::class)->getItems($filter),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV genre - '.JavGenres::find($id)->name,
-                'description' => ''
             ]
         );
     }
@@ -108,7 +117,6 @@ class JavController extends BaseController
                 'idol' => $idol,
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$idol->name,
-                'description' => ''
             ]
         );
     }

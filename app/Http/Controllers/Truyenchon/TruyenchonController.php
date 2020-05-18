@@ -28,17 +28,11 @@ class TruyenchonController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function dashboard(Request $request)
+    protected \App\Repositories\Truyenchon $repository;
+
+    public function __construct(\App\Repositories\Truyenchon $repository)
     {
-        return view(
-            'truyenchon.index',
-            [
-                'items' => app(\App\Repositories\Truyenchon::class)->getItems($request->request->all()),
-                'sidebar' => $this->getMenuItems(),
-                'title' => 'Truyenchon',
-                'description' => ''
-            ]
-        );
+        $this->repository = $repository;
     }
 
     /**
@@ -62,7 +56,6 @@ class TruyenchonController extends BaseController
                 'next' => $nextKey,
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'Truyenchon - '.$story->title,
-                'description' => ''
             ]
         );
     }

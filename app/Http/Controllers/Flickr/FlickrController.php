@@ -30,26 +30,15 @@ class FlickrController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected string $modelClass   = FlickrContacts::class;
-    protected array  $sortBy       = ['by' => 'id', 'dir' => 'desc'];
-    protected array  $filterFields = [
-    ];
+    protected \App\Repositories\FlickrContacts $repository;
 
     /**
-     * @param  Request  $request
-     * @return Application|Factory|View
+     * FlickrController constructor.
+     * @param  \App\Repositories\FlickrContacts  $repository
      */
-    public function dashboard(Request $request)
+    public function __construct(\App\Repositories\FlickrContacts $repository)
     {
-        return view(
-            'flickr.index',
-            [
-                'items' => $this->getItems($request),
-                'sidebar' => $this->getMenuItems(),
-                'title' => 'Flickr',
-                'description' => ''
-            ]
-        );
+        $this->repository = $repository;
     }
 
     /**
@@ -105,12 +94,10 @@ class FlickrController extends BaseController
     {
         return view(
             'flickr.photos',
-            [
+            $this->getViewDefaultOptions([
                 'items' => FlickrContacts::where(['nsid' => $nsid])->first()->photos()->paginate(30),
-                'sidebar' => $this->getMenuItems(),
                 'title' => 'Flickr',
-                'description' => ''
-            ]
+            ])
         );
     }
 }
