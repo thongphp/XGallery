@@ -56,7 +56,6 @@ class Kernel extends ConsoleKernel
          */
         $minuteTasks = [
             'batdongsan',
-            'truyentranh:truyenchon'
         ];
         foreach ($minuteTasks as $minuteTask) {
             $schedule->command($minuteTask)
@@ -74,6 +73,7 @@ class Kernel extends ConsoleKernel
             'jav:xcityvideo',
             'xiuren',
             'phodacbiet',
+            'kissgoddess',
             'flickr:photos',
             'flickr:photossizes'
         ];
@@ -84,7 +84,7 @@ class Kernel extends ConsoleKernel
         }
 
         $teenMinutesTasks = [
-            'kissgoddess',
+            'truyentranh:truyenchon',
         ];
         foreach ($teenMinutesTasks as $teenMinutesTask) {
             $schedule->command($teenMinutesTask)
