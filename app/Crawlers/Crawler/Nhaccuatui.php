@@ -27,10 +27,10 @@ final class Nhaccuatui extends AbstractCrawler
      */
     public function getItemDetail(string $itemUri): ?object
     {
-        $crawler = null === $itemUri ? $this->crawler : $this->crawl($itemUri);
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
+
         $text = $crawler->text(null, false);
         $start = strpos($text, '/flash/xml?html5=true&key1=');
         $end = strpos($text, '"', $start);

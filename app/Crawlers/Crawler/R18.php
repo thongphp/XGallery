@@ -27,9 +27,7 @@ final class R18 extends AbstractCrawler
      */
     public function getItemDetail(string $itemUri): ?object
     {
-        $crawler = null === $itemUri ? $this->crawler : $this->crawl($itemUri);
-
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 

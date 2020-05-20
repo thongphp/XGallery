@@ -29,7 +29,9 @@ final class Onejav extends AbstractCrawler
      */
     public function getItemDetail(string $itemUri): ?object
     {
-        $crawler = null === $itemUri ? $this->crawler : $this->crawl($itemUri);
+        if (!$crawler = $this->crawl($itemUri)) {
+            return null;
+        }
 
         $item = new stdClass();
         /**

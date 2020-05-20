@@ -28,10 +28,7 @@ final class Batdongsan extends AbstractCrawler
      */
     public function getItemDetail(string $itemUri): ?object
     {
-        $crawler = null === $itemUri ? $this->crawler : $this->crawl($itemUri);
-
-        if (!$crawler) {
-            $this->getLogger()->warning('Can not get crawler on URI '.$itemUri);
+        if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
