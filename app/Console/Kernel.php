@@ -84,11 +84,19 @@ class Kernel extends ConsoleKernel
         }
 
         $teenMinutesTasks = [
-            'truyentranh:truyenchon',
         ];
         foreach ($teenMinutesTasks as $teenMinutesTask) {
             $schedule->command($teenMinutesTask)
                 ->everyTenMinutes()
+                ->withoutOverlapping()->runInBackground();
+        }
+
+        $fifteenMinutesTasks = [
+            'truyentranh:truyenchon',
+        ];
+        foreach ($fifteenMinutesTasks as $fifteenMinutesTask) {
+            $schedule->command($fifteenMinutesTask)
+                ->everyFifteenMinutes()
                 ->withoutOverlapping()->runInBackground();
         }
 
