@@ -23,7 +23,7 @@ class Kissgoddess extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $signature = 'kissgoddess {task=fully} {--url=}';
+    protected $signature = 'kissgoddess {task=fully}';
 
     /**
      * The console command description.
