@@ -22,7 +22,7 @@ class JavDownload extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'jav:downloads';
+    protected $signature = 'jav:downloads {task} {item_number}';
 
     /**
      * The console command description.
@@ -31,7 +31,7 @@ class JavDownload extends BaseCommand
      */
     protected $description = 'Download JAVs';
 
-    public function handle()
+    protected function download()
     {
         $downloads = \App\Models\JavDownload::where(['is_downloaded' => null])->get();
         $this->createProgressBar($downloads->count());
@@ -40,6 +40,22 @@ class JavDownload extends BaseCommand
             $this->progressBar->advance();
         });
 
+        return true;
+    }
+
+    protected function add()
+    {
+        $itemNumber = $this->argument('item_number');
+        if (\App\Models\JavDownload::where(['item_number' => $itemNumber])->first()) {
+            $this->output->warning('Already exists');
+            return false;
+        }
+
+        $model = app(\App\Models\JavDownload::class);
+        $model->item_number = $itemNumber;
+        $model->save();
+
+        $this->output->note('Item <strong>'.$itemNumber.'</strong> added to queue');
         return true;
     }
 }
