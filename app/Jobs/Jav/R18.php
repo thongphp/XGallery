@@ -91,6 +91,6 @@ class R18 implements ShouldQueue
         // Trigger job to update genres and xref
         UpdateGenres::dispatch($movie, $itemDetail->categories);
         // Trigger job to update idols and xref
-        UpdateIdols::dispatch($movie, $itemDetail->actress)->onQueue('limited');
+        UpdateIdols::dispatch($movie, $itemDetail->actress);
     }
 }
