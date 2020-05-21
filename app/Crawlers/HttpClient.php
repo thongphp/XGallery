@@ -12,10 +12,10 @@ namespace App\Crawlers;
 use App\Crawlers\Crawler\Traits\HasCurl;
 use App\Crawlers\Traits\HasHeaders;
 use App\Events\HttpResponded;
+use App\Events\OrderShipped;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Psr\Http\Message\ResponseInterface;
@@ -58,7 +58,6 @@ class HttpClient extends Client
 
         try {
             $this->response = parent::request($method, $uri, array_merge($options, ['headers' => $this->getHeaders()]));
-            Event::dispatch(new HttpResponded($this->response));
         } catch (Exception $exception) {
             Log::stack(['http'])->error($exception->getMessage());
             $this->errors[$uri] = $exception->getMessage();

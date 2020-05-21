@@ -3,9 +3,6 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Class MenuItems
- */
 class MenuItemsSeeder extends Seeder
 {
     /**
