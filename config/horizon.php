@@ -145,22 +145,44 @@ return [
 
     'environments' => [
         'production' => [
-            'supervisor-1' => [
+            'supervisor-production' => [
                 'connection' => 'redis',
-                'queue' => ['default'],
-                'balance' => 'simple',
-                'processes' => 10,
-                'tries' => 1,
+                'queue' => [
+                    Queues::QUEUE_DEFAULT,
+                    Queues::QUEUE_JAV,
+                    Queues::QUEUE_JAV_DOWNLOADS,
+                    Queues::QUEUE_TRUYENTRANH,
+                    Queues::QUEUE_DOWNLOADS,
+                    Queues::QUEUE_BATDONGSAN,
+                    Queues::QUEUE_FLICKR,
+                    Queues::QUEUE_PHOTOS
+                ],
+                'balance' => 'auto',
+                'processes' => 35,
+                'minProcesses' => 1,
+                'maxProcesses' => 10,
+                'tries' => 5,
             ],
         ],
 
         'local' => [
-            'supervisor-1' => [
+            'supervisor-local' => [
                 'connection' => 'redis',
-                'queue' => [Queues::QUEUE_TRUYENTRANH, Queues::QUEUE_JAV_DOWNLOADS, Queues::QUEUE_JAV, Queues::QUEUE_DOWNLOADS, Queues::QUEUE_BATDONGSAN, Queues::QUEUE_FLICKR, Queues::QUEUE_PHOTOS],
-                'balance' => 'simple',
-                'processes' => 3,
-                'tries' => 1,
+                'queue' => [
+                    Queues::QUEUE_DEFAULT,
+                    Queues::QUEUE_JAV,
+                    Queues::QUEUE_JAV_DOWNLOADS,
+                    Queues::QUEUE_TRUYENTRANH,
+                    Queues::QUEUE_DOWNLOADS,
+                    Queues::QUEUE_BATDONGSAN,
+                    Queues::QUEUE_FLICKR,
+                    Queues::QUEUE_PHOTOS
+                ],
+                'balance' => 'auto',
+                'processes' => 35,
+                'minProcesses' => 1,
+                'maxProcesses' => 10,
+                'tries' => 5,
             ],
         ],
     ],
