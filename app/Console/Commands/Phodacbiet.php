@@ -23,7 +23,7 @@ class Phodacbiet extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $signature = 'phodacbiet {task=fully} {--url=}';
+    protected $signature = 'phodacbiet {task=fully}';
 
     /**
      * The console command description.

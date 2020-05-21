@@ -24,7 +24,7 @@ class Nhaccuatui extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $signature = 'nhaccuatui {task=search} {download=0} {--title=} {--singer=} {--pageFrom=1} {--pageTo}';
+    protected $signature = 'nhaccuatui {task=search} {download=0} {--title=} {--singer=}';
 
     /**
      * The console command description.

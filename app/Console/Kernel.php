@@ -11,6 +11,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Kernel
@@ -35,76 +36,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        /**
-         * Schedule with daily
-         */
-        $dailyTasks = [
-            'jav:onejav daily',
-            'jav:r18 daily',
-            'flickr:contacts',
-            'queue:restart',
-            'queue:retry all'
-        ];
-        foreach ($dailyTasks as $dailyTask) {
-            $schedule->command($dailyTask)
-                ->daily()
+        $commands = DB::table('schedules')->select('*')->get()->toArray();
+
+        foreach ($commands as $command) {
+            $schedule->command($command->command)
+                ->{$command->every}()
                 ->withoutOverlapping()->runInBackground();
         }
-
-        /**
-         * Schedule everyMinute
-         */
-        $minuteTasks = [
-            'batdongsan',
-        ];
-        foreach ($minuteTasks as $minuteTask) {
-            $schedule->command($minuteTask)
-                ->everyMinute()
-                ->withoutOverlapping()->runInBackground();
-        }
-
-        /**
-         * Schedule everyFiveMinute
-         */
-        $fiveMinutesTasks = [
-            'jav:onejav fully',
-            'jav:r18 fully',
-            'jav:xcityprofile',
-            'jav:xcityvideo',
-            'xiuren',
-            'phodacbiet',
-            'kissgoddess',
-            'flickr:photos',
-            'flickr:photossizes'
-        ];
-        foreach ($fiveMinutesTasks as $fiveMinutesTask) {
-            $schedule->command($fiveMinutesTask)
-                ->everyFiveMinutes()
-                ->withoutOverlapping()->runInBackground();
-        }
-
-        $fifteenMinutesTasks = [
-            'truyentranh:truyenchon',
-        ];
-        foreach ($fifteenMinutesTasks as $fifteenMinutesTask) {
-            $schedule->command($fifteenMinutesTask)
-                ->everyFifteenMinutes()
-                ->withoutOverlapping()->runInBackground();
-        }
-
-        $hourlyTasks = [
-
-        ];
-        foreach ($hourlyTasks as $hourlyTask) {
-            $schedule->command($hourlyTask)
-                ->hourly()
-                ->withoutOverlapping()->runInBackground();
-        }
-
-        // Clear cache
-        $schedule->command('cache:clear')
-            ->hourly()
-            ->withoutOverlapping()->runInBackground();
     }
 
     /**
