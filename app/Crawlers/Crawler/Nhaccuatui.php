@@ -79,10 +79,10 @@ final class Nhaccuatui extends AbstractCrawler
      */
     private function getItems(string $indexUri, string $filter): ?Collection
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-        if (null === $crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
+
         try {
             return collect($crawler->filter($filter)->each(function ($node) {
                 return $this->extractData($node);
@@ -157,10 +157,10 @@ final class Nhaccuatui extends AbstractCrawler
      */
     public function getIndexPagesCount(string $indexUri = null): int
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-        if (null === $crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return 1;
         }
+
         try {
             return (int) Url::fromString($crawler->selectLink('Trang cuối')->attr('href'))->getQueryParameter('page');
         } catch (Exception $exception) {

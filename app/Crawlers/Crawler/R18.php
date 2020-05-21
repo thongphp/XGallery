@@ -104,13 +104,11 @@ final class R18 extends AbstractCrawler
      */
     public function getItemLinks(string $indexUri = null): ?Collection
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 
-        $links = $crawler->filter('.main .cmn-list-product01 li.item-list a')->each(
+        return collect($crawler->filter('.main .cmn-list-product01 li.item-list a')->each(
             function ($el) {
                 if ($el->attr('href') === null) {
                     return false;
@@ -127,9 +125,7 @@ final class R18 extends AbstractCrawler
 
                 return $data;
             }
-        );
-
-        return collect($links)->reject(function ($value) {
+        ))->reject(function ($value) {
             return false === $value;
         });
     }
@@ -140,9 +136,7 @@ final class R18 extends AbstractCrawler
      */
     public function getIndexPagesCount(string $indexUri = null): int
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return 1;
         }
 

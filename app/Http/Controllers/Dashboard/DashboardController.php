@@ -10,7 +10,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\BaseController;
-use App\Models\CrawlerEndpoints;
+use App\Repositories\CrawlerEndpoints;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -36,7 +36,7 @@ class DashboardController extends BaseController
         return view(
             'dashboard.index',
             $this->getViewDefaultOptions([
-                'endpoints' => CrawlerEndpoints::all(),
+                'endpoints' => app(CrawlerEndpoints::class)->getItems(),
                 'title' => 'Dashboard',
             ])
         );

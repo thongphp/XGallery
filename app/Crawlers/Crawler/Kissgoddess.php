@@ -56,7 +56,9 @@ final class Kissgoddess extends AbstractCrawler
      */
     public function getIndexPagesCount(string $indexUri = null): int
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
+        if (!$crawler = $this->crawl($indexUri)) {
+            return 1;
+        }
 
         try {
             $count = $crawler->filter('#pages a')->count();
@@ -78,9 +80,7 @@ final class Kissgoddess extends AbstractCrawler
      */
     public function getItemLinks(string $indexUri = null): ?Collection
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 

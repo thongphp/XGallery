@@ -107,8 +107,7 @@ final class Onejav extends AbstractCrawler
      */
     public function getItemLinks(string $indexUri = null): ?Collection
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 
@@ -174,7 +173,9 @@ final class Onejav extends AbstractCrawler
         /**
          * @TODO Actually we can't get last page. Recursive is required
          */
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
+        if (!$crawler = $this->crawl($indexUri)) {
+            return 1;
+        }
 
         try {
             $page = (int) $crawler->filter('a.pagination-link')->last()->text();

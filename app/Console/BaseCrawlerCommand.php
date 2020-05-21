@@ -10,7 +10,6 @@
 namespace App\Console;
 
 use App\Crawlers\Crawler\CrawlerInterface;
-use App\Models\CrawlerEndpoints;
 use App\Traits\HasObject;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -118,12 +117,11 @@ class BaseCrawlerCommand extends BaseCommand
         /**
          * @var Model $endpoint
          */
-        if (!$endpoint = CrawlerEndpoints::where(['crawler' => $this->getShortClassname()])
-            ->orderBy('updated_at', 'asc')->get()->first()) {
+        if (!$endpoint = app(\App\Repositories\CrawlerEndpoints::class)->getWorkingItem($this->getShortClassname())) {
             throw new Exception('Crawler endpoint not found');
         }
 
-        if ($endpoint->page === null || $endpoint === 0) {
+        if ((int) $endpoint->page === 0) {
             $endpoint->page = 1;
         }
 

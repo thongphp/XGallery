@@ -45,7 +45,9 @@ class Phodacbiet extends AbstractCrawler
      */
     public function getIndexPagesCount(string $indexUri): int
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
+        if (!$crawler = $this->crawl($indexUri)) {
+            return 1;
+        }
 
         try {
             return (int) $crawler->filter('ul.pageNav-main li.pageNav-page ')->last()->text();
@@ -56,7 +58,7 @@ class Phodacbiet extends AbstractCrawler
 
     public function search(array $conditions): ?Collection
     {
-        // TODO: Implement search() method.
+        return collect([]);
     }
 
     public function getItemLinks(string $indexUri = null): ?Collection
@@ -70,10 +72,7 @@ class Phodacbiet extends AbstractCrawler
      */
     protected function getPosts(string $forumLink): ?Collection
     {
-        $crawler = null === $forumLink ? $this->crawler : $this->crawl($forumLink);
-
-        if (!$crawler) {
-            $this->getLogger()->warning('Can not get crawler on URI '.$forumLink);
+        if (!$crawler = $this->crawl($forumLink)) {
             return null;
         }
 

@@ -181,7 +181,7 @@ return [
                 'balance' => 'auto',
                 'processes' => 35,
                 'minProcesses' => 1,
-                'maxProcesses' => 10,
+                'maxProcesses' => 35,
                 'tries' => 5,
             ],
         ],

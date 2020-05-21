@@ -55,7 +55,10 @@ final class Truyenchon extends AbstractCrawler
      */
     public function getItemChapters(string $itemUri): ?Collection
     {
-        $crawler = null === $itemUri ? $this->crawler : $this->crawl($itemUri);
+        if (!$crawler = $this->crawl($itemUri)) {
+            return null;
+        }
+
         $nodes = $crawler->filter('.list-chapter ul li.row');
 
         if ($nodes->count() === 0) {
@@ -77,9 +80,7 @@ final class Truyenchon extends AbstractCrawler
      */
     public function getItemLinks(string $indexUri = null): ?Collection
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 
@@ -100,7 +101,9 @@ final class Truyenchon extends AbstractCrawler
      */
     public function getIndexPagesCount(string $indexUri = null): int
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
+        if (!$crawler = $this->crawl($indexUri)) {
+            return 1;
+        }
 
         try {
             $pages = $crawler->filter('.pagination li a')->last()->attr('href');

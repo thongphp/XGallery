@@ -111,10 +111,7 @@ final class Batdongsan extends AbstractCrawler
      */
     public function getItemLinks(string $indexUri = null): ?Collection
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
-            $this->getLogger()->warning('Can not get crawler on URI '.$indexUri);
+        if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 
@@ -135,10 +132,7 @@ final class Batdongsan extends AbstractCrawler
      */
     public function getIndexPagesCount(string $indexUri = null): int
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
-            $this->getLogger()->warning('Can not get crawler on URI '.$indexUri);
+        if (!$crawler = $this->crawl($indexUri)) {
             return 1;
         }
 

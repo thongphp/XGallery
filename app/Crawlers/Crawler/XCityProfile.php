@@ -149,9 +149,7 @@ final class XCityProfile extends AbstractCrawler
      */
     public function getItemLinks(string $indexUri = null): ?Collection
     {
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 
@@ -167,14 +165,12 @@ final class XCityProfile extends AbstractCrawler
             return collect($links);
         }
 
-        $links = $crawler->filter('.itemBox p.name a')->each(function ($el) {
+        return collect($crawler->filter('.itemBox p.name a')->each(function ($el) {
             return [
                 'url' => 'https://xxx.xcity.jp/idol/'.$el->filter('a')->attr('href'),
                 'name' => $el->filter('a')->attr('title'),
             ];
-        });
-
-        return collect($links);
+        }));
     }
 
     /**
@@ -186,9 +182,7 @@ final class XCityProfile extends AbstractCrawler
         /**
          * @TODO Actually we can't get last page. Recursive is required
          */
-        $crawler = null === $indexUri ? $this->crawler : $this->crawl($indexUri);
-
-        if (!$crawler) {
+        if (!$crawler = $this->crawl($indexUri)) {
             return 1;
         }
 
