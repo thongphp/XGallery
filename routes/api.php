@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Nhaccuatui\NhaccuatuiController;
+use App\Http\Apis\Batdongsan\BatdongsanController;
+use App\Http\Controllers\Apis\Nhaccuatui\NhaccuatuiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,10 +15,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::namespace('App\Http\Controllers\Nhaccuatui')
+Route::namespace('App\Http\Controllers\Apis\Nhaccuatui')
     ->prefix('v1/nhaccuatui')
     ->group(function () {
         Route::get('/', [NhaccuatuiController::class, 'index'])->name('nhaccuatui.dashboard.index');
-        Route::get('/songs', [NhaccuatuiController::class,'getSongs'])->name('nhaccuatui.songs.index');
-        Route::put('/fetch', [NhaccuatuiController::class,'fetchSongs'])->name('nhaccuatui.console.fetch');
+        Route::get('/search', [NhaccuatuiController::class, 'search'])->name('nhaccuatui.songs.search');
+        Route::put('/request', [NhaccuatuiController::class, 'request'])->name('nhaccuatui.console.request');
+    });
+
+Route::namespace('App\Http\Controllers\Apis\Batdongsan')
+    ->prefix('v1/batdongsan')
+    ->group(function () {
+        Route::get('/', [BatdongsanController::class, 'index'])->name('batdongsan.dashboard.index');
     });

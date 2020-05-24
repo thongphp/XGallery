@@ -7,7 +7,7 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Apis;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\ResponseFactory;

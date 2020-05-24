@@ -42,6 +42,10 @@ class R18 extends BaseCrawlerCommand
             return false;
         }
 
+        if ($pages->isEmpty()) {
+            return false;
+        }
+
         $this->progressBar = $this->createProgressBar();
         $this->progressBar->setMaxSteps($pages->count());
 

@@ -21,21 +21,9 @@
                             @endif value="label">Label
                     </option>
                 </select>
-                <label for="sort-by"></label><select class="custom-select form-control input-sm mr-sm-2" id="sort-by"
-                                                     name="sort-by">
-                    <option @if(request()->request->get('sort-by','release_date') == 'id') selected @endif value="id">
-                        ID
-                    </option>
-                    <option @if(request()->request->get('sort-by','release_date') == 'release_date') selected
-                            @endif value="release_date">Release date
-                    </option>
-                    <option @if(request()->request->get('sort-by','release_date') == 'is_downloadable') selected
-                            @endif value="is_downloadable">Downloadable
-                    </option>
-                </select>
-                <input data-provide="datepicker" class="custom-select form-control mr-sm-2" name="fromDate" />
-                <input data-provide="datepicker" class="custom-select form-control mr-sm-2" name="toDate" />
-
+                @include('includes.form.sort',['default'=> 'id','sorts' => [ ['id','ID'],['release_date','Release date'],['is_downloadable','Downloadable']]])
+                <input data-provide="datepicker" class="custom-select form-control mr-sm-2" name="fromDate"/>
+                <input data-provide="datepicker" class="custom-select form-control mr-sm-2" name="toDate"/>
 
                 @include('includes.form.pagination')
 

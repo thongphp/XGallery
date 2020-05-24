@@ -7,9 +7,9 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Http\Controllers\Nhaccuatui;
+namespace App\Http\Controllers\Apis\Nhaccuatui;
 
-use App\Http\Controllers\ApiController;
+use App\Http\Controllers\Apis\ApiController;
 use App\Models\Nhaccuatui;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class IndexController
- * @package App\Http\Controllers\Nhaccuatui
+ * Class NhaccuatuiController
+ * @package App\Http\Controllers\Apis\Nhaccuatui
  */
 class NhaccuatuiController extends ApiController
 {
@@ -27,14 +27,14 @@ class NhaccuatuiController extends ApiController
      */
     public function index()
     {
-        return $this->respondOk(Nhaccuatui::all()->toArray());
+        return $this->respondOk(Nhaccuatui::paginate(15)->toArray());
     }
 
     /**
      * @param  Request  $request
      * @return Response
      */
-    public function getSongs(Request $request)
+    public function search(Request $request)
     {
         $model = app(Nhaccuatui::class);
 
@@ -49,7 +49,7 @@ class NhaccuatuiController extends ApiController
      * @param  Request  $request
      * @return JsonResponse
      */
-    public function fetchSongs(Request $request)
+    public function request(Request $request)
     {
         $args = [];
         if ($title = $request->get('title')) {

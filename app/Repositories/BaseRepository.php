@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class BaseRepository
@@ -11,7 +12,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BaseRepository
 {
-    protected Model $model;
+    const CACHE_INTERVAL = 3600;
+    protected Model                  $model;
     protected Builder                $builder;
 
     public function __construct(Model $model)
@@ -22,12 +24,15 @@ class BaseRepository
 
     public function getItems(array $filter = [])
     {
-        if (isset($filter['sort-by'])) {
-            $this->builder->orderBy($filter['sort-by'], $filter['sort-dir'] ?? 'asc');
-        }
-
-        return $this->builder->paginate(isset($filter['per-page']) ? (int) $filter['per-page'] : 15)
-            ->appends(request()->except('page'));
+        return Cache::remember(
+            get_class($this).':'.__FUNCTION__.':'.serialize($filter),
+            self::CACHE_INTERVAL,
+            function () use ($filter) {
+                $this->builder->orderBy($filter['sort-by'] ?? 'id', $filter['sort-dir'] ?? 'asc');
+                return $this->builder->paginate(isset($filter['per-page']) ? (int) $filter['per-page'] : 15)
+                    ->appends(request()->except('page'));
+            }
+        );
     }
 
     /**
@@ -36,6 +41,12 @@ class BaseRepository
      */
     public function find($id): Model
     {
-        return $this->model->find($id);
+        return Cache::remember(
+            get_class($this).':'.__FUNCTION__.':'.$id,
+            self::CACHE_INTERVAL,
+            function () use ($id) {
+                return $this->model->find($id);
+            }
+        );
     }
 }
