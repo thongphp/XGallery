@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Apis\Batdongsan;
+namespace App\Http\Apis\Jav;
 
 use App\Http\Controllers\Apis\ApiController;
-use App\Repositories\BatdongsanRepository;
+use App\Repositories\JavMovies;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class BatdongsanController extends ApiController
+class JavController extends ApiController
 {
     /**
      * @param  Request  $request
@@ -15,6 +15,6 @@ class BatdongsanController extends ApiController
      */
     public function index(Request $request)
     {
-        return $this->respondOk(app(BatdongsanRepository::class)->getItems($request->request->all())->toArray());
+        return $this->respondOk(app(JavMovies::class)->getItems($request->request->all())->toArray());
     }
 }

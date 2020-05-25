@@ -9,6 +9,7 @@
 
 namespace App\Repositories;
 
+use App\Models\JavGenres;
 use App\Models\JavMoviesXref;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -50,9 +51,17 @@ class JavMovies extends BaseRepository
         }
 
         if (isset($filter['genre']) && !empty($filter['genre'])) {
-            $ids = JavMoviesXref::where(['xref_id' => $filter['genre'], 'xref_type' => 'genre'])
+            $id = $filter['genre'];
+
+            if (!is_numeric($filter['genre'])) {
+                $id = JavGenres::where(['name' => $filter['genre']])->select('id')->first();
+                $id = $id->id;
+            }
+
+            $ids = JavMoviesXref::where(['xref_id' => $id, 'xref_type' => 'genre'])
                 ->select('movie_id')
                 ->get()->toArray();
+
             $this->builder->whereIn('id', $ids);
         }
 

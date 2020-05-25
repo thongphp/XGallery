@@ -19,10 +19,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::namespace('App\Http\Controllers\Dashboard')
-    ->group(function () {
-        Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard.view');
-    });
 
 Route::namespace('App\Http\Controllers\Jav')
     ->prefix('jav')

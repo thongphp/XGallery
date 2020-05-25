@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Apis\Batdongsan\BatdongsanController;
+use App\Http\Apis\Jav\JavController;
 use App\Http\Controllers\Apis\Nhaccuatui\NhaccuatuiController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +20,6 @@ Route::namespace('App\Http\Controllers\Apis\Nhaccuatui')
     ->prefix('v1/nhaccuatui')
     ->group(function () {
         Route::get('/', [NhaccuatuiController::class, 'index'])->name('nhaccuatui.dashboard.index');
-        Route::get('/search', [NhaccuatuiController::class, 'search'])->name('nhaccuatui.songs.search');
         Route::put('/request', [NhaccuatuiController::class, 'request'])->name('nhaccuatui.console.request');
     });
 
@@ -27,4 +27,10 @@ Route::namespace('App\Http\Controllers\Apis\Batdongsan')
     ->prefix('v1/batdongsan')
     ->group(function () {
         Route::get('/', [BatdongsanController::class, 'index'])->name('batdongsan.dashboard.index');
+    });
+
+Route::namespace('App\Http\Controllers\Apis\Jav')
+    ->prefix('v1/jav')
+    ->group(function () {
+        Route::get('/', [JavController::class, 'index'])->name('jav.dashboard.index');
     });

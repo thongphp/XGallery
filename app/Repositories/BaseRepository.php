@@ -24,8 +24,13 @@ class BaseRepository
 
     public function getItems(array $filter = [])
     {
+        $id = get_class($this).':'.__FUNCTION__.':'.serialize($filter);
+        if (isset($filter['cache']) && $filter['cache'] == 0) {
+            Cache::delete($id);
+        }
+
         return Cache::remember(
-            get_class($this).':'.__FUNCTION__.':'.serialize($filter),
+            $id,
             self::CACHE_INTERVAL,
             function () use ($filter) {
                 $this->builder->orderBy($filter['sort-by'] ?? 'id', $filter['sort-dir'] ?? 'asc');

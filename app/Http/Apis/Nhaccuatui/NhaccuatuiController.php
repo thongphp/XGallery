@@ -10,7 +10,7 @@
 namespace App\Http\Controllers\Apis\Nhaccuatui;
 
 use App\Http\Controllers\Apis\ApiController;
-use App\Models\Nhaccuatui;
+use App\Repositories\NhaccuatuiRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -23,26 +23,12 @@ use Symfony\Component\HttpFoundation\Response;
 class NhaccuatuiController extends ApiController
 {
     /**
+     * @param  \Symfony\Component\HttpFoundation\Request  $request
      * @return Response
      */
-    public function index()
+    public function index(\Symfony\Component\HttpFoundation\Request $request)
     {
-        return $this->respondOk(Nhaccuatui::paginate(15)->toArray());
-    }
-
-    /**
-     * @param  Request  $request
-     * @return Response
-     */
-    public function search(Request $request)
-    {
-        $model = app(Nhaccuatui::class);
-
-        if ($title = $request->get('title')) {
-            $model = $model->where('name', 'LIKE', '%'.$title.'%');
-        }
-
-        return $this->respondOk($model->get()->toArray());
+        return $this->respondOk(app(NhaccuatuiRepository::class)->getItems($request->request->all()));
     }
 
     /**
