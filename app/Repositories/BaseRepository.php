@@ -26,7 +26,7 @@ class BaseRepository
     {
         $id = get_class($this).':'.__FUNCTION__.':'.serialize($filter);
         if (isset($filter['cache']) && $filter['cache'] == 0) {
-            Cache::delete($id);
+            Cache::forget($id);
         }
 
         return Cache::remember(
