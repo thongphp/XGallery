@@ -71,13 +71,19 @@ class Truyenchon extends BaseCrawlerCommand
                  * Update chapters for each book
                  * @TODO Reduce update if chapters already here
                  */
-                if ($chapters = $this->crawler->getItemChapters($story['url'])) {
-                    foreach ($chapters as $chapterUrl) {
-                        Chapters::dispatch($story, $chapterUrl);
-                    }
+                if (!$chapters = $this->crawler->getItemChapters($story['url'])) {
+                    $this->progressBar->setMessage($index + 1, 'step');
+                    $this->progressBar->setMessage('SKIPPED', 'status');
+
+                    return;
                 }
+                $chapters = array_chunk($chapters->toArray(), 10);
+                foreach ($chapters as $chaptersChunk) {
+                    Chapters::dispatch($story, $chaptersChunk);
+                }
+
                 $this->progressBar->setMessage($index + 1, 'step');
-                $this->progressBar->setMessage('COMPLETED', 'status');
+                $this->progressBar->setMessage('QUEUED', 'status');
             });
             $this->progressBar->advance();
         });

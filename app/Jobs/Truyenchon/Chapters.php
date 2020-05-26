@@ -29,18 +29,18 @@ class Chapters implements ShouldQueue
     use HasJob;
 
     private array  $item;
-    private string $chapterUrl;
+    private array  $chapterUrls;
 
     /**
      * Create a new job instance.
      *
      * @param  array  $item
-     * @param  string  $chapterUrl
+     * @param  array  $chapterUrls
      */
-    public function __construct(array $item, string $chapterUrl)
+    public function __construct(array $item, array $chapterUrls)
     {
         $this->item = $item;
-        $this->chapterUrl = $chapterUrl;
+        $this->chapterUrls = $chapterUrls;
         $this->onQueue(Queues::QUEUE_TRUYENTRANH);
     }
 
@@ -54,6 +54,7 @@ class Chapters implements ShouldQueue
 
     public function handle()
     {
+        $chapters = [];
         /**
          * @var Truyenchon $item
          */
@@ -61,13 +62,17 @@ class Chapters implements ShouldQueue
             return;
         }
 
-        $chapter = explode('/', $this->chapterUrl);
-        if (!$itemDetail = app(\App\Crawlers\Crawler\Truyenchon::class)->getItemDetail($this->chapterUrl)) {
-            return;
+        foreach ($this->chapterUrls as $chapterUrl) {
+            $chapter = explode('/', $chapterUrl);
+            if (!$itemDetail = app(\App\Crawlers\Crawler\Truyenchon::class)->getItemDetail($chapterUrl)) {
+                return;
+            }
+
+            $item->drop($chapter[5]); // Remove chapter-xxx
+            $chapters[$chapter[5]] = $itemDetail->images->toArray();
         }
 
-        $item->drop($chapter[5]);
-        $item->chapters = array_merge($item->chapters ?? [], [$chapter[5] => $itemDetail->images->toArray()]);
+        $item->chapters = array_merge($item['chapters'] ?? [], $chapters);
         $item->save();
     }
 }
