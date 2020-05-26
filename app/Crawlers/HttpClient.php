@@ -40,6 +40,7 @@ class HttpClient extends Client
      * @param  string  $uri
      * @param  array  $options
      * @return string|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function request($method, $uri = '', array $options = []): ?string
     {
@@ -66,7 +67,7 @@ class HttpClient extends Client
 
         switch ($this->response->getStatusCode()) {
             case Response::HTTP_OK:
-                Cache::put($key, $this->response->getBody()->getContents(), 3600); // 1 hour
+                Cache::put($key, $this->response->getBody()->getContents(), 1800);
                 break;
             default:
                 Log::stack(['http'])->error($this->response->getStatusCode());
