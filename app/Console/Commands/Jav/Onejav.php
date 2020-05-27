@@ -54,13 +54,11 @@ class Onejav extends BaseCrawlerCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($pages->count());
+        $this->progressBarInit($pages->count());
 
         $pages->each(function ($items) {
             // Pages process
-            $this->progressBar->setMessage(0, 'step');
-            $this->progressBar->setMessage($items->count(), 'steps');
+            $this->progressBarSetSteps($items->count());
             $this->itemsProcess($items);
             $this->progressBar->advance();
         });
@@ -79,7 +77,7 @@ class Onejav extends BaseCrawlerCommand
         }
 
         $items->each(function ($item, $index) {
-            $this->progressBar->setMessage($item['title'], 'info');
+            $this->progressBarSetInfo($item['title']);
             // Convert to Mongo DateTime
             $originalItem = $item;
             if (isset($item['date']) && null !== $item['date']) {
@@ -88,8 +86,8 @@ class Onejav extends BaseCrawlerCommand
             $this->insertItem($item);
             // Process to OneJAV to JavMovies with: Idols & Genres
             \App\Jobs\Jav\OneJav::dispatch($originalItem);
-            $this->progressBar->setMessage($index + 1, 'step');
-            $this->progressBar->setMessage('QUEUED', 'status');
+            $this->progressBarAdvanceStep();
+            $this->progressBarSetStatus('QUEUED');
         });
     }
 
@@ -124,8 +122,7 @@ class Onejav extends BaseCrawlerCommand
         $endpoint->page = (int) $endpoint->page + 1;
         $endpoint->save();
 
-        $this->createProgressBar();
-        $this->progressBar->setMaxSteps(1);
+        $this->progressBarInit(1);
         $this->progressBar->setMessage($items->count(), 'steps');
         $this->itemsProcess($items);
 

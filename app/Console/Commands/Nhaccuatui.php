@@ -48,25 +48,22 @@ class Nhaccuatui extends BaseCrawlerCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($pages->count());
+        $this->progressBarInit($pages->count());
 
         $pages->each(function ($items, $key) {
-            $this->progressBar->setMessage($items->count(), 'steps');
-            $this->progressBar->setMessage(0, 'step');
+            $this->progressBarSetSteps($items->count());
             $items->each(function ($item, $key) {
-                $this->progressBar->setMessage($item['name'], 'info');
-                $this->progressBar->setMessage('', 'status');
+                $this->progressBarSetInfo($item['name']);
 
                 if ($this->argument('download') == 1) {
                     DownloadNhacCuaTui::dispatch($item['url']);
-                    $this->progressBar->setMessage('Added to download queues', 'status');
+                    $this->progressBarSetStatus('QUEUED');
                 }
 
                 // Item process
                 $this->insertItem($item);
-                $this->progressBar->setMessage($key + 1, 'step');
-                $this->progressBar->setMessage('COMPLETED', 'status');
+                $this->progressBarAdvanceStep();
+                $this->progressBarSetStatus('COMPLETED');
             });
 
             $this->progressBar->advance();

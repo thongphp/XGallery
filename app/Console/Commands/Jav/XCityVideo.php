@@ -61,16 +61,15 @@ class XCityVideo extends BaseCrawlerCommand
         $endpoint->page = (int) $endpoint->page + 1;
         $endpoint->save();
 
-        $this->createProgressBar();
-        $this->progressBar->setMaxSteps(1);
-        $this->progressBar->setMessage($items->count(), 'steps');
+        $this->progressBarInit(1);
+        $this->progressBarSetSteps($items->count());
 
         $items->each(function ($item, $index) {
-            $this->progressBar->setMessage($item['title'], 'info');
+            $this->progressBarSetInfo($item['title']);
             // This queue trigger on limited channel
             \App\Jobs\Jav\XCityVideo::dispatch($item);
-            $this->progressBar->setMessage('QUEUED', 'status');
-            $this->progressBar->setMessage($index + 1, 'step');
+            $this->progressBarAdvanceStep();
+            $this->progressBarSetStatus('QUEUED');
         });
 
         return true;
@@ -85,15 +84,14 @@ class XCityVideo extends BaseCrawlerCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($items->count());
+        $this->progressBarInit($items->count());
 
         $items->each(function ($item) {
-            $this->progressBar->setMessage($item['url'], 'info');
-            $this->progressBar->setMessage('FETCHING', 'status');
+            $this->progressBarSetInfo($item['url']);
+            $this->progressBarSetStatus('FETCHING');
             // Because this is daily request. We don't need use limit channel
             \App\Jobs\Jav\XCityVideo::dispatch($item);
-            $this->progressBar->setMessage('QUEUED', 'status');
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 

@@ -41,15 +41,14 @@ class XCityProfile extends BaseCrawlerCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($items->count());
+        $this->progressBarInit($items->count());
 
         $items->each(function ($item) {
-            $this->progressBar->setMessage($item['url'], 'info');
-            $this->progressBar->setMessage('FETCHING', 'status');
+            $this->progressBarSetInfo($item['url']);
+            $this->progressBarSetStatus('FETCHING');
             // Because this is daily request. We don't need use limit channel
             \App\Jobs\Jav\XCityProfile::dispatch($item);
-            $this->progressBar->setMessage('QUEUED', 'status');
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 
@@ -66,8 +65,7 @@ class XCityProfile extends BaseCrawlerCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($pages->count());
+        $this->progressBarInit($pages->count());
 
         // Process all pages. Actually one page
         $pages->each(function ($page) {
@@ -75,11 +73,11 @@ class XCityProfile extends BaseCrawlerCommand
             $this->progressBar->setMessage(0, 'step');
             // Process items on page
             $page->each(function ($item, $index) {
-                $this->progressBar->setMessage($item['url'], 'info');
-                $this->progressBar->setMessage('FETCHING', 'status');
+                $this->progressBarSetInfo($item['url']);
+                $this->progressBarSetStatus('FETCHING');
                 \App\Jobs\Jav\XCityProfile::dispatch($item);
-                $this->progressBar->setMessage($index + 1, 'step');
-                $this->progressBar->setMessage('QUEUED', 'status');
+                $this->progressBarAdvanceStep();
+                $this->progressBarSetStatus('QUEUED');
             });
             $this->progressBar->advance();
         });

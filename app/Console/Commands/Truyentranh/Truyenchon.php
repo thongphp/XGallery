@@ -45,8 +45,7 @@ class Truyenchon extends BaseCrawlerCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($pages->count());
+        $this->progressBarInit($pages->count());
 
         // Process all pages
         $pages->each(function ($page) {
@@ -54,17 +53,14 @@ class Truyenchon extends BaseCrawlerCommand
              * @var Collection $page
              */
             if ($page->isEmpty()) {
-                $this->progressBar->setMessage('', 'steps');
-                $this->progressBar->setMessage(0, 'step');
                 $this->progressBar->advance();
                 return;
             }
-            $this->progressBar->setMessage($page->count(), 'steps');
-            $this->progressBar->setMessage(0, 'step');
+            $this->progressBarSetSteps($page->count());
             // Process items on page
             $page->each(function ($story, $index) {
-                $this->progressBar->setMessage($story['url'], 'info');
-                $this->progressBar->setMessage('FETCHING', 'status');
+                $this->progressBarSetInfo($story['url']);
+                $this->progressBarSetStatus('FETCHING');
                 // Save a book with information only
                 $this->insertItem($story);
                 /**
@@ -72,8 +68,8 @@ class Truyenchon extends BaseCrawlerCommand
                  * @TODO Reduce update if chapters already here
                  */
                 if (!$chapters = $this->crawler->getItemChapters($story['url'])) {
-                    $this->progressBar->setMessage($index + 1, 'step');
-                    $this->progressBar->setMessage('SKIPPED', 'status');
+                    $this->progressBarAdvanceStep();
+                    $this->progressBarSetStatus('SKIPPED');
 
                     return;
                 }
@@ -82,8 +78,8 @@ class Truyenchon extends BaseCrawlerCommand
                     Chapters::dispatch($story, $chaptersChunk);
                 }
 
-                $this->progressBar->setMessage($index + 1, 'step');
-                $this->progressBar->setMessage('QUEUED', 'status');
+                $this->progressBarAdvanceStep();
+                $this->progressBarSetStatus('QUEUED');
             });
             $this->progressBar->advance();
         });

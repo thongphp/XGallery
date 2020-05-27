@@ -38,12 +38,13 @@ class FlickrPhotosSizes extends BaseCommand
             return false;
         }
 
-        $this->createProgressBar(count($photos));
-        $this->progressBar->setMessage('Photos', 'message');
+        $this->progressBarInit(30);
+        $this->progressBarSetMessage('Photos');
 
         foreach ($photos as $photo) {
             FlickrPhotoSizes::dispatch($photo);
-            $this->progressBar->setMessage('<fg=yellow;options=bold>QUEUED</>', 'status');
+            $this->progressBarSetInfo($photo->id);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }
 

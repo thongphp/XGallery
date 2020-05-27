@@ -37,26 +37,24 @@ class BaseCrawlerCommand extends BaseCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($pages->count());
+        $this->progressBarInit($pages->count());
 
         // Process all pages
         $pages->each(function ($page) {
             if (!$page) {
                 return;
             }
-            $this->progressBar->setMessage($page->count(), 'steps');
-            $this->progressBar->setMessage(0, 'step');
+            $this->progressBarSetSteps($page->count());
             // Process items on page
             $page->each(function ($item, $index) {
-                $this->progressBar->setMessage($item['url'], 'info');
-                $this->progressBar->setMessage('FETCHING', 'status');
+                $this->progressBarSetInfo($item['url']);
+                $this->progressBarSetStatus('FETCHING');
                 /**
                  * @TODO Use Job instead directly
                  */
                 if (!$itemDetail = $this->getCrawler()->getItemDetail($item['url'])) {
-                    $this->progressBar->setMessage($index + 1, 'step');
-                    $this->progressBar->setMessage('FAILED', 'status');
+                    $this->progressBarAdvanceStep();
+                    $this->progressBarSetStatus('FAILED');
                     return;
                 }
                 $data = get_object_vars($itemDetail);
@@ -64,8 +62,8 @@ class BaseCrawlerCommand extends BaseCommand
                     $data['cover'] = $item['cover'];
                 }
                 $this->insertItem($data);
-                $this->progressBar->setMessage($index + 1, 'step');
-                $this->progressBar->setMessage('<fg=blue;options=bold>COMPLETED</>', 'status');
+                $this->progressBarAdvanceStep();
+                $this->progressBarSetStatus('COMPLETED');
             });
             $this->progressBar->advance();
         });

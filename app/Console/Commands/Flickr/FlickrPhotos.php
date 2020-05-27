@@ -55,12 +55,12 @@ class FlickrPhotos extends BaseCommand
             )
         );
 
-        $this->createProgressBar($photos->photos->pages);
+        $this->progressBarInit($photos->photos->pages);
 
         // Trigger job to fetch photos of user
         for ($page = 1; $page <= $photos->photos->pages; $page++) {
             \App\Jobs\Flickr\FlickrPhotos::dispatch($contact, $page);
-            $this->progressBar->setMessage('<fg=yellow;options=bold>QUEUED</>', 'status');
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }
 

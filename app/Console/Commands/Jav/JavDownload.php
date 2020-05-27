@@ -34,9 +34,10 @@ class JavDownload extends BaseCommand
     protected function download()
     {
         $downloads = \App\Models\JavDownload::where(['is_downloaded' => null])->get();
-        $this->createProgressBar($downloads->count());
+        $this->progressBarInit($downloads->count());
         $downloads->each(function ($download) {
             \App\Jobs\Jav\JavDownload::dispatch($download);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 
@@ -55,7 +56,7 @@ class JavDownload extends BaseCommand
         $model->item_number = $itemNumber;
         $model->save();
 
-        $this->output->note('Item <strong>'.$itemNumber.'</strong> added to queue');
+        $this->output->text('Item <fg=white;options=bold>'.$itemNumber.'</> added to queue');
         return true;
     }
 }

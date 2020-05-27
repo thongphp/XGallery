@@ -42,23 +42,21 @@ final class Batdongsan extends BaseCrawlerCommand
             return false;
         }
 
-        $this->progressBar = $this->createProgressBar();
-        $this->progressBar->setMaxSteps($pages->count());
+        $this->progressBarInit($pages->count());
 
         // Process all pages
         $pages->each(function ($page) {
             if (!$page) {
                 return;
             }
-            $this->progressBar->setMessage($page->count(), 'steps');
-            $this->progressBar->setMessage(0, 'step');
+            $this->progressBarSetSteps($page->count());
             // Process items on page
             $page->each(function ($item, $index) {
-                $this->progressBar->setMessage($item['url'], 'info');
-                $this->progressBar->setMessage('FETCHING', 'status');
+                $this->progressBarSetInfo($item['url']);
+                $this->progressBarSetStatus('FETCHING');
                 \App\Jobs\Batdongsan::dispatch($item['url']);
-                $this->progressBar->setMessage($index + 1, 'step');
-                $this->progressBar->setMessage('QUEUED', 'status');
+                $this->progressBarAdvanceStep();
+                $this->progressBarSetStatus('QUEUED');
             });
             $this->progressBar->advance();
         });

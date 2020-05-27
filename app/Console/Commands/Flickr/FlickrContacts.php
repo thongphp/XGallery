@@ -46,11 +46,12 @@ class FlickrContacts extends BaseCommand
             )
         );
 
-        $this->createProgressBar($contacts->contacts->pages);
+        $this->progressBarInit($contacts->contacts->pages);
 
         for ($page = 1; $page <= $contacts->contacts->pages; $page++) {
             // Add contacts on a page
             \App\Jobs\Flickr\FlickrContacts::dispatch($page);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }
 
