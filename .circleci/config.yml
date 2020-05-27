@@ -37,7 +37,7 @@ jobs:
       - run: php -r "unlink('composer-setup.php');"
       - run: php composer.phar self-update
       - run: sudo mv composer.phar /usr/local/bin/composer
-      - run: php -d memory_limit=-1 composer install -n --prefer-dist
+      - run: php -d memory_limit=-1 /usr/local/bin/composer install -n --prefer-dist
 
       - save_cache:
           key: v1-dependencies-{{ checksum "composer.json" }}
