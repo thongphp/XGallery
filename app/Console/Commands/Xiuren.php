@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Xiuren
  * @package App\Console\Commands
  */
-class Xiuren extends BaseCrawlerCommand
+final class Xiuren extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

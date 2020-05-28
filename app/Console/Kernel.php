@@ -38,6 +38,8 @@ class Kernel extends ConsoleKernel
     {
         $commands = DB::table('schedules')->select('*')->get()->toArray();
 
+        $schedule->command('system:database')->everyMinute()->withoutOverlapping();
+
         foreach ($commands as $command) {
             $schedule->command($command->command)
                 ->{$command->every}()

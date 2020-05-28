@@ -16,7 +16,7 @@ use Exception;
  * Class XCity
  * @package App\Console\Commands
  */
-class XCityProfile extends BaseCrawlerCommand
+final class XCityProfile extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

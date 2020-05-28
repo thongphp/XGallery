@@ -16,7 +16,7 @@ use Exception;
  * Class XCityVideo
  * @package App\Console\Commands
  */
-class XCityVideo extends BaseCrawlerCommand
+final class XCityVideo extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

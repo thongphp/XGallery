@@ -16,7 +16,7 @@ use App\Jobs\Flickr\FlickrPhotoSizes;
  * Class FlickrPhotosSizes
  * @package App\Console\Commands\Flickr
  */
-class FlickrPhotosSizes extends BaseCommand
+final class FlickrPhotosSizes extends BaseCommand
 {
     /**
      * The name and signature of the console command.

@@ -16,7 +16,7 @@ use App\Oauth\Services\Flickr\Flickr;
  * Class FlickrPhotos
  * @package App\Console\Commands\Flickr
  */
-class FlickrPhotos extends BaseCommand
+final class FlickrPhotos extends BaseCommand
 {
     /**
      * The name and signature of the console command.

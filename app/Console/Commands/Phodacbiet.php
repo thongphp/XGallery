@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Xiuren
  * @package App\Console\Commands
  */
-class Phodacbiet extends BaseCrawlerCommand
+final class Phodacbiet extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

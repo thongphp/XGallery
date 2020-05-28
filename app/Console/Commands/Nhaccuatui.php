@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Nhaccuatui
  * @package App\Console\Commands
  */
-class Nhaccuatui extends BaseCrawlerCommand
+final class Nhaccuatui extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

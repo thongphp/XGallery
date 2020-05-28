@@ -16,7 +16,7 @@ use Exception;
  * R18 only used to get videos. There are no idol information
  * @package App\Console\Commands
  */
-class R18 extends BaseCrawlerCommand
+final class R18 extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

@@ -19,7 +19,7 @@ use MongoDB\BSON\UTCDateTime;
  * Class Onejav
  * @package App\Console\Commands\Jav
  */
-class Onejav extends BaseCrawlerCommand
+final class Onejav extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

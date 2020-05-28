@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
  * Class Truyenchon
  * @package App\Console\Commands\Truyentranh
  */
-class Truyenchon extends BaseCrawlerCommand
+final class Truyenchon extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

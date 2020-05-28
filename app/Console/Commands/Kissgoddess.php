@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Kissgoddess
  * @package App\Console\Commands
  */
-class Kissgoddess extends BaseCrawlerCommand
+final class Kissgoddess extends BaseCrawlerCommand
 {
     /**
      * The name and signature of the console command.

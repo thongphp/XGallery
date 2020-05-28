@@ -15,7 +15,7 @@ use App\Console\BaseCommand;
  * Process download pending JAV
  * @package App\Console\Commands
  */
-class JavDownload extends BaseCommand
+final class JavDownload extends BaseCommand
 {
     /**
      * The name and signature of the console command.
