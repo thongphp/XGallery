@@ -24,9 +24,9 @@ class NhaccuatuiController extends ApiController
 {
     /**
      * @param  \Symfony\Component\HttpFoundation\Request  $request
-     * @return Response
+     * @return JsonResponse
      */
-    public function index(\Symfony\Component\HttpFoundation\Request $request)
+    public function index(\Symfony\Component\HttpFoundation\Request $request): JsonResponse
     {
         return $this->respondOk(app(NhaccuatuiRepository::class)->getItems($request->request->all()));
     }
@@ -35,7 +35,7 @@ class NhaccuatuiController extends ApiController
      * @param  Request  $request
      * @return JsonResponse
      */
-    public function request(Request $request)
+    public function request(Request $request): JsonResponse
     {
         $args = [];
         if ($title = $request->get('title')) {

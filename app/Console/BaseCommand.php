@@ -12,7 +12,6 @@ namespace App\Console;
 use App\Console\Traits\HasProgressBar;
 use Illuminate\Console\Command;
 use Illuminate\Notifications\Notifiable;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -56,7 +55,7 @@ class BaseCommand extends Command
      */
     protected function completed($status)
     {
-       $this->progressBarFinished();
+        $this->progressBarFinished();
 
         if ($status) {
             $this->output->newLine(2);
