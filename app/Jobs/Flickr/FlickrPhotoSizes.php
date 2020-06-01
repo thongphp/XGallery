@@ -9,10 +9,10 @@
 
 namespace App\Jobs\Flickr;
 
+use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Oauth\Services\Flickr\Flickr;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -56,9 +56,7 @@ class FlickrPhotoSizes implements ShouldQueue
      */
     public function handle()
     {
-        $client = app(Flickr::class);
-
-        if (!$sizes = $client->get('photos.getSizes', ['photo_id' => $this->photo->id])) {
+        if (!$sizes = Flickr::get('photos.getSizes', ['photo_id' => $this->photo->id])) {
             return;
         }
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Helpers;
 
+use Throwable;
+
 /**
  * Class Toast
  * @package App\Http\Helpers
@@ -13,11 +15,6 @@ class Toast
         return self::html($title, ucfirst(__FUNCTION__), $message);
     }
 
-    public static function warning(string $title, string $message = ''): string
-    {
-        return self::html($title, ucfirst(__FUNCTION__), $message);
-    }
-
     public static function html(string $title, string $status, string $message): string
     {
         try {
@@ -25,8 +22,13 @@ class Toast
                 'includes.toast',
                 ['title' => $title, 'status' => $status, 'message' => $message]
             )->render();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return '';
         }
+    }
+
+    public static function warning(string $title, string $message = ''): string
+    {
+        return self::html($title, ucfirst(__FUNCTION__), $message);
     }
 }

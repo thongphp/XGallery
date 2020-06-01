@@ -10,6 +10,7 @@
 namespace App\Console;
 
 use App\Crawlers\Crawler\CrawlerInterface;
+use App\Repositories\CrawlerEndpoints;
 use App\Traits\HasObject;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -115,7 +116,7 @@ class BaseCrawlerCommand extends BaseCommand
         /**
          * @var Model $endpoint
          */
-        if (!$endpoint = app(\App\Repositories\CrawlerEndpoints::class)->getWorkingItem($this->getShortClassname())) {
+        if (!$endpoint = app(CrawlerEndpoints::class)->getWorkingItem($this->getShortClassname())) {
             throw new Exception('Crawler endpoint not found');
         }
 

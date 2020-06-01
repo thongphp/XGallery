@@ -10,7 +10,7 @@
 namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
-use App\Oauth\Services\Flickr\Flickr;
+use App\Facades\Flickr;
 
 /**
  * Class FlickrContacts
@@ -34,16 +34,12 @@ final class FlickrContacts extends BaseCommand
 
     public function fully()
     {
-        if (!$contacts = app(Flickr::class)->get('contacts.getList')) {
+        if (!$contacts = Flickr::get('contacts.getList')) {
             return false;
         }
 
         $this->output->note(
-            sprintf(
-                'Got %d contacts in %d pages',
-                $contacts->contacts->total,
-                $contacts->contacts->pages
-            )
+            sprintf('Got %d contacts in %d pages', $contacts->contacts->total, $contacts->contacts->pages)
         );
 
         $this->progressBarInit($contacts->contacts->pages);

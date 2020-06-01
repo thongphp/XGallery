@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Xiuren;
 
 use App\Http\Controllers\BaseController;
 use App\Jobs\XiurenDownload;
-use App\Models\Xiuren;
+use App\Repositories\Xiuren;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -24,9 +24,9 @@ class XiurenController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected \App\Repositories\Xiuren $repository;
+    protected Xiuren $repository;
 
-    public function __construct(\App\Repositories\Xiuren $repository)
+    public function __construct(Xiuren $repository)
     {
         $this->repository = $repository;
     }

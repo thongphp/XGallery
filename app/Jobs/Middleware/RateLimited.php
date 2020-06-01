@@ -18,7 +18,7 @@ class RateLimited
 
     public function __construct(string $key)
     {
-        $value = explode(':', config('ratelimit.' . $key, '6:1:2'));
+        $value = explode(':', config('ratelimit.'.$key, '6:1:2'));
         $this->key = $key;
         $this->allow = $value[0];
         $this->every = $value[1];

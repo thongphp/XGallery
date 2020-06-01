@@ -9,6 +9,8 @@
 
 namespace App\Providers;
 
+use App\Services\Flickr;
+use App\Services\GoogleDrive;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,7 +22,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind('googledrive', function () {
+            return new GoogleDrive;
+        });
+
+        $this->app->bind('flickr', function () {
+            return new Flickr;
+        });
     }
 
     /**

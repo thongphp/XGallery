@@ -12,4 +12,22 @@ class FlickrContacts extends BaseRepository
     {
         parent::__construct($model);
     }
+
+    public function getContactByNsid(string $nsid)
+    {
+        return $this->model->where(['nsid' => $nsid])->first();
+    }
+
+    public function save(array $data)
+    {
+        $model = clone($this->model);
+
+        foreach ($data as $key => $value) {
+            $model->{$key} = $value;
+        }
+
+        $model->save();
+
+        return $model;
+    }
 }

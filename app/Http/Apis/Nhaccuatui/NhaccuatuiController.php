@@ -14,7 +14,6 @@ use App\Repositories\NhaccuatuiRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class NhaccuatuiController

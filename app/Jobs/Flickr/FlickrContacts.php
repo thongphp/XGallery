@@ -9,11 +9,10 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Jobs\Middleware\FlickrRateLimited;
+use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Oauth\Services\Flickr\Flickr;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -57,28 +56,25 @@ class FlickrContacts implements ShouldQueue
      */
     public function handle()
     {
-        $client = app(Flickr::class);
-
-        if (!$contacts = $client->get('contacts.getList', ['page' => $this->page])) {
+        if (!$contacts = Flickr::get('contacts.getList', ['page' => $this->page])) {
             return;
         }
 
         foreach ($contacts->contacts->contact as $contact) {
+            $repository = app(\App\Repositories\FlickrContacts::class);
             /**
              * @TODO Trigger sub job for flickr.people.getInfo
              */
-            $model = app(\App\Models\FlickrContacts::class);
-            if ($item = $model->where(['nsid' => $contact->nsid])->first()) {
+            if ($item = $repository->getContactByNsid($contact->nsid)) {
                 continue;
             }
 
-            $properties = get_object_vars($contact);
+            $repository->save(get_object_vars($contact));
 
-            foreach ($properties as $key => $value) {
-                $model->{$key} = $value;
-            }
-
-            $model->save();
+            /**
+             * @TODO #17 Call https://www.flickr.com/services/api/flickr.favorites.getList.html
+             * and trigger job FlickrFavoritePhotos to store these
+             */
         }
     }
 }

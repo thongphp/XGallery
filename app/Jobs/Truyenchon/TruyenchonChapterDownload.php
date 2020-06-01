@@ -66,9 +66,9 @@ class TruyenchonChapterDownload implements ShouldQueue
         $files = [];
         foreach ($this->images as $image) {
             $files[] = storage_path('app/'.$crawler->download(
-                $image,
-                'truyenchon'.$this->path
-            ));
+                    $image,
+                    'truyenchon'.$this->path
+                ));
         }
 
         $chapter = explode('/', $this->path);

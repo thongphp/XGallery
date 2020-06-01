@@ -10,12 +10,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
-use App\Http\Traits\HasModel;
 use App\Traits\HasObject;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class BaseController

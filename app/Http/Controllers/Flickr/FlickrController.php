@@ -9,10 +9,10 @@
 
 namespace App\Http\Controllers\Flickr;
 
+use App\Facades\Flickr;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrDownload;
 use App\Models\FlickrContacts;
-use App\Oauth\Services\Flickr\Flickr;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -51,35 +51,34 @@ class FlickrController extends BaseController
             return;
         }
 
-        $flashMessage = '';
+        if (strpos($url, 'albums') === false) {
+            return redirect()->route('flickr.dashboard.view')->with('warning', 'Invalid Album URL');
+        }
 
-        if (strpos($url, 'albums') !== false) {
-            $urls = explode('/', $url);
-            $url = end($urls);
+        $urls = explode('/', $url);
+        $url = end($urls);
 
-            $client = app(Flickr::class);
-            $photos = $client->get('photosets.getPhotos', ['photoset_id' => $url]);
+        $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $url]);
 
-            if (!$photos) {
-                return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
-            }
+        if (!$photos) {
+            return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
+        }
 
-            $flashMessage = 'Added '.count($photos->photoset->photo).' photos of album <strong>'
-                .$photos->photoset->title.'</strong> to queue';
+        $flashMessage = 'Added '.count($photos->photoset->photo).' photos of album <strong>'
+            .$photos->photoset->title.'</strong> to queue';
 
+        foreach ($photos->photoset->photo as $photo) {
+            FlickrDownload::dispatch($photos->photoset->owner, $photo);
+        }
+
+        if ($photos->photoset->page == 1) {
+            return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
+        }
+
+        for ($page = 2; $page <= $photos->photoset->pages; $page++) {
+            $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $url, 'page' => $page]);
             foreach ($photos->photoset->photo as $photo) {
                 FlickrDownload::dispatch($photos->photoset->owner, $photo);
-            }
-
-            if ($photos->photoset->page == 1) {
-                return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
-            }
-
-            for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-                $photos = $client->get('photosets.getPhotos', ['photoset_id' => $url, 'page' => $page]);
-                foreach ($photos->photoset->photo as $photo) {
-                    FlickrDownload::dispatch($photos->photoset->owner, $photo);
-                }
             }
         }
 

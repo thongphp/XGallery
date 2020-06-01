@@ -41,6 +41,30 @@ class ApiController
     }
 
     /**
+     * Respond Ok - 200
+     *
+     * @param  mixed  $data
+     *
+     * @return JsonResponse
+     */
+    public function respondOk($data = []): JsonResponse
+    {
+        return $this->setData($data)
+            ->setStatusCode(HttpResponse::HTTP_OK)
+            ->respond();
+    }
+
+    /**
+     * Return the response
+     *
+     * @return JsonResponse
+     */
+    protected function respond(): JsonResponse
+    {
+        return $this->response->json($this->getData(), $this->getStatusCode(), $this->getHeaders());
+    }
+
+    /**
      * Get the data
      *
      * @return mixed
@@ -62,20 +86,6 @@ class ApiController
     }
 
     /**
-     * Set the error message as data
-     *
-     * @param string $message
-     *
-     * @return $this
-     */
-    protected function setErrorMessage(string $message): self
-    {
-        return $this->setData([
-            'error' => $message,
-        ]);
-    }
-
-    /**
      * Get the Status Code
      *
      * @return int
@@ -83,20 +93,6 @@ class ApiController
     protected function getStatusCode(): int
     {
         return $this->status;
-    }
-
-    /**
-     * Set the Status Code
-     *
-     * @param int $status
-     *
-     * @return $this
-     */
-    protected function setStatusCode(int $status): self
-    {
-        $this->status = $status;
-
-        return $this;
     }
 
     /**
@@ -112,7 +108,7 @@ class ApiController
     /**
      * Set the headers
      *
-     * @param array $headers
+     * @param  array  $headers
      *
      * @return $this
      */
@@ -124,33 +120,23 @@ class ApiController
     }
 
     /**
-     * Return the response
+     * Set the Status Code
      *
-     * @return JsonResponse
+     * @param  int  $status
+     *
+     * @return $this
      */
-    protected function respond(): JsonResponse
+    protected function setStatusCode(int $status): self
     {
-        return $this->response->json($this->getData(), $this->getStatusCode(), $this->getHeaders());
-    }
+        $this->status = $status;
 
-    /**
-     * Respond Ok - 200
-     *
-     * @param mixed $data
-     *
-     * @return JsonResponse
-     */
-    public function respondOk($data = []): JsonResponse
-    {
-        return $this->setData($data)
-            ->setStatusCode(HttpResponse::HTTP_OK)
-            ->respond();
+        return $this;
     }
 
     /**
      * Respond Created - 201
      *
-     * @param mixed $data
+     * @param  mixed  $data
      *
      * @return JsonResponse
      */
@@ -164,7 +150,7 @@ class ApiController
     /**
      * Respond Accepted - 202
      *
-     * @param mixed $data
+     * @param  mixed  $data
      *
      * @return JsonResponse
      */
@@ -178,7 +164,7 @@ class ApiController
     /**
      * Respond No Content - 204
      *
-     * @param mixed $data
+     * @param  mixed  $data
      *
      * @return JsonResponse
      */
@@ -192,7 +178,7 @@ class ApiController
     /**
      * Respond Bad Request - 400
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return JsonResponse
      */
@@ -204,9 +190,23 @@ class ApiController
     }
 
     /**
+     * Set the error message as data
+     *
+     * @param  string  $message
+     *
+     * @return $this
+     */
+    protected function setErrorMessage(string $message): self
+    {
+        return $this->setData([
+            'error' => $message,
+        ]);
+    }
+
+    /**
      * Respond Unauthorized - 401
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return JsonResponse
      */
@@ -220,7 +220,7 @@ class ApiController
     /**
      * Respond Forbidden - 403
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return JsonResponse
      */
@@ -234,7 +234,7 @@ class ApiController
     /**
      * Respond Not Found - 404
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return JsonResponse
      */
@@ -248,7 +248,7 @@ class ApiController
     /**
      * Respond Expectation Failed - 417
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return JsonResponse
      */
@@ -262,7 +262,7 @@ class ApiController
     /**
      * Respond Unprocessable Entity - 422
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return JsonResponse
      */
@@ -276,7 +276,7 @@ class ApiController
     /**
      * Respond Internal Server Error - 500
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return JsonResponse
      */

@@ -1,5 +1,8 @@
 <?php
 
+use App\Facades\Flickr;
+use App\Facades\GoogleDrive;
+use App\Facades\GoogleDriveFacade;
 use SocialiteProviders\Manager\ServiceProvider;
 
 return [
@@ -172,6 +175,7 @@ return [
          * Application Service Providers...
          */
 
+        App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
@@ -249,6 +253,8 @@ return [
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
         'Es' => Elasticquent\ElasticquentElasticsearchFacade::class,
+        'GoogleDrive' => GoogleDriveFacade::class,
+        'Flickr' => Flickr::class
     ],
 
 ];

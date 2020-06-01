@@ -19,19 +19,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard.view');
 
 Route::namespace('App\Http\Controllers\Jav')
     ->prefix('jav')
     ->group(function () {
-        Route::get('/', [JavController::class, 'dashboard'])->name('jav.dashboard.view');
-        Route::post('/', [JavController::class, 'dashboard'])->name('jav.dashboard.view');
+        Route::match(['GET', 'POST'], '/', [JavController::class, 'dashboard'])->name('jav.dashboard.view');
         Route::get('/movie/{id}', [JavController::class, 'movie'])->name('jav.movie.view');
         Route::get('/genre/{id}', [JavController::class, 'genre'])->name('jav.genre.view');
         Route::get('/idol/{id}', [JavController::class, 'idol'])->name('jav.idol.view');
-        Route::post(
-            '/download/{itemNumber}',
-            [JavController::class, 'download']
-        )->name('jav.download.request');
+        Route::post('/download/{itemNumber}', [JavController::class, 'download'])->name('jav.download.request');
     });
 
 Route::namespace('App\Http\Controllers\Xiuren')
@@ -39,10 +36,7 @@ Route::namespace('App\Http\Controllers\Xiuren')
     ->group(function () {
         Route::get('/', [XiurenController::class, 'dashboard'])->name('xiuren.dashboard.view');
         Route::get('/{id}', [XiurenController::class, 'item'])->name('xiuren.item.view');
-        Route::post(
-            '/download/{id}',
-            [XiurenController::class, 'download']
-        )->name('xiuren.download.request');
+        Route::post('/download/{id}', [XiurenController::class, 'download'])->name('xiuren.download.request');
     });
 
 Route::namespace('App\Http\Controllers\Truyenchon')
@@ -51,10 +45,7 @@ Route::namespace('App\Http\Controllers\Truyenchon')
         Route::get('/', [TruyenchonController::class, 'dashboard'])->name('truyenchon.dashboard.view');
         Route::get('/{id}/{chapter}', [TruyenchonController::class, 'story'])->name('truyenchon.story.view');
         Route::post('/search', [TruyenchonController::class, 'search'])->name('truyenchon.search.view');
-        Route::post(
-            '/download/{id}',
-            [TruyenchonController::class, 'download']
-        )->name('truyenchon.download.request');
+        Route::post('/download/{id}', [TruyenchonController::class, 'download'])->name('truyenchon.download.request');
     });
 
 Route::namespace('App\Http\Controllers\Flickr')

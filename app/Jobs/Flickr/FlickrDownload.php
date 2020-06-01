@@ -10,17 +10,15 @@
 namespace App\Jobs\Flickr;
 
 use App\Crawlers\HttpClient;
+use App\Facades\GoogleDriveFacade;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Oauth\Services\Flickr\Flickr;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -55,9 +53,6 @@ class FlickrDownload implements ShouldQueue
         return [new RateLimited('flickr')];
     }
 
-    /**
-     * @throws FileNotFoundException
-     */
     public function handle()
     {
         $filePath = $this->download();
@@ -66,34 +61,15 @@ class FlickrDownload implements ShouldQueue
         $dirName = '1B_ii6zmyqMjnb37NBnU9DJjcRfb2iECm/18Wi-wHgjgp8JgTijv7rTgH0tAuqvPZM6';
 
         // Create owner dir if needed
-        if (!$ownerDir = collect(Storage::cloud()->listContents($dirName))
-            ->where('type', '=', 'dir')
-            ->where('name', '=', $this->owner)
-            ->first()) {
+        if (!$ownerDir = GoogleDriveFacade::dirExists($dirName, $this->owner)) {
             Storage::cloud()->createDir($dirName.'/'.$this->owner);
         }
 
         // Get ID
-        $ownerDir = collect(Storage::cloud()->listContents($dirName))
-            ->where('type', '=', 'dir')
-            ->where('name', '=', $this->owner)
-            ->first();
+        $ownerDir = GoogleDriveFacade::dirExists($dirName, $this->owner);
 
-        $fileName = basename($filePath);
-
-        // Check if filename exists
-        if (collect(Storage::cloud()->listContents($ownerDir['path']))
-            ->where('type', '=', 'file')
-            ->where('name', '=', $fileName)
-            ->first()) {
-            Storage::delete($filePath);
-            return;
-        }
-
-        Storage::cloud()->put($ownerDir['path'].'/'.$fileName, File::get(storage_path('app/'.$filePath)));
+        GoogleDriveFacade::put($ownerDir['path'], storage_path('app/'.$filePath));
         Storage::delete($filePath);
-
-        return;
     }
 
     private function download()
@@ -102,7 +78,7 @@ class FlickrDownload implements ShouldQueue
         $httpClient = app(HttpClient::class);
 
         if (!$sizes = $client->get('photos.getSizes', ['photo_id' => $this->photo->id])) {
-            return;
+            return false;
         }
 
         $size = end($sizes->sizes->size);

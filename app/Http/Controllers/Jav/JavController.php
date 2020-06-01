@@ -23,6 +23,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 /**
  * Class JavController
@@ -124,7 +125,7 @@ class JavController extends BaseController
     /**
      * @param  string  $itemNumber
      * @return JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function download(string $itemNumber)
     {

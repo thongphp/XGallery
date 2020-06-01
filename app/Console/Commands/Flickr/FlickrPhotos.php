@@ -10,7 +10,7 @@
 namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
-use App\Oauth\Services\Flickr\Flickr;
+use App\Facades\Flickr;
 
 /**
  * Class FlickrPhotos
@@ -34,8 +34,10 @@ final class FlickrPhotos extends BaseCommand
 
     public function fully()
     {
-        $client = app(Flickr::class);
-        if (!$contact = \App\Models\FlickrContacts::orderBy('updated_at', 'asc')->first()) {
+        if (!$contact = app(\App\Repositories\FlickrContacts::class)->getItems(
+            [
+                'sort-by' => 'updated_at', 'cache' => 0
+            ])->first()) {
             return false;
         }
 
@@ -43,16 +45,12 @@ final class FlickrPhotos extends BaseCommand
 
         $this->output->title('Working on contact '.$contact->nsid);
 
-        if (!$photos = $client->get('people.getPhotos', ['user_id' => $contact->nsid])) {
+        if (!$photos = Flickr::get('people.getPhotos', ['user_id' => $contact->nsid])) {
             return false;
         }
 
         $this->output->note(
-            sprintf(
-                'Got %d photos in %d pages',
-                $photos->photos->total,
-                $photos->photos->pages
-            )
+            sprintf('Got %d photos in %d pages', $photos->photos->total, $photos->photos->pages)
         );
 
         $this->progressBarInit($photos->photos->pages);
