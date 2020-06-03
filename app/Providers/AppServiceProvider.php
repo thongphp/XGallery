@@ -11,6 +11,7 @@ namespace App\Providers;
 
 use App\Services\Flickr;
 use App\Services\GoogleDrive;
+use App\Services\UrlDetect;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind('flickr', function () {
             return new Flickr;
+        });
+
+        $this->app->bind('urldetect', function () {
+            return new UrlDetect;
         });
     }
 
