@@ -25,7 +25,7 @@ abstract class AbstractFlickrUrl implements FlickrUrlInterface
      */
     public function getType(): string
     {
-        return self::TYPE;
+        return static::TYPE;
     }
 
     /**
