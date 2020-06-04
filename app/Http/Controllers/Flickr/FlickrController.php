@@ -11,10 +11,11 @@
 namespace App\Http\Controllers\Flickr;
 
 use App\Facades\Flickr;
-use App\Facades\UrlDetect;
+use App\Facades\FlickrUrlExtractor;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrDownload;
 use App\Models\FlickrContacts;
+use App\Services\Flickr\Url\FlickrAlbumUrl;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -58,7 +59,8 @@ class FlickrController extends BaseController
             return;
         }
 
-        $result = UrlDetect::flickrDetect($url);
+        /** @var \App\Services\Flickr\Url\FlickrUrlInterface $result */
+        $result = FlickrUrlExtractor::extract($url);
 
         if ($result === null) {
             return redirect()
@@ -68,9 +70,9 @@ class FlickrController extends BaseController
 
         $flashMessage = '';
 
-        switch ($result['type']) {
-            case 'album':
-                $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $result['entity']['albumId']]);
+        switch ($result->getType()) {
+            case FlickrAlbumUrl::TYPE:
+                $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $result->getId()]);
 
                 if (!$photos) {
                     return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
@@ -83,7 +85,7 @@ class FlickrController extends BaseController
                     FlickrDownload::dispatch($photos->photoset->owner, $photo);
                 }
 
-                if ($photos->photoset->page == 1) {
+                if ($photos->photoset->page === 1) {
                     return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
                 }
 
