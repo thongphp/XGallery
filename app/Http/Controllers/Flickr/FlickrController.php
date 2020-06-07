@@ -95,6 +95,9 @@ class FlickrController extends BaseController
                 break;
 
             default:
+                return redirect()
+                    ->route('flickr.dashboard.view')
+                    ->with('error', 'Could not detect type of URL');
                 break;
         }
 

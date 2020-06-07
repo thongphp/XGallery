@@ -10,30 +10,32 @@ class UrlExtractor
     private const MAPPER = 'mapper';
     private const REGEX = 'regex';
 
+    private const REGEX_DOMAIN = '(?:https?:\/\/)?(?:www\.)?flickr\.com\/';
+
     public const DETECTOR = [
         FlickrUrlInterface::TYPE_ALBUM => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/albums\/(?:albumId\/)?(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\w+)\/albums\/(?:albumId\/)?(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PHOTO => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\w+)\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_GALLERY => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/galleries\/(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\w+)\/galleries\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PROFILE => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/people\/(\w+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'people\/(\w+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_ID => 1,
                 FlickrUrlInterface::KEY_OWNER => 1,
