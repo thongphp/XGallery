@@ -14,7 +14,6 @@ use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrDownload;
-use App\Jobs\Flickr\FlickrFavePhotos;
 use App\Models\FlickrContacts;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Contracts\Foundation\Application;
@@ -90,11 +89,6 @@ class FlickrController extends BaseController
                     }
                 }
 
-                break;
-
-            case FlickrUrlInterface::TYPE_PROFILE:
-                FlickrFavePhotos::dispatch($result->getOwner());
-                $flashMessage = 'Added faves photos of contact ' . $result->getOwner();
                 break;
 
             default:
