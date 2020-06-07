@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Facades;
+namespace App\Facades\Flickr;
 
 use Illuminate\Support\Facades\Facade;
 
-class FlickrUrlExtractor extends Facade
+class UrlExtractor extends Facade
 {
     protected static function getFacadeAccessor(): string
     {

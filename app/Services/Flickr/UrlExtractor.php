@@ -2,55 +2,47 @@
 
 namespace App\Services\Flickr;
 
-use App\Services\Flickr\Url\FlickrAlbumUrl;
-use App\Services\Flickr\Url\FlickrGalleryUrl;
-use App\Services\Flickr\Url\FlickrPhotoUrl;
-use App\Services\Flickr\Url\FlickrProfileUrl;
+use App\Services\Flickr\Url\FlickrUrl;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 
 class UrlExtractor
 {
     private const MAPPER = 'mapper';
     private const REGEX = 'regex';
-    private const RESULT = 'result';
 
     public const DETECTOR = [
-        FlickrAlbumUrl::TYPE => [
+        FlickrUrlInterface::TYPE_ALBUM => [
             self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/albums\/(?:albumId\/)?(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
-            self::RESULT => FlickrAlbumUrl::class,
         ],
-        FlickrPhotoUrl::TYPE => [
+        FlickrUrlInterface::TYPE_PHOTO => [
             self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
-            self::RESULT => FlickrPhotoUrl::class,
         ],
-        FlickrGalleryUrl::TYPE => [
+        FlickrUrlInterface::TYPE_GALLERY => [
             self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/galleries\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
-            self::RESULT => FlickrGalleryUrl::class,
         ],
-        FlickrProfileUrl::TYPE => [
+        FlickrUrlInterface::TYPE_PROFILE => [
             self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/people\/(\w+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_ID => 1,
                 FlickrUrlInterface::KEY_OWNER => 1,
             ],
-            self::RESULT => FlickrProfileUrl::class,
         ],
     ];
 
     /**
-     * @param string $url
+     * @param  string  $url
      *
      * @return \App\Services\Flickr\Url\FlickrUrlInterface|null
      */
@@ -60,8 +52,8 @@ class UrlExtractor
     }
 
     /**
-     * @param string $url
-     * @param array $detectors
+     * @param  string  $url
+     * @param  array  $detectors
      *
      * @return \App\Services\Flickr\Url\FlickrUrlInterface|null
      */
@@ -72,7 +64,7 @@ class UrlExtractor
         }
 
         foreach ($detectors as $type => $detector) {
-            $result = $this->check($url, $detector);
+            $result = $this->check($url, $type, $detector);
 
             if ($result === null) {
                 continue;
@@ -85,12 +77,13 @@ class UrlExtractor
     }
 
     /**
-     * @param string $url
-     * @param array $detector
+     * @param  string  $url
+     * @param  string  $type
+     * @param  array  $detector
      *
      * @return \App\Services\Flickr\Url\FlickrUrlInterface|null
      */
-    private function check(string $url, array $detector): ?FlickrUrlInterface
+    private function check(string $url, string $type, array $detector): ?FlickrUrlInterface
     {
         if (!preg_match($detector[self::REGEX], $url, $matches)) {
             return null;
@@ -98,12 +91,13 @@ class UrlExtractor
 
         $result = [
             FlickrUrlInterface::KEY_URL => $url,
+            FlickrUrlInterface::KEY_TYPE => $type,
         ];
 
         foreach ($detector[self::MAPPER] as $key => $index) {
             $result[$key] = $matches[$index];
         }
 
-        return new $detector[self::RESULT]($result);
+        return new FlickrUrl($result);
     }
 }

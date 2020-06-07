@@ -2,60 +2,80 @@
 
 namespace Tests\Unit\Services\Flickr;
 
-use App\Services\Flickr\Url\FlickrAlbumUrl;
-use App\Services\Flickr\Url\FlickrGalleryUrl;
-use App\Services\Flickr\Url\FlickrPhotoUrl;
-use App\Services\Flickr\Url\FlickrProfileUrl;
+use App\Services\Flickr\Url\FlickrUrl;
 use App\Services\Flickr\UrlExtractor;
 use PHPUnit\Framework\TestCase;
 
 class UrlExtractorTest extends TestCase
 {
-    public function testExtractAlbum(): void
+    /**
+     * @return array|\string[][]
+     */
+    public function extractFromUrlDataProvider(): array
     {
-        $url = 'https://www.flickr.com/photos/flickr/albums/72157707851154934';
-        $urlExtractor = new UrlExtractor();
-        $result = $urlExtractor->extract($url);
-
-        $this->assertInstanceOf(FlickrAlbumUrl::class, $result);
-        $this->assertSame($result->getType(), 'album');
-        $this->assertSame($result->getId(), '72157707851154934');
-        $this->assertSame($result->getOwner(), 'flickr');
+        return [
+            [
+                'url' => 'https://www.flickr.com/photos/flickr/albums/72157707851154934',
+                'expectType' => 'album',
+                'expectId' => '72157707851154934',
+                'expectOwner' => 'flickr',
+            ],
+            [
+                'url' => 'https://www.flickr.com/photos/baraods/albums/93826484219372866?foo=bar',
+                'expectType' => 'album',
+                'expectId' => '93826484219372866',
+                'expectOwner' => 'baraods',
+            ],
+            [
+                'url' => 'https://www.flickr.com/photos/flickr/galleries/72157714491688536',
+                'expectType' => 'gallery',
+                'expectId' => '72157714491688536',
+                'expectOwner' => 'flickr',
+            ],
+            [
+                'url' => 'https://www.flickr.com/photos/kingnik/49956954471',
+                'expectType' => 'photo',
+                'expectId' => '49956954471',
+                'expectOwner' => 'kingnik',
+            ],
+            [
+                'url' => 'https://www.flickr.com/photos/kingnik/123281738273/in/fave-1237123627@N3/',
+                'expectType' => 'photo',
+                'expectId' => '123281738273',
+                'expectOwner' => 'kingnik',
+            ],
+            [
+                'url' => 'https://www.flickr.com/people/flickr',
+                'expectType' => 'profile',
+                'expectId' => 'flickr',
+                'expectOwner' => 'flickr',
+            ],
+            [
+                'url' => 'https://www.flickr.com/people/flicdadsa/',
+                'expectType' => 'profile',
+                'expectId' => 'flicdadsa',
+                'expectOwner' => 'flicdadsa',
+            ],
+        ];
     }
 
-    public function testExtractGallery(): void
+    /**
+     * @dataProvider extractFromUrlDataProvider
+     *
+     * @param  string  $url
+     * @param  string  $expectType
+     * @param  string  $expectId
+     * @param  string  $expectOwner
+     *
+     * @return void
+     */
+    public function testExtractFromUrl(string $url, string $expectType, string $expectId, string $expectOwner): void
     {
-        $url = 'https://www.flickr.com/photos/flickr/galleries/72157714491688536';
-        $urlExtractor = new UrlExtractor();
-        $result = $urlExtractor->extract($url);
+        $result = app(UrlExtractor::class)->extract($url);
 
-        $this->assertInstanceOf(FlickrGalleryUrl::class, $result);
-        $this->assertSame($result->getType(), 'gallery');
-        $this->assertSame($result->getId(), '72157714491688536');
-        $this->assertSame($result->getOwner(), 'flickr');
-    }
-
-    public function testExtractPhoto(): void
-    {
-        $url = 'https://www.flickr.com/photos/kingnik/49956954471';
-        $urlExtractor = new UrlExtractor();
-        $result = $urlExtractor->extract($url);
-
-        $this->assertInstanceOf(FlickrPhotoUrl::class, $result);
-        $this->assertSame($result->getType(), 'photo');
-        $this->assertSame($result->getId(), '49956954471');
-        $this->assertSame($result->getOwner(), 'kingnik');
-    }
-
-    public function testExtractProfile(): void
-    {
-        $url = 'https://www.flickr.com/people/flickr/';
-        $urlExtractor = new UrlExtractor();
-        $result = $urlExtractor->extract($url);
-
-        $this->assertInstanceOf(FlickrProfileUrl::class, $result);
-        $this->assertSame($result->getType(), 'profile');
-        $this->assertSame($result->getId(), 'flickr');
-        $this->assertSame($result->getOwner(), 'flickr');
+        $this->assertInstanceOf(FlickrUrl::class, $result);
+        $this->assertSame($result->getType(), $expectType);
+        $this->assertSame($result->getId(), $expectId);
+        $this->assertSame($result->getOwner(), $expectOwner);
     }
 }

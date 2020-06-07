@@ -2,13 +2,12 @@
 
 namespace App\Services\Flickr\Url;
 
-abstract class AbstractFlickrUrl implements FlickrUrlInterface
+class FlickrUrl implements FlickrUrlInterface
 {
-    public const TYPE = '';
-
     private string $url;
     private string $owner;
     private string $id;
+    private string $type;
 
     /**
      * @param array $data
@@ -18,14 +17,15 @@ abstract class AbstractFlickrUrl implements FlickrUrlInterface
         $this->url = $data[self::KEY_URL] ?? '';
         $this->owner = $data[self::KEY_OWNER] ?? '';
         $this->id = $data[self::KEY_ID] ?? '';
+        $this->type = $data[self::KEY_TYPE] ?? '';
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
     public function getType(): string
     {
-        return static::TYPE;
+        return $this->type;
     }
 
     /**

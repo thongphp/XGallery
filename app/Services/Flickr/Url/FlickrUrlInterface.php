@@ -7,6 +7,12 @@ interface FlickrUrlInterface
     public const KEY_URL = 'url';
     public const KEY_OWNER = 'owner';
     public const KEY_ID = 'id';
+    public const KEY_TYPE = 'type';
+
+    public const TYPE_ALBUM = 'album';
+    public const TYPE_PHOTO = 'photo';
+    public const TYPE_GALLERY = 'gallery';
+    public const TYPE_PROFILE = 'profile';
 
     /**
      * @return string

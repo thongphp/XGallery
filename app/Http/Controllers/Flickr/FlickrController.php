@@ -11,11 +11,11 @@
 namespace App\Http\Controllers\Flickr;
 
 use App\Facades\Flickr;
-use App\Facades\FlickrUrlExtractor;
+use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrDownload;
 use App\Models\FlickrContacts;
-use App\Services\Flickr\Url\FlickrAlbumUrl;
+use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -39,7 +39,7 @@ class FlickrController extends BaseController
     /**
      * FlickrController constructor.
      *
-     * @param \App\Repositories\FlickrContacts $repository
+     * @param  \App\Repositories\FlickrContacts  $repository
      */
     public function __construct(\App\Repositories\FlickrContacts $repository)
     {
@@ -47,22 +47,19 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return RedirectResponse|void
      */
     public function download(Request $request)
     {
-        $url = $request->get('url');
-
-        if ($url === null) {
+        if (!$url = $request->get('url')) {
             return;
         }
 
-        /** @var \App\Services\Flickr\Url\FlickrUrlInterface $result */
-        $result = FlickrUrlExtractor::extract($url);
+        ;
 
-        if ($result === null) {
+        if (!$result = UrlExtractor::extract($url)) {
             return redirect()
                 ->route('flickr.dashboard.view')
                 ->with('error', 'Could not detect type of URL');
@@ -71,7 +68,7 @@ class FlickrController extends BaseController
         $flashMessage = '';
 
         switch ($result->getType()) {
-            case FlickrAlbumUrl::TYPE:
+            case FlickrUrlInterface::TYPE_ALBUM:
                 $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $result->getId()]);
 
                 if (!$photos) {
@@ -105,7 +102,7 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param string $nsid
+     * @param  string  $nsid
      *
      * @return Application|Factory|View
      */

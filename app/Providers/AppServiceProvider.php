@@ -10,6 +10,7 @@
 namespace App\Providers;
 
 use App\Services\Flickr;
+use App\Services\Flickr\UrlExtractor;
 use App\Services\GoogleDrive;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('flickr\urlextractor', function () {
-            return new Flickr\UrlExtractor;
+            return new UrlExtractor;
         });
     }
 
