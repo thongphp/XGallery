@@ -60,8 +60,8 @@ class FlickrContacts implements ShouldQueue
             return;
         }
 
+        $repository = app(\App\Repositories\FlickrContacts::class);
         foreach ($contacts->contacts->contact as $contact) {
-            $repository = app(\App\Repositories\FlickrContacts::class);
             /**
              * @TODO Trigger sub job for flickr.people.getInfo
              */

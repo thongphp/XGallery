@@ -35,9 +35,8 @@ final class FlickrPhotos extends BaseCommand
     public function fully()
     {
         if (!$contact = app(\App\Repositories\FlickrContacts::class)->getItems(
-            [
-                'sort-by' => 'updated_at', 'cache' => 0
-            ])->first()) {
+            ['sort-by' => 'updated_at', 'cache' => 0]
+        )->first()) {
             return false;
         }
 

@@ -51,7 +51,7 @@ final class Batdongsan extends BaseCrawlerCommand
             }
             $this->progressBarSetSteps($page->count());
             // Process items on page
-            $page->each(function ($item, $index) {
+            $page->each(function ($item) {
                 $this->progressBarSetInfo($item['url']);
                 $this->progressBarSetStatus('FETCHING');
                 \App\Jobs\Batdongsan::dispatch($item['url']);
