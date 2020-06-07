@@ -10,6 +10,7 @@
 namespace App\Jobs\Flickr;
 
 use App\Crawlers\HttpClient;
+use App\Facades\Flickr;
 use App\Facades\GoogleDriveFacade;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
@@ -74,10 +75,9 @@ class FlickrDownload implements ShouldQueue
 
     private function download()
     {
-        $client = app(Flickr::class);
         $httpClient = app(HttpClient::class);
 
-        if (!$sizes = $client->get('photos.getSizes', ['photo_id' => $this->photo->id])) {
+        if (!$sizes = Flickr::request('photos.getSizes', ['photo_id' => $this->photo->id])) {
             return false;
         }
 
