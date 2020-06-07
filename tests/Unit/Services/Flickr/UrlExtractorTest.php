@@ -21,6 +21,12 @@ class UrlExtractorTest extends TestCase
                 'expectOwner' => 'flickr',
             ],
             [
+                'url' => 'https://www.flickr.com/photos/92537543@N08/albums/72157684206305213',
+                'expectType' => 'album',
+                'expectId' => '72157707851154934',
+                'expectOwner' => 'flickr',
+            ],
+            [
                 'url' => 'https://www.flickr.com/photos/baraods/albums/93826484219372866?foo=bar',
                 'expectType' => 'album',
                 'expectId' => '93826484219372866',

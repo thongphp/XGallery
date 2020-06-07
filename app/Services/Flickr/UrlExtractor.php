@@ -64,9 +64,7 @@ class UrlExtractor
         }
 
         foreach ($detectors as $type => $detector) {
-            $result = $this->check($url, $type, $detector);
-
-            if ($result === null) {
+            if (!$result = $this->check($url, $type, $detector)) {
                 continue;
             }
 

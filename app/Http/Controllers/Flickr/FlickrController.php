@@ -72,7 +72,7 @@ class FlickrController extends BaseController
                 }
 
                 $flashMessage = 'Added '.count($photos->photoset->photo).' photos of album <strong>'
-                    .$photos->photoset->title.'</strong> to queue';
+                    .$photos->photoset->title.'</strong> by <strong>'. $result->getOwner() . '</strong> to queue';
 
                 foreach ($photos->photoset->photo as $photo) {
                     FlickrDownload::dispatch($photos->photoset->owner, $photo);
