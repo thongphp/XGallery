@@ -57,15 +57,11 @@ class FlickrController extends BaseController
             return;
         }
 
-        ;
-
         if (!$result = UrlExtractor::extract($url)) {
             return redirect()
                 ->route('flickr.dashboard.view')
                 ->with('error', 'Could not detect type of URL');
         }
-
-        $flashMessage = '';
 
         switch ($result->getType()) {
             case FlickrUrlInterface::TYPE_ALBUM:
@@ -95,6 +91,9 @@ class FlickrController extends BaseController
                 break;
 
             default:
+                return redirect()
+                    ->route('flickr.dashboard.view')
+                    ->with('error', 'Could not detect type of URL');
                 break;
         }
 

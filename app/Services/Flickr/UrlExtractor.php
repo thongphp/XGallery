@@ -44,7 +44,7 @@ class UrlExtractor
     /**
      * @param  string  $url
      *
-     * @return \App\Services\Flickr\Url\FlickrUrlInterface|null
+     * @return FlickrUrlInterface|null
      */
     public function extract(string $url): ?FlickrUrlInterface
     {
@@ -55,7 +55,7 @@ class UrlExtractor
      * @param  string  $url
      * @param  array  $detectors
      *
-     * @return \App\Services\Flickr\Url\FlickrUrlInterface|null
+     * @return FlickrUrlInterface|null
      */
     private function detect(string $url, array $detectors): ?FlickrUrlInterface
     {
@@ -81,7 +81,7 @@ class UrlExtractor
      * @param  string  $type
      * @param  array  $detector
      *
-     * @return \App\Services\Flickr\Url\FlickrUrlInterface|null
+     * @return FlickrUrlInterface|null
      */
     private function check(string $url, string $type, array $detector): ?FlickrUrlInterface
     {
