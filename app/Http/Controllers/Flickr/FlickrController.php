@@ -57,8 +57,6 @@ class FlickrController extends BaseController
             return;
         }
 
-        ;
-
         if (!$result = UrlExtractor::extract($url)) {
             return redirect()
                 ->route('flickr.dashboard.view')
