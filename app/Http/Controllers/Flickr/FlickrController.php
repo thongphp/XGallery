@@ -88,6 +88,7 @@ class FlickrController extends BaseController
                         FlickrDownload::dispatch($photos->photoset->owner, $photo);
                     }
                 }
+
                 break;
 
             default:

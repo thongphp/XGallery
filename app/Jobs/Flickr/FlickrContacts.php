@@ -44,7 +44,7 @@ class FlickrContacts implements ShouldQueue
     /**
      * @return RateLimited[]
      */
-    public function middleware()
+    public function middleware(): array
     {
         return [new RateLimited('flickr')];
     }
@@ -54,7 +54,7 @@ class FlickrContacts implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         if (!$contacts = Flickr::get('contacts.getList', ['page' => $this->page])) {
             return;
@@ -71,10 +71,7 @@ class FlickrContacts implements ShouldQueue
 
             $repository->save(get_object_vars($contact));
 
-            /**
-             * @TODO #17 Call https://www.flickr.com/services/api/flickr.favorites.getList.html
-             * and trigger job FlickrFavoritePhotos to store these
-             */
+            FlickrFavePhotos::dispatch($contact->nsid);
         }
     }
 }
