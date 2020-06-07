@@ -2,6 +2,7 @@
 
 namespace App\Services\Flickr;
 
+use App\Facades\Flickr;
 use App\Services\Flickr\Url\FlickrUrl;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 
@@ -10,30 +11,32 @@ class UrlExtractor
     private const MAPPER = 'mapper';
     private const REGEX = 'regex';
 
+    private const REGEX_DOMAIN = '(?:https?:\/\/)?(?:www\.)?flickr\.com\/';
+
     public const DETECTOR = [
         FlickrUrlInterface::TYPE_ALBUM => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/albums\/(?:albumId\/)?(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+)\/albums\/(?:albumId\/)?(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PHOTO => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+)\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_GALLERY => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/photos\/(\w+)\/galleries\/(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+)\/galleries\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PROFILE => [
-            self::REGEX => '/(?:https?:\/\/)?(?:www\.)?flickr\.com\/people\/(\w+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . '\w+\/(\d+@[\w-]{3}|\w+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_ID => 1,
                 FlickrUrlInterface::KEY_OWNER => 1,
@@ -96,6 +99,34 @@ class UrlExtractor
             $result[$key] = $matches[$index];
         }
 
+        $owner = $this->getNsId($result[FlickrUrlInterface::KEY_OWNER], $url);
+
+        if (null === $owner) {
+            return null;
+        }
+
+        $result[FlickrUrlInterface::KEY_OWNER] = $owner;
+
         return new FlickrUrl($result);
+    }
+
+    /**
+     * @param  string  $owner
+     * @param  string  $url
+     *
+     * @return string|null
+     */
+    private function getNsId(string $owner, string $url): ?string
+    {
+        if (strpos($owner, '@') !== false) {
+            return $owner;
+        }
+
+        if (!$result = Flickr::get('urls.lookupUser', ['url' => $url]))
+        {
+            return null;
+        }
+
+        return $result->user->id;
     }
 }
