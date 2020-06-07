@@ -1,0 +1,102 @@
+version: "3.5"
+
+services:
+  xgallery_mariadb:
+    container_name: xgallery_mariadb
+    image: mariadb:10.5-bionic
+    ports:
+      - 3306:3306
+    networks:
+      - xgallery_services
+      - xgallery_private
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - database-mariadb-data:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: xgallery_phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    networks:
+      - xgallery_services
+    depends_on:
+      - xgallery_mariadb
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=xgallery_mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_ARBITRARY=1
+
+  mongo:
+    container_name: xgallery_mongo
+    image: mongo:4.2.7-bionic
+    networks:
+      - xgallery_private
+      - xgallery_services
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: xgallery_dev
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "root"
+    volumes:
+      - database-mongodb-data:/data/db
+
+  mongo-express:
+    container_name: xgallery_mongo_express
+    image: mongo-express:latest
+    networks:
+      - xgallery_services
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "root"
+
+  key_value_store:
+    container_name: xgallery_redis
+    image: redis:6.0-alpine
+    command: 'redis-server --appendonly yes --save \"\"'
+    ports:
+      - 6379:6379
+    networks:
+      - xgallery_services
+      - xgallery_private
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - key_value_store-redis-data:/data
+
+  redis-commander:
+    container_name: xgallery_redis_commander
+    image: rediscommander/redis-commander:latest
+    ports:
+      - 8082:8081
+    networks:
+      - xgallery_services
+    environment:
+      - REDIS_HOSTS=local:key_value_store:6379
+
+volumes:
+  database-mariadb-data:
+    external: false
+  database-mongodb-data:
+    external: false
+  key_value_store-redis-data:
+    external: false
+  redis-commander-redis-commander-data:
+    external: false
+
+networks:
+  xgallery_services:
+  xgallery_private:
