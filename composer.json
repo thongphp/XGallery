@@ -88,7 +88,8 @@
             "@php artisan key:generate --ansi"
         ],
         "test": [
-            "@php vendor/bin/phpunit --testsuite=Crawlers"
+            "@php vendor/bin/phpunit --testsuite=Crawlers",
+            "@php vendor/bin/phpunit --testsuite=Commands"
         ]
     }
 }
