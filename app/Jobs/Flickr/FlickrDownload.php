@@ -37,7 +37,7 @@ class FlickrDownload implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param  object  $photo
+     * @param object $photo
      */
     public function __construct(string $owner, object $photo)
     {
@@ -49,12 +49,12 @@ class FlickrDownload implements ShouldQueue
     /**
      * @return RateLimited[]
      */
-    public function middleware()
+    public function middleware(): array
     {
         return [new RateLimited('flickr')];
     }
 
-    public function handle()
+    public function handle(): void
     {
         $filePath = $this->download();
 
@@ -73,7 +73,10 @@ class FlickrDownload implements ShouldQueue
         Storage::delete($filePath);
     }
 
-    private function download()
+    /**
+     * @return bool
+     */
+    private function download(): bool
     {
         $httpClient = app(HttpClient::class);
 

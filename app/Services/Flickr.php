@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Oauth\OauthClient;
+use App\Oauth\GoogleOauthClient;
 use Illuminate\Support\Facades\Log;
 
-class Flickr extends OauthClient
+class Flickr extends GoogleOauthClient
 {
-    const REST_ENDPOINT = 'https://api.flickr.com/services/rest';
+    public const REST_ENDPOINT = 'https://api.flickr.com/services/rest';
 
     /**
      * @param  string  $method
@@ -46,7 +46,7 @@ class Flickr extends OauthClient
      *
      * @return array
      */
-    private function getDefaultFlickrParameters()
+    private function getDefaultFlickrParameters(): array
     {
         return ['format' => 'json', 'nojsoncallback' => 1, 'api_key' => config('auth.flickr.token')];
     }
