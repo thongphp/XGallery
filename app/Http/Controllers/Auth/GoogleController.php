@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Oauth;
+use Google_Service_PhotosLibrary;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -27,7 +28,9 @@ class GoogleController extends BaseController
      */
     public function login()
     {
-        return Socialite::driver('Google')->scopes(['https://www.googleapis.com/auth/drive'])->redirect();
+        return Socialite::driver('Google')
+            ->scopes(['https://www.googleapis.com/auth/drive', Google_Service_PhotosLibrary::PHOTOSLIBRARY])
+            ->redirect();
     }
 
     /**
@@ -40,12 +43,14 @@ class GoogleController extends BaseController
             return;
         }
 
+        /** @var Oauth $model */
         $model = app(Oauth::class);
-        $model->name = 'google';
 
         foreach ($user as $key => $value) {
-            $model->{$key} = $value;
+            $model->setAttribute($key, $value);
         }
+
+        $model->setAttribute('name', 'google');
 
         $model->save();
     }

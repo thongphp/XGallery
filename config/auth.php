@@ -117,5 +117,10 @@ return [
     'flickr' => [
         'token' => env('FLICKR_KEY'),
         'token_secret' => env('FLICKR_SECRET')
+    ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
     ]
 ];

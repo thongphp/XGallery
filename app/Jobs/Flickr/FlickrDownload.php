@@ -10,6 +10,7 @@
 namespace App\Jobs\Flickr;
 
 use App\Crawlers\HttpClient;
+use App\Facades\Flickr;
 use App\Facades\GoogleDriveFacade;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
@@ -36,7 +37,7 @@ class FlickrDownload implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param  object  $photo
+     * @param object $photo
      */
     public function __construct(string $owner, object $photo)
     {
@@ -48,12 +49,12 @@ class FlickrDownload implements ShouldQueue
     /**
      * @return RateLimited[]
      */
-    public function middleware()
+    public function middleware(): array
     {
         return [new RateLimited('flickr')];
     }
 
-    public function handle()
+    public function handle(): void
     {
         $filePath = $this->download();
 
@@ -72,9 +73,14 @@ class FlickrDownload implements ShouldQueue
         Storage::delete($filePath);
     }
 
-    private function download()
+    /**
+     * @return bool
+     */
+    private function download(): bool
     {
+        /** @var Flickr $client */
         $client = app(Flickr::class);
+        /** @var HttpClient $httpClient */
         $httpClient = app(HttpClient::class);
 
         if (!$sizes = $client->get('photos.getSizes', ['photo_id' => $this->photo->id])) {
