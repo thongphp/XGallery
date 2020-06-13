@@ -33,7 +33,7 @@ class NhaccuatuiTest extends TestCase
 
     protected array $indexLinks = [
         'https://www.nhaccuatui.com/tim-nang-cao?title=&user=&singer=Tu%E1%BA%A4n+H%C6%B0ng&kbit=&type=1&sort=&direction=2&page=1' => [
-            'pageCount' => 27,
+            'pageCount' => 25,
             'itemPerPage' => 20
         ]
     ];
