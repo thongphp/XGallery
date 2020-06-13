@@ -7,7 +7,7 @@ jobs:
     name: PHP Syntax Checker (Lint)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: StephaneBour/actions-php-lint@7.4
   phpstan:
     name: phpstan
@@ -15,6 +15,7 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
+        run: composer install
       - name: Run phpstan
         uses: actions-x/phpstan@v1
   php-security-check:
