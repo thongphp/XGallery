@@ -19,9 +19,9 @@ class FlickrAlbums extends BaseRepository
     /**
      * @param $id
      *
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Model|null|FlickrAlbum
      */
-    public function findByAlbumId($id): Model
+    public function findByAlbumId($id): ?Model
     {
         return $this->model->where(['id' => $id])->first();
     }

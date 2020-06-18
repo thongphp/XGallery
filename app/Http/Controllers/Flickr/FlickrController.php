@@ -14,7 +14,6 @@ use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrAlbum;
-use App\Jobs\Flickr\FlickrDownload;
 use App\Models\FlickrContacts;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Contracts\Foundation\Application;
@@ -74,30 +73,7 @@ class FlickrController extends BaseController
 
                 FlickrAlbum::dispatch($albumInfo->photoset);
 
-                // @TODO: Would be remove when complete change process to upload images to Google Photos
-                $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $result->getId()]);
-
-                if (!$photos) {
-                    return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
-                }
-
-                $flashMessage = 'Added '.count($photos->photoset->photo).' photos of album <strong>'
-                    .$photos->photoset->title.'</strong> by <strong>'. $result->getOwner() . '</strong> to queue';
-
-                foreach ($photos->photoset->photo as $photo) {
-                    FlickrDownload::dispatch($photos->photoset->owner, $photo);
-                }
-
-                if ($photos->photoset->page === 1) {
-                    return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
-                }
-
-                for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-                    $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $url, 'page' => $page]);
-                    foreach ($photos->photoset->photo as $photo) {
-                        FlickrDownload::dispatch($photos->photoset->owner, $photo);
-                    }
-                }
+                $flashMessage = 'Add album: ' .  $albumInfo->photoset->title->_content . ' (' . $albumInfo->photoset->id . ') successfull';
 
                 break;
 
@@ -109,11 +85,6 @@ class FlickrController extends BaseController
         }
 
         return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
-    }
-
-    private function albumProcess(object $albumInfo): void
-    {
-
     }
 
     /**

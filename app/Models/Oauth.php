@@ -17,4 +17,5 @@ use App\Database\Mongodb;
  */
 class Oauth extends Mongodb
 {
+    protected $collection = 'oauths';
 }

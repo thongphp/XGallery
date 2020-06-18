@@ -54,24 +54,27 @@ class FlickrAlbum implements ShouldQueue
             $flickrAlbum = $repository->save((array) $this->album);
         }
 
-        $googleAlbum = GooglePhoto::createAlbum($this->album->title->_content);
+        $googleRef = $flickrAlbum->getAttributeValue('googleRef');
 
-        $flickrAlbum->setAttribute('googleRef', $googleAlbum);
-        $flickrAlbum->save();
+        if (!$googleRef) {
+            $googleAlbum = GooglePhoto::createAlbum($this->album->title->_content);
+            $flickrAlbum->setAttribute('googleRef', $googleAlbum);
+            $flickrAlbum->save();
+        }
 
-//        foreach ($photos->photoset->photo as $photo) {
-//            FlickrDownload::dispatch($photos->photoset->owner, $photo);
-//        }
-//
-//        if ($photos->photoset->page === 1) {
-//            return;
-//        }
-//
-//        for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-//            $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $this->album->id, 'page' => $page]);
-//            foreach ($photos->photoset->photo as $photo) {
-//                FlickrDownload::dispatch($photos->photoset->owner, $photo);
-//            }
-//        }
+        foreach ($photos->photoset->photo as $photo) {
+            FlickrPhotoSync::dispatch($photo, $flickrAlbum);
+        }
+
+        if ($photos->photoset->page === 1) {
+            return;
+        }
+
+        for ($page = 2; $page <= $photos->photoset->pages; $page++) {
+            $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $this->album->id, 'page' => $page]);
+            foreach ($photos->photoset->photo as $photo) {
+                FlickrPhotoSync::dispatch($photo, $flickrAlbum);
+            }
+        }
     }
 }

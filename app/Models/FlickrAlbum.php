@@ -15,6 +15,6 @@ class FlickrAlbum extends Mongodb
      */
     public function photos()
     {
-        return $this->hasMany(FlickrPhotos::class, 'album', 'id');
+        return $this->hasMany(FlickrPhotos::class, 'albumId', 'id');
     }
 }
