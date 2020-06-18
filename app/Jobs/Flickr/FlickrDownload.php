@@ -78,9 +78,12 @@ class FlickrDownload implements ShouldQueue
      */
     private function download(): bool
     {
+        /** @var Flickr $client */
+        $client = app(Flickr::class);
+        /** @var HttpClient $httpClient */
         $httpClient = app(HttpClient::class);
 
-        if (!$sizes = Flickr::request('GET', 'photos.getSizes', ['photo_id' => $this->photo->id])) {
+        if (!$sizes = $client->get('photos.getSizes', ['photo_id' => $this->photo->id])) {
             return false;
         }
 

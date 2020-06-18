@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Oauth\GoogleOauthClient;
+use App\Oauth\OauthClient;
 use Illuminate\Support\Facades\Log;
 
-class Flickr extends GoogleOauthClient
+class Flickr extends OauthClient
 {
     public const REST_ENDPOINT = 'https://api.flickr.com/services/rest';
 
