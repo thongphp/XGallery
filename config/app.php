@@ -3,6 +3,7 @@
 use App\Facades\Flickr;
 use App\Facades\GoogleDrive;
 use App\Facades\GoogleDriveFacade;
+use App\Facades\GooglePhotoFacade;
 use SocialiteProviders\Manager\ServiceProvider;
 
 return [
@@ -254,6 +255,7 @@ return [
 
         'Es' => Elasticquent\ElasticquentElasticsearchFacade::class,
         'GoogleDrive' => GoogleDriveFacade::class,
+        'GooglePhoto' => GooglePhotoFacade::class,
         'Flickr' => Flickr::class
     ],
 

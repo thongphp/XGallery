@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\FlickrPhoto;
 
-class FlickrPhotos extends BaseRepository
+class FlickrPhotoRepository extends BaseRepository
 {
     public function __construct(FlickrPhoto $model)
     {
@@ -14,7 +14,7 @@ class FlickrPhotos extends BaseRepository
     /**
      * @param string $id
      *
-     * @return FlickrPhoto|null|\Illuminate\Database\Eloquent\Model
+     * @return FlickrPhoto|null
      */
     public function findById(string $id): ?FlickrPhoto
     {

@@ -3,8 +3,7 @@
 namespace App\Services;
 
 use App\Oauth\GoogleOauthClient;
-use App\Repositories\FlickrAlbums;
-use App\Repositories\FlickrPhotos;
+use App\Repositories\FlickrPhotoRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -49,27 +48,22 @@ class GooglePhoto extends GoogleOauthClient
      * https://developers.google.com/photos/library/guides/upload-media
      *
      * @param string $file
-     * @param string|\App\Models\FlickrPhoto|\Illuminate\Database\Eloquent\Model $photo
-     * @param string|\App\Models\FlickrAlbum|\Illuminate\Database\Eloquent\Model $album
+     * @param string $photoId
+     *
+     * @return bool
+     * @throws \JsonException
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     * @throws \JsonException
      */
-    public function uploadMedia(string $file, $photo, $album): void
+    public function uploadAndCreateMedia(string $file, string $photoId): bool
     {
-        if (is_string($photo)) {
-            $photoRepository = app(FlickrPhotos::class);
-            $photo = $photoRepository->findById($photo);
+        $photo = app(FlickrPhotoRepository::class)->findById($photoId);
+
+        if (!$photo) {
+            return false;
         }
 
-        if (is_string($album)) {
-            $repository = app(FlickrAlbums::class);
-            $album = $repository->findByAlbumId($album);
-        }
-
-        $uploadToken = $photo->getAttributeValue('uploadToken');
-
-        if (empty($uploadToken)) {
+        if (!$photo->uploadToken) {
             $uploadToken = $this->request(
                 'post',
                 'https://photoslibrary.googleapis.com/v1/uploads',
@@ -84,44 +78,50 @@ class GooglePhoto extends GoogleOauthClient
             );
 
             if (!$uploadToken) {
-                Log::stack(['google.photo'])->alert('Can not add uploading media. PhotoId: ' . $photo->getAttributeValue('id'));
-                return;
+                Log::stack(['google'])->alert('Can not add uploading media. PhotoId: '.$photo->id);
+                return false;
             }
 
-            $photo->setAttribute('uploadToken', $uploadToken);
+            $photo->uploadToken = $uploadToken;
             $photo->save();
         }
 
-        $googleAlbum = (object) $album->getAttributeValue('googleRef');
+        $postBody = [
+            'newMediaItems' => [
+                [
+                    'description' => $photo->title,
+                    'simpleMediaItem' => [
+                        'fileName' => basename($file),
+                        'uploadToken' => $photo->uploadToken
+                    ],
+                ]
+            ]
+        ];
+
+        if ($photo->album && $photo->album->googleRef) {
+            $googleRef = (object) $photo->album->getAttributeValue('googleRef');
+            $postBody['albumId'] = $googleRef->id;
+        }
 
         $response = $this->request(
             'post',
             'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
             [
                 'headers' => ['Content-type' => 'application/json'],
-                'body' => json_encode([
-                    'albumId' => $googleAlbum->id,
-                    'newMediaItems' => [
-                        [
-                            'description' => $photo->getAttributeValue('title'),
-                            'simpleMediaItem' => [
-                                'fileName' => basename($file),
-                                'uploadToken' => $uploadToken
-                            ],
-                        ]
-                    ]
-                ], JSON_THROW_ON_ERROR)
+                'body' => json_encode($postBody, JSON_THROW_ON_ERROR)
             ],
         );
 
         if (!$response) {
-            Log::stack(['google.photo'])->alert('Can not add media into Album. AlbumId: ' . $album->getAttributeValue('id') . ' / PhotoId: ' . $photo->getAttributeValue('id'));
-            return;
+            Log::stack(['google'])->alert('Can not add media into Album. AlbumId: '.$album->getAttributeValue('id').' / PhotoId: '.$photo->id);
+            return false;
         }
 
         $newMediaItemResult = $response->newMediaItemResults[0];
         $photo->setAttribute('googleRef', $newMediaItemResult->mediaItem);
         $photo->setAttribute('status', true);
         $photo->save();
+
+        return true;
     }
 }

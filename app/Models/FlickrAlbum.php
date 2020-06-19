@@ -9,12 +9,15 @@ class FlickrAlbum extends Mongodb
 {
     protected $collection = 'flickr_albums';
 
+    public const KEY_ID = 'id';
+    public const KEY_OWNER = 'owner';
+
     /**
      * Return photos collection of this album
      * @return HasMany|\Jenssegers\Mongodb\Relations\HasMany
      */
     public function photos()
     {
-        return $this->hasMany(FlickrPhotos::class, 'albumId', 'id');
+        return $this->hasMany(FlickrPhoto::class, FlickrPhoto::KEY_ALBUM_ID, self::KEY_ID);
     }
 }

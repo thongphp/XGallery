@@ -13,7 +13,7 @@ use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Repositories\FlickrContacts;
+use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,7 +24,7 @@ use Illuminate\Queue\SerializesModels;
  * Process get all fave photos => get owner of this photos => Store list of contacts
  * @package App\Jobs\Flickr
  */
-class FlickrFavePhotos implements ShouldQueue
+class FavesPhoto implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
@@ -32,7 +32,7 @@ class FlickrFavePhotos implements ShouldQueue
     private string $owner;
 
     /**
-     * @param  string  $owner
+     * @param string $owner
      */
     public function __construct(string $owner)
     {
@@ -55,11 +55,11 @@ class FlickrFavePhotos implements ShouldQueue
      */
     public function handle(): void
     {
-        if (!$result = Flickr::get('favorites.getList', ['user_id' => $this->owner])) {
+        if (!$result = Flickr::getCurrentFavouritePhotos($this->owner)) {
             return;
         }
 
-        $repository = app(FlickrContacts::class);
+        $repository = app(ContactRepository::class);
 
         $this->saveContacts($result->photos->photo, $repository);
 
@@ -68,23 +68,29 @@ class FlickrFavePhotos implements ShouldQueue
         }
 
         for ($page = 2; $page <= $result->photos->pages; $page++) {
-            $result = Flickr::get('favorites.getList', ['user_id' => $this->owner, 'page' => $page]);
+            $result = Flickr::getCurrentFavouritePhotos($this->owner, $page);
             $this->saveContacts($result->photos->photo, $repository);
         }
     }
 
     /**
-     * @param  array  $photos
-     * @param  FlickrContacts  $repository
+     * @param array $photos
+     * @param ContactRepository $repository
      */
-    private function saveContacts(array $photos, FlickrContacts $repository): void
+    private function saveContacts(array $photos, ContactRepository $repository): void
     {
         foreach ($photos as $photo) {
             if ($item = $repository->getContactByNsid($photo->owner)) {
                 continue;
             }
 
-            $repository->save(['nsid' => $photo->owner]);
+            $userInfo = Flickr::getUserInfo($photo->owner);
+
+            if (!$userInfo) {
+                continue;
+            }
+
+            $repository->save((array) $userInfo->person);
         }
     }
 }

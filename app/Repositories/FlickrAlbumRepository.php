@@ -2,35 +2,34 @@
 
 namespace App\Repositories;
 
+use App\Models\FlickrAlbum;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * Class FlickrAlbumRepository
  * @package App\Repositories
  */
-class FlickrContacts extends BaseRepository
+class FlickrAlbumRepository extends BaseRepository
 {
-    /**
-     * @param  \App\Models\FlickrContacts  $model
-     */
-    public function __construct(\App\Models\FlickrContacts $model)
+    public function __construct(FlickrAlbum $model)
     {
         parent::__construct($model);
     }
 
     /**
-     * @param  string  $nsid
+     * @param $id
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Model|null|FlickrAlbum
      */
-    public function getContactByNsid(string $nsid)
+    public function findByAlbumId($id): ?Model
     {
-        return $this->model->where(['nsid' => $nsid])->first();
+        return $this->model->where(['id' => $id])->first();
     }
 
     /**
-     * @param  array  $data
+     * @param array $data
      *
-     * @return Model
+     * @return \Illuminate\Database\Eloquent\Model|FlickrAlbum
      */
     public function save(array $data)
     {
