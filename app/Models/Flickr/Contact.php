@@ -7,15 +7,14 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Models;
+namespace App\Models\Flickr;
 
 use App\Database\Mongodb;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @package App\Models
  */
-class FlickrContact extends Mongodb
+class Contact extends Mongodb
 {
     protected $collection = 'flickr_contacts';
 
@@ -26,7 +25,7 @@ class FlickrContact extends Mongodb
      */
     public function photos()
     {
-        return $this->hasMany(FlickrPhoto::class, FlickrPhoto::KEY_OWNER_ID, self::KEY_NSID);
+        return $this->hasMany(Photo::class, Photo::KEY_OWNER_ID, self::KEY_NSID);
     }
 
     /**
@@ -34,6 +33,6 @@ class FlickrContact extends Mongodb
      */
     public function albums()
     {
-        return $this->hasMany(FlickrAlbum::class, FlickrAlbum::KEY_OWNER, self::KEY_NSID);
+        return $this->hasMany(Album::class, Album::KEY_OWNER, self::KEY_NSID);
     }
 }

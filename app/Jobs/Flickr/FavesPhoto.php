@@ -80,7 +80,7 @@ class FavesPhoto implements ShouldQueue
     private function saveContacts(array $photos, ContactRepository $repository): void
     {
         foreach ($photos as $photo) {
-            if ($item = $repository->getContactByNsid($photo->owner)) {
+            if ($repository->getContactByNsid($photo->owner)) {
                 continue;
             }
 

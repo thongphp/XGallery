@@ -2,15 +2,15 @@
 
 namespace App\Repositories\Flickr;
 
-use App\Models\FlickrContact;
+use App\Models\Flickr\Contact;
 use App\Repositories\BaseRepository;
 
 class ContactRepository extends BaseRepository
 {
     /**
-     * @param \App\Models\FlickrContact $model
+     * @param \App\Models\Flickr\Contact $model
      */
-    public function __construct(FlickrContact $model)
+    public function __construct(Contact $model)
     {
         parent::__construct($model);
     }
@@ -18,9 +18,9 @@ class ContactRepository extends BaseRepository
     /**
      * @param string $nsid
      *
-     * @return null|FlickrContact
+     * @return null|Contact
      */
-    public function getContactByNsid(string $nsid): ?FlickrContact
+    public function getContactByNsid(string $nsid): ?Contact
     {
         return $this->model->where(['nsid' => $nsid])->first();
     }
@@ -28,7 +28,7 @@ class ContactRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return \Illuminate\Database\Eloquent\Model|FlickrContact
+     * @return \Illuminate\Database\Eloquent\Model|\App\Models\Flickr\Contact
      */
     public function save(array $data)
     {

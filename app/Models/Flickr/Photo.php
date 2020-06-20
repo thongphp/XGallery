@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Flickr;
 
 use App\Database\Mongodb;
 
-class FlickrPhoto extends Mongodb
+class Photo extends Mongodb
 {
     protected $collection = 'flickr_photos';
 
@@ -17,7 +17,7 @@ class FlickrPhoto extends Mongodb
      */
     public function album()
     {
-        return $this->belongsTo(FlickrAlbum::class, self::KEY_ALBUM_ID, FlickrAlbum::KEY_ID);
+        return $this->belongsTo(Album::class, self::KEY_ALBUM_ID, Album::KEY_ID);
     }
 
     /**
@@ -25,7 +25,7 @@ class FlickrPhoto extends Mongodb
      */
     public function owner()
     {
-        return $this->belongsTo(FlickrContact::class, self::KEY_OWNER_ID, FlickrContact::KEY_NSID);
+        return $this->belongsTo(Contact::class, self::KEY_OWNER_ID, Contact::KEY_NSID);
     }
 
     /**

@@ -7,9 +7,9 @@ use App\Facades\GooglePhotoFacade;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\FlickrPhoto;
-use App\Repositories\FlickrAlbumRepository;
-use App\Repositories\FlickrPhotoRepository;
+use App\Models\Flickr\Photo;
+use App\Repositories\Flickr\AlbumRepository;
+use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -42,10 +42,9 @@ class Album implements ShouldQueue
 
     public function handle(): void
     {
-        $repository = app(FlickrAlbumRepository::class);
-        $albumModel = $repository->findByAlbumId($this->album->id);
+        $repository = app(AlbumRepository::class);
 
-        if (!$albumModel) {
+        if (!$albumModel = $repository->findByAlbumId($this->album->id)) {
             $albumData = (array) $this->album;
             $albumData['status'] = false;
             $albumData['download_photos'] = 0;
@@ -56,32 +55,28 @@ class Album implements ShouldQueue
             return;
         }
 
-        $photos = Flickr::getAlbumPhotos($albumModel->id);
-
-        if (!$photos) {
+        if (!$photos = Flickr::getAlbumPhotos($albumModel->id)) {
             return;
         }
 
-        $googleRef = $albumModel->getAttributeValue('googleRef');
-
-        if (!$googleRef) {
+        if (!$albumModel->googleRef) {
             $googleAlbum = GooglePhotoFacade::createAlbum($albumModel->title);
             $albumModel->setAttribute('googleRef', $googleAlbum);
             $albumModel->save();
         }
 
-        $albumId = $albumModel->getAttributeValue('id');
-        $owner = $albumModel->getAttributeValue('owner');
-
-        $this->startDownloadPhotos($photos->photoset->photo, $albumId, $owner);
+        $this->startDownloadPhotos($photos->photoset->photo, $albumModel->id, $albumModel->owner);
 
         if ($photos->photoset->page === 1) {
             return;
         }
 
         for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-            $photos = Flickr::getAlbumPhotos($albumModel->id, $page);
-            $this->startDownloadPhotos($photos->photoset->photo, $albumId, $owner);
+            if (!$photos = Flickr::getAlbumPhotos($albumModel->id, $page)) {
+                continue;
+            }
+
+            $this->startDownloadPhotos($photos->photoset->photo, $albumModel->id, $albumModel->owner);
         }
     }
 
@@ -92,16 +87,14 @@ class Album implements ShouldQueue
      */
     private function startDownloadPhotos(array $photos, string $albumId, string $owner): void
     {
-        $photoRepository = app(FlickrPhotoRepository::class);
+        $photoRepository = app(PhotoRepository::class);
 
         foreach ($photos as $photo) {
-            $photoModel = $photoRepository->findById($photo->id);
-
-            if (!$photoModel) {
+            if (!$photoRepository->findById($photo->id)) {
                 $photoData = (array) $photo;
-                $photoData[FlickrPhoto::KEY_ALBUM_ID] = $albumId;
-                $photoData[FlickrPhoto::KEY_OWNER_ID] = $owner;
-                $photoData[FlickrPhoto::KEY_STATUS] = false;
+                $photoData[Photo::KEY_ALBUM_ID] = $albumId;
+                $photoData[Photo::KEY_OWNER_ID] = $owner;
+                $photoData[Photo::KEY_STATUS] = false;
                 unset($photoData['owner']);
                 $photo = $photoRepository->save($photoData);
             }

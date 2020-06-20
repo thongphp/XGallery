@@ -14,8 +14,7 @@ use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\Album;
-use App\Models\FlickrContact;
-use App\Models\FlickrPhoto;
+use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Contracts\Foundation\Application;
@@ -73,7 +72,7 @@ class FlickrController extends BaseController
                     return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
                 }
 
-                Album::dispatch($albumInfo->photoset);
+                Album::dispatchNow($albumInfo->photoset);
 
                 $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successfull';
 
@@ -97,7 +96,7 @@ class FlickrController extends BaseController
     public function contact(string $nsid)
     {
         $contact = app(ContactRepository::class)->getContactByNsid($nsid);
-        $items = $contact->photos()->where([FlickrPhoto::KEY_STATUS => true])
+        $items = $contact->photos()->where([Photo::KEY_STATUS => true])
             ->paginate(30);
 
         return view(

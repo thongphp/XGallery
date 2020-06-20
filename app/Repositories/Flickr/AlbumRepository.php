@@ -1,17 +1,21 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Flickr;
 
-use App\Models\FlickrAlbum;
+use App\Models\Flickr\Album;
+use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class FlickrAlbumRepository
+ * Class AlbumRepository
  * @package App\Repositories
  */
-class FlickrAlbumRepository extends BaseRepository
+class AlbumRepository extends BaseRepository
 {
-    public function __construct(FlickrAlbum $model)
+    /**
+     * @param \App\Models\Flickr\Album $model
+     */
+    public function __construct(Album $model)
     {
         parent::__construct($model);
     }
@@ -19,7 +23,7 @@ class FlickrAlbumRepository extends BaseRepository
     /**
      * @param $id
      *
-     * @return \Illuminate\Database\Eloquent\Model|null|FlickrAlbum
+     * @return \Illuminate\Database\Eloquent\Model|null|Album
      */
     public function findByAlbumId($id): ?Model
     {
@@ -29,7 +33,7 @@ class FlickrAlbumRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return \Illuminate\Database\Eloquent\Model|FlickrAlbum
+     * @return \Illuminate\Database\Eloquent\Model|Album
      */
     public function save(array $data)
     {

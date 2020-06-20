@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Oauth\GoogleOauthClient;
-use App\Repositories\FlickrPhotoRepository;
+use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class GooglePhoto extends GoogleOauthClient
 {
+    private const LOG_NAME = 'google';
+    private const TITLE_MAX_LENGTH = 500;
     public const ALBUMS_ENDPOINT = 'https://photoslibrary.googleapis.com/v1/albums';
 
     /**
@@ -20,6 +22,7 @@ class GooglePhoto extends GoogleOauthClient
      */
     public function createAlbum(string $title): ?object
     {
+        $title = substr($title, 0, self::TITLE_MAX_LENGTH);
         $content = $this->request(
             'POST',
             static::ALBUMS_ENDPOINT,
@@ -37,7 +40,7 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$content) {
-            Log::stack(['oauth'])->warning('Request responded with no content');
+            Log::stack([self::LOG_NAME])->warning('Request responded with no content');
             return null;
         }
 
@@ -57,7 +60,7 @@ class GooglePhoto extends GoogleOauthClient
      */
     public function uploadAndCreateMedia(string $file, string $photoId): bool
     {
-        $photo = app(FlickrPhotoRepository::class)->findById($photoId);
+        $photo = app(PhotoRepository::class)->findById($photoId);
 
         if (!$photo) {
             return false;
@@ -78,7 +81,7 @@ class GooglePhoto extends GoogleOauthClient
             );
 
             if (!$uploadToken) {
-                Log::stack(['google'])->alert('Can not add uploading media. PhotoId: '.$photo->id);
+                Log::stack([self::LOG_NAME])->alert('Can not add uploading media. PhotoId: '.$photo->id);
                 return false;
             }
 
@@ -113,7 +116,7 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$response) {
-            Log::stack(['google'])->alert('Can not add media into Album. AlbumId: '.$album->getAttributeValue('id').' / PhotoId: '.$photo->id);
+            Log::stack([self::LOG_NAME])->alert('Can not add media into Album. AlbumId: '.$photo->album->id.' / PhotoId: '.$photo->id);
             return false;
         }
 

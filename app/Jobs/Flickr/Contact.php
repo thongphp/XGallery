@@ -64,7 +64,7 @@ class Contact implements ShouldQueue
         $repository = app(ContactRepository::class);
 
         foreach ($contacts->contacts->contact as $contact) {
-            if ($item = $repository->getContactByNsid($contact->nsid)) {
+            if ($repository->getContactByNsid($contact->nsid)) {
                 continue;
             }
 

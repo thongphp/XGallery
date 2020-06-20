@@ -13,8 +13,8 @@ use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\FlickrPhoto;
-use App\Repositories\FlickrPhotoRepository;
+use App\Models\Flickr\Photo;
+use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -65,20 +65,20 @@ class ContactPhotos implements ShouldQueue
             return;
         }
 
-        $photoRepository = app(FlickrPhotoRepository::class);
+        $photoRepository = app(PhotoRepository::class);
 
         foreach ($photos->photos->photo as $photo) {
             $photoModel = $photoRepository->findById($photo->id);
 
             if (!$photoModel) {
                 $photoData = (array) $photo;
-                $photoData[FlickrPhoto::KEY_OWNER_ID] = $photo->owner;
-                $photoData[FlickrPhoto::KEY_STATUS] = false;
+                $photoData[Photo::KEY_OWNER_ID] = $photo->owner;
+                $photoData[Photo::KEY_STATUS] = false;
                 unset($photoData['owner']);
                 $photoModel = $photoRepository->save($photoData);
             }
 
-            if ((bool) $photoModel->{FlickrPhoto::KEY_STATUS} === true) {
+            if ((bool) $photoModel->{Photo::KEY_STATUS} === true) {
                 continue;
             }
 

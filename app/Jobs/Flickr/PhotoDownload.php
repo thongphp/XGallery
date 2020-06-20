@@ -8,9 +8,9 @@ use App\Facades\GooglePhotoFacade;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\FlickrAlbum;
-use App\Models\FlickrPhoto;
-use App\Repositories\FlickrPhotoRepository;
+use App\Models\Flickr\Album;
+use App\Models\Flickr\Photo;
+use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -44,9 +44,7 @@ class PhotoDownload implements ShouldQueue
 
     public function handle(): void
     {
-        $photo = app(FlickrPhotoRepository::class)->findById($this->photoId);
-
-        if (!$photo) {
+        if (!$photo = app(PhotoRepository::class)->findById($this->photoId)) {
             return;
         }
 
@@ -56,15 +54,11 @@ class PhotoDownload implements ShouldQueue
             return;
         }
 
-        $filePath = $this->downloadPhoto($this->getPhotoSizes($photo), $photo->{FlickrPhoto::KEY_OWNER_ID});
-
-        if (!$filePath) {
+        if (!$filePath = $this->downloadPhoto($this->getPhotoSizes($photo), $photo->{Photo::KEY_OWNER_ID})) {
             return;
         }
 
-        $result = GooglePhotoFacade::uploadAndCreateMedia($filePath, $photo->id);
-
-        if (!$result) {
+        if (!$result = GooglePhotoFacade::uploadAndCreateMedia($filePath, $photo->id)) {
             return;
         }
 
@@ -92,32 +86,28 @@ class PhotoDownload implements ShouldQueue
         );
     }
 
-    private function getPhotoSizes(FlickrPhoto $photo): array
+    private function getPhotoSizes(Photo $photo): array
     {
-        $photoSizes = $photo->getAttributeValue('sizes');
-
-        if (!empty($photoSizes)) {
-            return $photoSizes;
+        if (!empty($photo->sizes)) {
+            return $photo->sizes;
         }
 
-        $sizes = Flickr::getPhotoSizes($photo->getAttributeValue('id'));
-
-        if (!$sizes) {
+        if (!$sizes = Flickr::getPhotoSizes($photo->getAttributeValue('id'))) {
             return [];
         }
 
         $photo->setAttribute('sizes', $sizes->sizes->size);
         $photo->save();
 
-        return $photo->getAttributeValue('sizes');
+        return $photo->sizes;
     }
 
     /**
-     * @param \App\Models\FlickrAlbum $album
+     * @param \App\Models\Flickr\Album $album
      *
      * @return void
      */
-    private function calculateDownloadedPhotos(FlickrAlbum $album): void
+    private function calculateDownloadedPhotos(Album $album): void
     {
         $album->increment('download_photos', 1);
 
