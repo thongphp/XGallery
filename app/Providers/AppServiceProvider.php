@@ -12,6 +12,8 @@ namespace App\Providers;
 use App\Services\Flickr;
 use App\Services\Flickr\UrlExtractor;
 use App\Services\GoogleDrive;
+use App\Services\GooglePhoto;
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
             return new GoogleDrive;
         });
 
+        $this->app->bind('googlephoto', function () {
+            return new GooglePhoto;
+        });
+
         $this->app->bind('flickr', function () {
             return new Flickr;
         });
@@ -34,6 +40,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('flickr\urlextractor', function () {
             return new UrlExtractor;
         });
+
+        if ($this->app->environment() !== 'production') {
+            $this->app->register(IdeHelperServiceProvider::class);
+        }
     }
 
     /**
@@ -45,4 +55,6 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
+
 }

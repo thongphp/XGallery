@@ -11,12 +11,13 @@ namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
 use App\Facades\Flickr;
+use App\Jobs\Flickr\ContactPhotos;
+use App\Repositories\Flickr\ContactRepository;
 
 /**
- * Class FlickrPhotos
  * @package App\Console\Commands\Flickr
  */
-final class FlickrPhotos extends BaseCommand
+final class FlickrContactPhotos extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -32,9 +33,12 @@ final class FlickrPhotos extends BaseCommand
      */
     protected $description = 'Fetching Flickr photos';
 
-    public function fully()
+    /**
+     * @return bool
+     */
+    public function fully(): bool
     {
-        if (!$contact = app(\App\Repositories\FlickrContacts::class)->getItems(
+        if (!$contact = app(ContactRepository::class)->getItems(
             ['sort-by' => 'updated_at', 'cache' => 0]
         )->first()) {
             return false;
@@ -44,7 +48,7 @@ final class FlickrPhotos extends BaseCommand
 
         $this->output->title('Working on contact '.$contact->nsid);
 
-        if (!$photos = Flickr::get('people.getPhotos', ['user_id' => $contact->nsid])) {
+        if (!$photos = Flickr::getUserPhotos($contact->nsid)) {
             return false;
         }
 
@@ -56,7 +60,7 @@ final class FlickrPhotos extends BaseCommand
 
         // Trigger job to fetch photos of user
         for ($page = 1; $page <= $photos->photos->pages; $page++) {
-            \App\Jobs\Flickr\FlickrPhotos::dispatch($contact, $page);
+            ContactPhotos::dispatch($contact, $page);
             $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }

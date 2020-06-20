@@ -11,9 +11,9 @@ namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
 use App\Facades\Flickr;
+use App\Jobs\Flickr\Contact;
 
 /**
- * Class FlickrContacts
  * @package App\Console\Commands\Flickr
  */
 final class FlickrContacts extends BaseCommand
@@ -32,9 +32,12 @@ final class FlickrContacts extends BaseCommand
      */
     protected $description = 'Fetching Flickr contacts';
 
-    public function fully()
+    /**
+     * @return bool
+     */
+    public function fully(): bool
     {
-        if (!$contacts = Flickr::get('contacts.getList')) {
+        if (!$contacts = Flickr::getCurrentContacts()) {
             return false;
         }
 
@@ -45,8 +48,7 @@ final class FlickrContacts extends BaseCommand
         $this->progressBarInit($contacts->contacts->pages);
 
         for ($page = 1; $page <= $contacts->contacts->pages; $page++) {
-            // Add contacts on a page
-            \App\Jobs\Flickr\FlickrContacts::dispatch($page);
+            Contact::dispatch($page);
             $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }
