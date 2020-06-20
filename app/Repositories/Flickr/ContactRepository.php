@@ -26,6 +26,16 @@ class ContactRepository extends BaseRepository
     }
 
     /**
+     * @param string $nsId
+     *
+     * @return \App\Models\Flickr\Contact
+     */
+    public function findOrCreateByNsId(string $nsId): Contact
+    {
+        return $this->model::firstOrCreate(['nsid' => $nsId]);
+    }
+
+    /**
      * @param array $data
      *
      * @return \Illuminate\Database\Eloquent\Model|\App\Models\Flickr\Contact

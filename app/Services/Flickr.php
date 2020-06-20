@@ -104,7 +104,7 @@ class Flickr extends OauthClient
      *
      * @return object|null
      */
-    public function getCurrentContacts(?int $page = 1): ?object
+    public function getContactsOfCurrentUser(?int $page = 1): ?object
     {
         return $this->get(self::CONTACT_GET_LIST, ['page' => $page]);
     }

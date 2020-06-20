@@ -14,16 +14,43 @@ use App\Database\Mongodb;
 /**
  * @package App\Models
  */
-class Contact extends Mongodb
+class Contact extends Mongodb implements ContactInterface
 {
-    protected $collection = 'flickr_contacts';
-
     public const KEY_NSID = 'nsid';
+
+    protected $collection = 'flickr_contacts';
+    protected $fillable = [
+        'nsid',
+        'ispro',
+        'can_buy_pro',
+        'iconserver',
+        'iconfarm',
+        'path_alias',
+        'has_stats',
+        'gender',
+        'ignored',
+        'contact',
+        'friend',
+        'family',
+        'revcontact',
+        'revfriend',
+        'revfamily',
+        'username',
+        'realname',
+        'mbox_sha1sum',
+        'location',
+        'timezone',
+        'description',
+        'photosurl',
+        'profileurl',
+        'mobileurl',
+        'photos',
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
      */
-    public function photos()
+    public function refPhotos()
     {
         return $this->hasMany(Photo::class, Photo::KEY_OWNER_ID, self::KEY_NSID);
     }
@@ -35,4 +62,13 @@ class Contact extends Mongodb
     {
         return $this->hasMany(Album::class, Album::KEY_OWNER, self::KEY_NSID);
     }
+
+    /**
+     * @return bool
+     */
+    public function isDone(): bool
+    {
+        return !empty($this->mbox_sha1sum);
+    }
+
 }

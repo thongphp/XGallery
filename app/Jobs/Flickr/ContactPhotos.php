@@ -82,7 +82,7 @@ class ContactPhotos implements ShouldQueue
                 continue;
             }
 
-            PhotoDownload::dispatch($photo->id);
+//            PhotoDownload::dispatch($photo->id);
         }
     }
 }
