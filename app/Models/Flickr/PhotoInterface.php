@@ -15,6 +15,8 @@ namespace App\Models\Flickr;
  * @property array|null $sizes
  * @property bool|null $status
  * @property \App\Models\Flickr\Contact|null $ref_owner;
+ * @property string|null $google_album_id;
+ * @property string|null $google_media_id;
  */
 interface PhotoInterface
 {

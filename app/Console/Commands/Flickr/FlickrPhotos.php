@@ -11,8 +11,8 @@ namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
 use App\Facades\Flickr;
-use App\Jobs\Flickr\FlickrContactQueue;
-use App\Jobs\Flickr\FlickrPhotoQueue;
+use App\Jobs\Flickr\FlickrContact;
+use App\Jobs\Flickr\FlickrPhoto;
 use App\Models\Flickr\Contact;
 use App\Repositories\Flickr\ContactRepository;
 use App\Repositories\Flickr\PhotoRepository;
@@ -144,14 +144,14 @@ final class FlickrPhotos extends BaseCommand
             $photoModel->fill($hydrator->extract($photo))
                 ->save();
 
-            FlickrPhotoQueue::dispatch($photoModel->id);
+            FlickrPhoto::dispatch($photoModel->id);
 
             if (false === $shouldProcessOwner
                 || $contactRepository->findOrCreateByNsId($photoModel->owner)->isDone()) {
                 continue;
             }
 
-            FlickrContactQueue::dispatch($photoModel->owner);
+            FlickrContact::dispatch($photoModel->owner);
         }
     }
 }

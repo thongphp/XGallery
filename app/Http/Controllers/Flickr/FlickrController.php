@@ -13,7 +13,7 @@ namespace App\Http\Controllers\Flickr;
 use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
-use App\Jobs\Flickr\Album;
+use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -72,7 +72,7 @@ class FlickrController extends BaseController
                     return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
                 }
 
-                Album::dispatchNow($albumInfo->photoset);
+                FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
 
                 $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successfull';
 

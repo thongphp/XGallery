@@ -56,14 +56,6 @@ class Contact extends Mongodb implements ContactInterface
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
-     */
-    public function albums()
-    {
-        return $this->hasMany(Album::class, Album::KEY_OWNER, self::KEY_NSID);
-    }
-
-    /**
      * @return bool
      */
     public function isDone(): bool

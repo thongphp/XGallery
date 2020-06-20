@@ -11,7 +11,7 @@ namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
 use App\Facades\Flickr;
-use App\Jobs\Flickr\FlickrContactQueue;
+use App\Jobs\Flickr\FlickrContact;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
@@ -82,7 +82,7 @@ final class FlickrContacts extends BaseCommand
                 continue;
             }
 
-            FlickrContactQueue::dispatch($contact->nsid);
+            FlickrContact::dispatch($contact->nsid);
         }
     }
 }

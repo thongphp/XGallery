@@ -6,26 +6,27 @@ use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Repositories\Flickr\PhotoRepository;
+use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Laminas\Hydrator\ObjectPropertyHydrator;
 
-class FlickrPhotoQueue implements ShouldQueue
+class FlickrContact implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $id;
+    private string $nsid;
 
     /**
-     * @param string $id
+     * @param string $nsId
      */
-    public function __construct(string $id)
+    public function __construct(string $nsId)
     {
-        $this->id = $id;
+        $this->nsid = $nsId;
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
@@ -44,19 +45,19 @@ class FlickrPhotoQueue implements ShouldQueue
      */
     public function handle(): void
     {
-        $photoModel = app(PhotoRepository::class)->findOrCreateById($this->id);
+        $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
 
-        if ($photoModel->isDone() || $photoModel->hasSizes()) {
+        if ($contactModel->isDone()) {
             return;
         }
 
-        $sizes = Flickr::getPhotoSizes($photoModel->id);
+        $userInfo = Flickr::getUserInfo($contactModel->nsid);
 
-        if (!$sizes) {
+        if (!$userInfo) {
             return;
         }
 
-        $photoModel->sizes = $sizes;
-        $photoModel->save();
+        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
+            ->save();
     }
 }

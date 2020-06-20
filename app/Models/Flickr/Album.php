@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Album extends Mongodb
 {
     public const KEY_ID = 'id';
-    public const KEY_OWNER = 'owner';
 
     protected $collection = 'flickr_albums';
 
