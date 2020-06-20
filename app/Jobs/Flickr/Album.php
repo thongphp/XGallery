@@ -93,7 +93,7 @@ class Album implements ShouldQueue
             if (!$photoRepository->findById($photo->id)) {
                 $photoData = (array) $photo;
                 $photoData[Photo::KEY_ALBUM_ID] = $albumId;
-                $photoData[Photo::KEY_OWNER_ID] = $owner;
+                $photoData[Photo::KEY_OWNER] = $owner;
                 $photoData[Photo::KEY_STATUS] = false;
                 unset($photoData['owner']);
                 $photo = $photoRepository->save($photoData);

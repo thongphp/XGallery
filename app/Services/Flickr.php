@@ -115,7 +115,7 @@ class Flickr extends OauthClient
      *
      * @return object|null
      */
-    public function getCurrentFavouritePhotos(string $userId, ?int $page = 1): ?object
+    public function getFavouritePhotosOfUser(string $userId, ?int $page = 1): ?object
     {
         return $this->get(self::FAVES_GET_LIST, ['user_id' => $userId, 'page' => $page]);
     }

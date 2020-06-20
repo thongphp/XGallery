@@ -57,11 +57,11 @@ final class FlickrContacts extends BaseCommand
         }
 
         for ($page = 2; $page <= $contacts->contacts->pages; $page++) {
-            if (!$contacts = $contacts = Flickr::getContactsOfCurrentUser($page)) {
+            if (!$nextContacts = Flickr::getContactsOfCurrentUser($page)) {
                 continue;
             }
 
-            $this->processContacts($contacts->contacts->contact);
+            $this->processContacts($nextContacts->contacts->contact);
             $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }
@@ -78,13 +78,11 @@ final class FlickrContacts extends BaseCommand
 
         foreach ($contacts as $contact) {
             /** @var \App\Models\Flickr\ContactInterface $contact */
-            $contactModel = $repository->findOrCreateByNsId($contact->nsid);
-
-            if ($contactModel->isDone()) {
+            if ($repository->findOrCreateByNsId($contact->nsid)->isDone()) {
                 continue;
             }
 
-            FlickrContactQueue::dispatch($contactModel->nsid);
+            FlickrContactQueue::dispatch($contact->nsid);
         }
     }
 }

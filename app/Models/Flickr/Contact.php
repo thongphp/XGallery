@@ -52,7 +52,7 @@ class Contact extends Mongodb implements ContactInterface
      */
     public function refPhotos()
     {
-        return $this->hasMany(Photo::class, Photo::KEY_OWNER_ID, self::KEY_NSID);
+        return $this->hasMany(Photo::class, Photo::KEY_OWNER, self::KEY_NSID);
     }
 
     /**

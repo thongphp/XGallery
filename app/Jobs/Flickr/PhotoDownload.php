@@ -54,7 +54,7 @@ class PhotoDownload implements ShouldQueue
             return;
         }
 
-        if (!$filePath = $this->downloadPhoto($this->getPhotoSizes($photo), $photo->{Photo::KEY_OWNER_ID})) {
+        if (!$filePath = $this->downloadPhoto($this->getPhotoSizes($photo), $photo->{Photo::KEY_OWNER})) {
             return;
         }
 

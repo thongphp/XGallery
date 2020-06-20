@@ -72,7 +72,7 @@ class ContactPhotos implements ShouldQueue
 
             if (!$photoModel) {
                 $photoData = (array) $photo;
-                $photoData[Photo::KEY_OWNER_ID] = $photo->owner;
+                $photoData[Photo::KEY_OWNER] = $photo->owner;
                 $photoData[Photo::KEY_STATUS] = false;
                 unset($photoData['owner']);
                 $photoModel = $photoRepository->save($photoData);

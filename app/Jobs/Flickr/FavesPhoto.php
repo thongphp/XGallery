@@ -55,7 +55,7 @@ class FavesPhoto implements ShouldQueue
      */
     public function handle(): void
     {
-        if (!$result = Flickr::getCurrentFavouritePhotos($this->owner)) {
+        if (!$result = Flickr::getFavouritePhotosOfUser($this->owner)) {
             return;
         }
 
@@ -68,7 +68,7 @@ class FavesPhoto implements ShouldQueue
         }
 
         for ($page = 2; $page <= $result->photos->pages; $page++) {
-            $result = Flickr::getCurrentFavouritePhotos($this->owner, $page);
+            $result = Flickr::getFavouritePhotosOfUser($this->owner, $page);
             $this->saveContacts($result->photos->photo, $repository);
         }
     }

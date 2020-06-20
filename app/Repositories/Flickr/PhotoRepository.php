@@ -26,6 +26,16 @@ class PhotoRepository extends BaseRepository
     }
 
     /**
+     * @param string $id
+     *
+     * @return \App\Models\Flickr\Photo
+     */
+    public function findOrCreateById(string $id): Photo
+    {
+        return $this->model::firstOrCreate(['id' => $id]);
+    }
+
+    /**
      * @param array $data
      *
      * @return \App\Models\Flickr\Photo|\Illuminate\Database\Eloquent\Model
