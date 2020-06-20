@@ -13,9 +13,9 @@ namespace App\Http\Controllers\Flickr;
 use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
-use App\Jobs\Flickr\FlickrAlbum;
-use App\Jobs\Flickr\FlickrDownload;
-use App\Models\FlickrContacts;
+use App\Jobs\Flickr\Album;
+use App\Models\Flickr\Photo;
+use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -35,20 +35,20 @@ class FlickrController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected \App\Repositories\FlickrContacts $repository;
+    protected ContactRepository $repository;
 
     /**
      * FlickrController constructor.
      *
-     * @param  \App\Repositories\FlickrContacts  $repository
+     * @param ContactRepository $repository
      */
-    public function __construct(\App\Repositories\FlickrContacts $repository)
+    public function __construct(ContactRepository $repository)
     {
         $this->repository = $repository;
     }
 
     /**
-     * @param  Request  $request
+     * @param Request $request
      *
      * @return RedirectResponse|void
      */
@@ -66,38 +66,16 @@ class FlickrController extends BaseController
 
         switch ($result->getType()) {
             case FlickrUrlInterface::TYPE_ALBUM:
-                $albumInfo = Flickr::get('photosets.getInfo', ['photoset_id' => $result->getId()]);
+                $albumInfo = Flickr::getAlbumInfo($result->getId());
 
                 if (!$albumInfo || $albumInfo->photoset->photos === 0) {
                     return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
                 }
 
-                FlickrAlbum::dispatch($albumInfo->photoset);
+                Album::dispatchNow($albumInfo->photoset);
 
-                // @TODO: Would be remove when complete change process to upload images to Google Photos
-                $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $result->getId()]);
+                $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successfull';
 
-                if (!$photos) {
-                    return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
-                }
-
-                $flashMessage = 'Added '.count($photos->photoset->photo).' photos of album <strong>'
-                    .$photos->photoset->title.'</strong> by <strong>'. $result->getOwner() . '</strong> to queue';
-
-                foreach ($photos->photoset->photo as $photo) {
-                    FlickrDownload::dispatch($photos->photoset->owner, $photo);
-                }
-
-                if ($photos->photoset->page === 1) {
-                    return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
-                }
-
-                for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-                    $photos = Flickr::get('photosets.getPhotos', ['photoset_id' => $url, 'page' => $page]);
-                    foreach ($photos->photoset->photo as $photo) {
-                        FlickrDownload::dispatch($photos->photoset->owner, $photo);
-                    }
-                }
                 break;
 
             default:
@@ -110,22 +88,21 @@ class FlickrController extends BaseController
         return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
     }
 
-    private function albumProcess(object $albumInfo): void
-    {
-
-    }
-
     /**
-     * @param  string  $nsid
+     * @param string $nsid
      *
      * @return Application|Factory|View
      */
     public function contact(string $nsid)
     {
+        $contact = app(ContactRepository::class)->getContactByNsid($nsid);
+        $items = $contact->photos()->where([Photo::KEY_STATUS => true])
+            ->paginate(30);
+
         return view(
             'flickr.photos',
             $this->getViewDefaultOptions([
-                'items' => FlickrContacts::where(['nsid' => $nsid])->first()->photos()->paginate(30),
+                'items' => $items,
                 'title' => 'Flickr',
             ])
         );

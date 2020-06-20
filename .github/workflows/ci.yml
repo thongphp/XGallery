@@ -1,35 +1,34 @@
 name: CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
-
+  phplint:
+    name: PHP Syntax Checker (Lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: StephaneBour/actions-php-lint@7.4
+  phpstan:
+    name: phpstan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+        run: composer install
+      - name: Run phpstan
+        uses: actions-x/phpstan@v1
   php-security-check:
     name: PHP Security Checker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - run: composer install
       - uses: StephaneBour/actions-php-security-checker@1.0
-
-  sonarcloud:
-    name: SonarQube Checker
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting
-          fetch-depth: 0
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
   build-test:
     name: PHPUnit Checker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - run: composer install
       - run: composer test

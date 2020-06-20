@@ -22,6 +22,7 @@
         "guzzlehttp/oauth-subscriber": "^0.3.0",
         "jenssegers/mongodb": "^3.6",
         "kamermans/guzzle-oauth2-subscriber": "^1.0",
+        "laminas/laminas-hydrator": "^3.0",
         "laravel/framework": "^6.0",
         "laravel/horizon": "3.7.2",
         "laravel/socialite": "^4.3",
@@ -35,8 +36,7 @@
         "symfony/browser-kit": "^5.0",
         "symfony/console": "^4.3.4",
         "symfony/dom-crawler": "^5.0",
-        "symfony/http-client": "^5.0",
-        "symfony/process": "^4.3.4"
+        "symfony/http-client": "^5.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",
@@ -89,7 +89,8 @@
             "@php artisan key:generate --ansi"
         ],
         "test": [
-            "@php vendor/bin/phpunit --testsuite=Crawlers"
+            "@php vendor/bin/phpunit --testsuite=Crawlers",
+            "@php vendor/bin/phpunit --testsuite=Commands"
         ]
     }
 }

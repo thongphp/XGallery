@@ -13,6 +13,8 @@ use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Flickr\Photo;
+use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,7 +25,7 @@ use Illuminate\Queue\SerializesModels;
  * Fetch photos in a contact page
  * @package App\Jobs\Flickr
  */
-class FlickrPhotos implements ShouldQueue
+class ContactPhotos implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
@@ -35,7 +37,7 @@ class FlickrPhotos implements ShouldQueue
      * Create a new job instance.
      *
      * @param $contact
-     * @param  int  $page
+     * @param int $page
      */
     public function __construct(object $contact, int $page)
     {
@@ -47,7 +49,7 @@ class FlickrPhotos implements ShouldQueue
     /**
      * @return RateLimited[]
      */
-    public function middleware()
+    public function middleware(): array
     {
         return [new RateLimited('flickr')];
     }
@@ -57,30 +59,30 @@ class FlickrPhotos implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        if (!$photos = Flickr::get(
-            'people.getPhotos',
-            ['user_id' => $this->contact->nsid, 'page' => $this->page]
-        )) {
+        if (!$photos = Flickr::getUserPhotos($this->contact->nsid, $this->page)) {
             return;
         }
 
-        foreach ($photos->photos->photo as $photo) {
-            $model = app(\App\Models\FlickrPhotos::class);
+        $photoRepository = app(PhotoRepository::class);
 
-            // Photo already exists
-            if ($item = $model->where(['id' => $photo->id, 'owner' => $photo->owner])->first()) {
+        foreach ($photos->photos->photo as $photo) {
+            $photoModel = $photoRepository->findById($photo->id);
+
+            if (!$photoModel) {
+                $photoData = (array) $photo;
+                $photoData[Photo::KEY_OWNER_ID] = $photo->owner;
+                $photoData[Photo::KEY_STATUS] = false;
+                unset($photoData['owner']);
+                $photoModel = $photoRepository->save($photoData);
+            }
+
+            if ((bool) $photoModel->{Photo::KEY_STATUS} === true) {
                 continue;
             }
 
-            $properties = get_object_vars($photo);
-
-            foreach ($properties as $key => $value) {
-                $model->{$key} = $value;
-            }
-
-            $model->save();
+            PhotoDownload::dispatch($photo->id);
         }
     }
 }
