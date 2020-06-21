@@ -123,9 +123,9 @@ class FlickrController extends BaseController
                     break;
 
                 case FlickrUrlInterface::TYPE_PROFILE:
-                    FlickrDownloadContact::dispatchNow($result->getId());
+                    FlickrDownloadContact::dispatchNow($result->getOwner());
 
-                    $flashMessage = 'Add user: '.$result->getId().' successful';
+                    $flashMessage = 'Add user: '.$result->getOwner().' successful';
 
                     break;
 
