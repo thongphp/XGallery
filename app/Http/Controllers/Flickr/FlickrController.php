@@ -13,6 +13,7 @@ namespace App\Http\Controllers\Flickr;
 use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
@@ -44,7 +45,7 @@ class FlickrController extends BaseController
     /**
      * FlickrController constructor.
      *
-     * @param ContactRepository $repository
+     * @param  ContactRepository  $repository
      */
     public function __construct(ContactRepository $repository)
     {
@@ -52,9 +53,9 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param  Request  $request
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Application|Factory|View
      */
     public function dashboard(Request $request)
     {
@@ -77,11 +78,11 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param Request $request
+     * @param  FlickrDownloadRequest  $request
      *
      * @return RedirectResponse|void
      */
-    public function download(Request $request)
+    public function download(FlickrDownloadRequest $request)
     {
         if (!$url = $request->get('url')) {
             return;
@@ -93,7 +94,12 @@ class FlickrController extends BaseController
                 ->with('error', 'Could not detect type of URL');
         }
 
+        $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos in %s: <strong>%s</strong> / <span class="badge badge-secondary">%s</span>';
+
         try {
+            /**
+             * @var FlickrUrlInterface $result
+             */
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
                     $albumInfo = Flickr::getAlbumInfo($result->getId());
@@ -105,7 +111,13 @@ class FlickrController extends BaseController
 
                     FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
 
-                    $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successful';
+                    $flashMessage = sprintf(
+                        $flashMessage,
+                        $albumInfo->photoset->photos,
+                        'album',
+                        $albumInfo->photoset->title,
+                        $albumInfo->photoset->id
+                    );
 
                     break;
 
@@ -119,13 +131,20 @@ class FlickrController extends BaseController
 
                     FlickrDownloadGallery::dispatchNow($galleryInfo->gallery);
 
-                    $flashMessage = 'Add gallery: '.$galleryInfo->gallery->title.' ('.$galleryInfo->gallery->gallery_id.') successful';
+                    $flashMessage = sprintf(
+                        $flashMessage,
+                        $galleryInfo->gallery->count_photos,
+                        'gallery',
+                        $galleryInfo->gallery->title,
+                        $galleryInfo->gallery->gallery_id
+                    );
+
                     break;
 
                 case FlickrUrlInterface::TYPE_PROFILE:
                     FlickrDownloadContact::dispatchNow($result->getOwner());
 
-                    $flashMessage = 'Add user: '.$result->getOwner().' successful';
+                    $flashMessage = 'Added user <strong>'.$result->getOwner().'</strong>';
 
                     break;
 
@@ -133,7 +152,6 @@ class FlickrController extends BaseController
                     return redirect()
                         ->route('flickr.dashboard.view')
                         ->with('error', 'Could not detect type of URL');
-                    break;
             }
         } catch (Exception $exception) {
             return redirect()
@@ -145,7 +163,7 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param string $nsid
+     * @param  string  $nsid
      *
      * @return Application|Factory|View
      */
