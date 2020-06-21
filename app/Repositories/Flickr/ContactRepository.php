@@ -16,13 +16,13 @@ class ContactRepository extends BaseRepository
     }
 
     /**
-     * @param string $nsid
+     * @param string $nsId
      *
-     * @return null|Contact
+     * @return \App\Models\Flickr\Contact
      */
-    public function getContactByNsid(string $nsid): ?Contact
+    public function findOrCreateByNsId(string $nsId): Contact
     {
-        return $this->model->where(['nsid' => $nsid])->first();
+        return $this->model::firstOrCreate(['nsid' => $nsId]);
     }
 
     /**

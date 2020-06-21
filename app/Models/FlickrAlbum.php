@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Models\Flickr;
+namespace App\Models;
 
 use App\Database\Mongodb;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Album extends Mongodb
+class FlickrAlbum extends Mongodb
 {
-    public const KEY_ID = 'id';
-    public const KEY_OWNER = 'owner';
-
     protected $collection = 'flickr_albums';
 
     /**
@@ -18,6 +15,6 @@ class Album extends Mongodb
      */
     public function photos()
     {
-        return $this->hasMany(Photo::class, Photo::KEY_ALBUM_ID, self::KEY_ID);
+        return $this->hasMany(FlickrPhotos::class, 'album', 'id');
     }
 }

@@ -36,14 +36,14 @@ class GoogleController extends BaseController
     }
 
     /**
-     * Obtain the user information from Google.
+     * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @param Request $request
+     * @return RedirectResponse
      */
-    public function callback(Request $request): void
+    public function callback(Request $request): RedirectResponse
     {
         if (!$user = Socialite::driver('Google')->user()) {
-            return;
+            return redirect()->route('flickr.dashboard.view')->with('danger', 'Authenticate with Google fail.');
         }
 
         $code = $request->get('code');
@@ -55,9 +55,10 @@ class GoogleController extends BaseController
             $model->setAttribute($key, $value);
         }
 
-        $model->setAttribute('name', 'google');
-        $model->setAttribute('code', $code);
+        $model->setAttribute('name', 'google')
+            ->setAttribute('code', $code)
+            ->save();
 
-        $model->save();
+        return redirect()->route('flickr.dashboard.view')->with('success', 'Authenticate with Google Successfully.');
     }
 }

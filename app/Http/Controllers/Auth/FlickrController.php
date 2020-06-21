@@ -34,10 +34,10 @@ class FlickrController extends BaseController
      * Obtain the user information from GitHub.
      *
      */
-    public function callback()
+    public function callback(): RedirectResponse
     {
         if (!$user = Socialite::driver('flickr')->user()) {
-            return;
+            return redirect()->route('flickr.dashboard.view')->with('danger', 'Can not authenticate with Flickr');
         }
 
         $model = app(Oauth::class);
@@ -48,5 +48,7 @@ class FlickrController extends BaseController
         }
 
         $model->save();
+
+        return redirect()->route('flickr.dashboard.view')->with('success', 'Authenticate with Flickr Successfully.');
     }
 }

@@ -13,9 +13,12 @@ namespace App\Http\Controllers\Flickr;
 use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
-use App\Jobs\Flickr\Album;
+use App\Jobs\Flickr\FlickrDownloadAlbum;
+use App\Jobs\Flickr\FlickrDownloadContact;
+use App\Jobs\Flickr\FlickrDownloadGallery;
 use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\ContactRepository;
+use App\Repositories\OAuthRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -48,6 +51,31 @@ class FlickrController extends BaseController
     }
 
     /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function dashboard(Request $request)
+    {
+        $oAuthRepository = app(OAuthRepository::class);
+        $flickrOAuth = $oAuthRepository->findBy(['name' => 'flickr']);
+        $googleOAuth = $oAuthRepository->findBy(['name' => 'google']);
+
+        if ($flickrOAuth && $googleOAuth) {
+            return parent::dashboard($request);
+        }
+
+        return view(
+            'flickr.authorization',
+            $this->getViewDefaultOptions([
+                'title' => 'Flickr',
+                'flickr' => (bool) $flickrOAuth,
+                'google' => (bool) $googleOAuth,
+            ])
+        );
+    }
+
+    /**
      * @param Request $request
      *
      * @return RedirectResponse|void
@@ -69,12 +97,33 @@ class FlickrController extends BaseController
                 $albumInfo = Flickr::getAlbumInfo($result->getId());
 
                 if (!$albumInfo || $albumInfo->photoset->photos === 0) {
-                    return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
+                    return redirect()->route('flickr.dashboard.view')
+                        ->with('error', 'Can not get Album information or album has no photos.');
                 }
 
-                Album::dispatchNow($albumInfo->photoset);
+                FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
 
-                $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successfull';
+                $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successful';
+
+                break;
+
+            case FlickrUrlInterface::TYPE_GALLERY:
+                $galleryInfo = Flickr::getGalleryInformation($result->getId());
+
+                if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
+                    return redirect()->route('flickr.dashboard.view')
+                        ->with('error', 'Can not get Gallery information or gallery has no photos.');
+                }
+
+                FlickrDownloadGallery::dispatchNow($galleryInfo->gallery);
+
+                $flashMessage = 'Add gallery: '.$galleryInfo->gallery->title.' ('.$galleryInfo->gallery->gallery_id.') successful';
+                break;
+
+            case FlickrUrlInterface::TYPE_PROFILE:
+                FlickrDownloadContact::dispatchNow($result->getId());
+
+                $flashMessage = 'Add user: '.$result->getId().' successful';
 
                 break;
 
@@ -95,8 +144,8 @@ class FlickrController extends BaseController
      */
     public function contact(string $nsid)
     {
-        $contact = app(ContactRepository::class)->getContactByNsid($nsid);
-        $items = $contact->photos()->where([Photo::KEY_STATUS => true])
+        $contact = app(ContactRepository::class)->findOrCreateByNsId($nsid);
+        $items = $contact->refPhotos()->where([Photo::KEY_STATUS => true])
             ->paginate(30);
 
         return view(

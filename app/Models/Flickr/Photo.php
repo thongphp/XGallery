@@ -4,28 +4,30 @@ namespace App\Models\Flickr;
 
 use App\Database\Mongodb;
 
-class Photo extends Mongodb
+class Photo extends Mongodb implements PhotoInterface
 {
-    protected $collection = 'flickr_photos';
-
-    public const KEY_ALBUM_ID = 'album_id';
-    public const KEY_OWNER_ID = 'owner_id';
+    public const KEY_OWNER = 'owner';
     public const KEY_STATUS = 'status';
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
-     */
-    public function album()
-    {
-        return $this->belongsTo(Album::class, self::KEY_ALBUM_ID, Album::KEY_ID);
-    }
+    protected $collection = 'flickr_photos';
+    protected $fillable = [
+        'id',
+        'owner',
+        'secret',
+        'server',
+        'farm',
+        'title',
+        'ispublic',
+        'isfriend',
+        'isfamily',
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
      */
-    public function owner()
+    public function refOwner()
     {
-        return $this->belongsTo(Contact::class, self::KEY_OWNER_ID, Contact::KEY_NSID);
+        return $this->belongsTo(Contact::class, self::KEY_OWNER, Contact::KEY_NSID);
     }
 
     /**
@@ -34,5 +36,21 @@ class Photo extends Mongodb
     public function getCover(): string
     {
         return !$this->sizes ? '' : $this->sizes[0]['source'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSizes(): bool
+    {
+        return !empty($this->sizes);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDone(): bool
+    {
+        return (bool) $this->status;
     }
 }

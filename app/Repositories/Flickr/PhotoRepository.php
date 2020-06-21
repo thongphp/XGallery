@@ -18,11 +18,11 @@ class PhotoRepository extends BaseRepository
     /**
      * @param string $id
      *
-     * @return \App\Models\Flickr\Photo|null
+     * @return \App\Models\Flickr\Photo
      */
-    public function findById(string $id): ?Photo
+    public function findOrCreateById(string $id): Photo
     {
-        return $this->model->where(['id' => $id])->first();
+        return $this->model::firstOrCreate(['id' => $id]);
     }
 
     /**
