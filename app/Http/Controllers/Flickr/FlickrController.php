@@ -14,6 +14,7 @@ use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
+use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
 use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\ContactRepository;
@@ -102,7 +103,7 @@ class FlickrController extends BaseController
 
                 FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
 
-                $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successfull';
+                $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successful';
 
                 break;
 
@@ -116,7 +117,14 @@ class FlickrController extends BaseController
 
                 FlickrDownloadGallery::dispatchNow($galleryInfo->gallery);
 
-                $flashMessage = 'Add gallery: '.$galleryInfo->gallery->title.' ('.$galleryInfo->gallery->gallery_id.') successfull';
+                $flashMessage = 'Add gallery: '.$galleryInfo->gallery->title.' ('.$galleryInfo->gallery->gallery_id.') successful';
+                break;
+
+            case FlickrUrlInterface::TYPE_PROFILE:
+                FlickrDownloadContact::dispatchNow($result->getId());
+
+                $flashMessage = 'Add user: '.$result->getId().' successful';
+
                 break;
 
             default:

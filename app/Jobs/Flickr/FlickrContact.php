@@ -6,7 +6,9 @@ use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Flickr\Contact;
 use App\Repositories\Flickr\ContactRepository;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -54,10 +56,16 @@ class FlickrContact implements ShouldQueue
         $userInfo = Flickr::getUserInfo($contactModel->nsid);
 
         if (!$userInfo) {
-            return;
+            throw new Exception('Can not get user information for: '.$contactModel->nsid);
         }
 
-        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
+        $contactModel->touch();
+
+        $hydrator = new ObjectPropertyHydrator();
+        $userInfo = $hydrator->extract($userInfo->person);
+
+        $contactModel->fill($userInfo)
+            ->setAttribute(Contact::KEY_STATUS, true)
             ->save();
     }
 }

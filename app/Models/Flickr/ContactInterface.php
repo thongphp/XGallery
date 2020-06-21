@@ -28,6 +28,7 @@ namespace App\Models\Flickr;
  * @property string|null $profileurl
  * @property string|null $mobileurl
  * @property object|null $photos
+ * @property bool|null $status;
  * @property \App\Models\Flickr\Photo[]|null $ref_photos;
  */
 interface ContactInterface

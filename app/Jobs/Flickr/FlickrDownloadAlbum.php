@@ -66,11 +66,11 @@ class FlickrDownloadAlbum implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-            if (!$photos = Flickr::getAlbumPhotos($this->album->id, $page)) {
+            if (!$nextPhotos = Flickr::getAlbumPhotos($this->album->id, $page)) {
                 continue;
             }
 
-            $this->syncPhotos($photos->photoset->photo, $owner, $googleAlbumId);
+            $this->syncPhotos($nextPhotos->photoset->photo, $owner, $googleAlbumId);
         }
     }
 }

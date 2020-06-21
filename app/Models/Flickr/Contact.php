@@ -17,6 +17,7 @@ use App\Database\Mongodb;
 class Contact extends Mongodb implements ContactInterface
 {
     public const KEY_NSID = 'nsid';
+    public const KEY_STATUS = 'status';
 
     protected $collection = 'flickr_contacts';
     protected $fillable = [
@@ -60,7 +61,6 @@ class Contact extends Mongodb implements ContactInterface
      */
     public function isDone(): bool
     {
-        return !empty($this->mbox_sha1sum);
+        return (bool) $this->status;
     }
-
 }
