@@ -15,19 +15,19 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class FlickrDownloadAlbum implements ShouldQueue
+class FlickrDownloadGallery implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob, SyncPhotos;
 
-    private object $album;
+    private object $gallery;
 
     /**
-     * @param object $album
+     * @param object $gallery
      */
-    public function __construct(object $album)
+    public function __construct(object $gallery)
     {
-        $this->album = $album;
+        $this->gallery = $gallery;
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
@@ -44,33 +44,33 @@ class FlickrDownloadAlbum implements ShouldQueue
      */
     public function handle(): void
     {
-        if (!$photos = Flickr::getAlbumPhotos($this->album->id)) {
+        if (!$photos = Flickr::getGalleryPhotos($this->gallery->id)) {
             return;
         }
 
-        $googleAlbum = GooglePhotoFacade::createAlbum($this->album->title);
+        $googleAlbum = GooglePhotoFacade::createAlbum($this->gallery->title);
 
         if (!$googleAlbum) {
-            throw new Exception('Can not create Google FlickrAlbumDownloadQueue: '.$this->album->id);
+            throw new Exception('Can not create Google FlickrAlbumDownloadQueue from Gallery: '.$this->gallery->id);
         }
 
         $googleAlbumId = $googleAlbum->id;
-        $owner = $this->album->owner;
+        $owner = $this->gallery->owner;
 
         FlickrContact::dispatch($owner);
 
-        $this->syncPhotos($photos->photoset->photo, $owner, $googleAlbumId);
+        $this->syncPhotos($photos->photos->photo, $owner, $googleAlbumId);
 
-        if ($photos->photoset->page === 1) {
+        if ($photos->photos->page === 1) {
             return;
         }
 
-        for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-            if (!$photos = Flickr::getAlbumPhotos($this->album->id, $page)) {
+        for ($page = 2; $page <= $photos->photos->pages; $page++) {
+            if (!$photos = Flickr::getAlbumPhotos($this->gallery->id, $page)) {
                 continue;
             }
 
-            $this->syncPhotos($photos->photoset->photo, $owner, $googleAlbumId);
+            $this->syncPhotos($photos->photos->photo, $owner, $googleAlbumId);
         }
     }
 }

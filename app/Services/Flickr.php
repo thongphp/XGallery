@@ -9,8 +9,10 @@ class Flickr extends OauthClient
 {
     public const REST_ENDPOINT = 'https://api.flickr.com/services/rest';
 
-    private const PHOTOSETS_GET_PHOTOS = 'photosets.getPhotos';
+    private const ALBUM_GET_PHOTOS = 'photosets.getPhotos';
     private const ALBUM_GET_INFO = 'photosets.getInfo';
+    private const GALLERY_GET_INFO = 'galleries.getInfo';
+    private const GALLERY_GET_PHOTOS = 'galleries.getPhotos';
     private const PHOTO_GET_SIZES = 'photos.getSizes';
     private const CONTACT_GET_LIST = 'contacts.getList';
     private const FAVES_GET_LIST = 'favorites.getList';
@@ -25,7 +27,7 @@ class Flickr extends OauthClient
      */
     public function getAlbumPhotos(string $photoSetId, ?int $page = 1): ?object
     {
-        return $this->get(self::PHOTOSETS_GET_PHOTOS, ['photoset_id' => $photoSetId, 'page' => (int) $page]);
+        return $this->get(self::ALBUM_GET_PHOTOS, ['photoset_id' => $photoSetId, 'page' => (int) $page]);
     }
 
     /**
@@ -62,6 +64,16 @@ class Flickr extends OauthClient
     }
 
     /**
+     * Default parameters for all requests
+     *
+     * @return array
+     */
+    private function getDefaultFlickrParameters(): array
+    {
+        return ['format' => 'json', 'nojsoncallback' => 1, 'api_key' => config('auth.flickr.token')];
+    }
+
+    /**
      * @param object $content
      *
      * @return object
@@ -73,20 +85,22 @@ class Flickr extends OauthClient
                 continue;
             }
 
-            $content->{$key} = property_exists($value, '_content') ?  $value->_content : $this->removeContentObject($value);
+            $content->{$key} = property_exists($value,
+                '_content') ? $value->_content : $this->removeContentObject($value);
         }
 
         return $content;
     }
 
     /**
-     * Default parameters for all requests
+     * @param string $id
+     * @param int|null $page
      *
-     * @return array
+     * @return object|null
      */
-    private function getDefaultFlickrParameters(): array
+    public function getGalleryPhotos(string $id, ?int $page = 1): ?object
     {
-        return ['format' => 'json', 'nojsoncallback' => 1, 'api_key' => config('auth.flickr.token')];
+        return $this->get(self::GALLERY_GET_PHOTOS, ['gallery_id' => $id, 'page' => (int) $page]);
     }
 
     /**
@@ -128,6 +142,16 @@ class Flickr extends OauthClient
     public function getAlbumInfo(string $albumId): ?object
     {
         return $this->get(self::ALBUM_GET_INFO, ['photoset_id' => $albumId]);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return object|null
+     */
+    public function getGalleryInformation(string $id): ?object
+    {
+        return $this->get(self::GALLERY_GET_INFO, ['gallery_id' => $id]);
     }
 
     /**

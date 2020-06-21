@@ -14,6 +14,7 @@ use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
 use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
+use App\Jobs\Flickr\FlickrDownloadGallery;
 use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\ContactRepository;
 use App\Repositories\OAuthRepository;
@@ -95,7 +96,8 @@ class FlickrController extends BaseController
                 $albumInfo = Flickr::getAlbumInfo($result->getId());
 
                 if (!$albumInfo || $albumInfo->photoset->photos === 0) {
-                    return redirect()->route('flickr.dashboard.view')->with('error', 'Can not get photosets');
+                    return redirect()->route('flickr.dashboard.view')
+                        ->with('error', 'Can not get Album information or album has no photos.');
                 }
 
                 FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
@@ -104,14 +106,25 @@ class FlickrController extends BaseController
 
                 break;
 
+            case FlickrUrlInterface::TYPE_GALLERY:
+                $galleryInfo = Flickr::getGalleryInformation($result->getId());
+
+                if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
+                    return redirect()->route('flickr.dashboard.view')
+                        ->with('error', 'Can not get Gallery information or gallery has no photos.');
+                }
+
+                FlickrDownloadGallery::dispatchNow($galleryInfo->gallery);
+
+                $flashMessage = 'Add gallery: '.$galleryInfo->gallery->title.' ('.$galleryInfo->gallery->gallery_id.') successfull';
+                break;
+
             default:
                 return redirect()
                     ->route('flickr.dashboard.view')
                     ->with('error', 'Could not detect type of URL');
                 break;
         }
-
-        exit;
 
         return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
     }
