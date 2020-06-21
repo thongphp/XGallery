@@ -15,6 +15,7 @@ class UrlExtractorTest extends TestCase
     public function extractFromUrlDataProvider(): array
     {
         return [
+            // Album
             [
                 'url' => 'https://www.flickr.com/photos/flickr/albums/72157707851154934',
                 'expectType' => 'album',
@@ -39,6 +40,7 @@ class UrlExtractorTest extends TestCase
                 'expectId' => '93826484219372866',
                 'expectOwner' => '12345678@N01',
             ],
+            // Gallery
             [
                 'url' => 'https://www.flickr.com/photos/flickr/galleries/72157714491688536',
                 'expectType' => 'gallery',
@@ -57,6 +59,7 @@ class UrlExtractorTest extends TestCase
                 'expectId' => '49956954471',
                 'expectOwner' => '12345678@N01',
             ],
+            // Photo
             [
                 'url' => 'https://www.flickr.com/photos/236127362@N93/49956954471',
                 'expectType' => 'photo',
@@ -69,6 +72,7 @@ class UrlExtractorTest extends TestCase
                 'expectId' => '123281738273',
                 'expectOwner' => '12345678@N01',
             ],
+            // Profile
             [
                 'url' => 'https://www.flickr.com/people/flickr/',
                 'expectType' => 'profile',
@@ -80,6 +84,12 @@ class UrlExtractorTest extends TestCase
                 'expectType' => 'profile',
                 'expectId' => '236127362@N93',
                 'expectOwner' => '236127362@N93',
+            ],
+            [
+                'url' => 'https://www.flickr.com/photos/139519108@N02/',
+                'expectType' => 'profile',
+                'expectId' => '139519108@N02',
+                'expectOwner' => '139519108@N02',
             ],
         ];
     }
