@@ -22,12 +22,12 @@ namespace App\Models\Flickr;
  * @property string|null $realname
  * @property string|null $mbox_sha1sum
  * @property string|null $location
- * @property object|null $timezone
+ * @property array|null $timezone
  * @property string|null $description
  * @property string|null $photosurl
  * @property string|null $profileurl
  * @property string|null $mobileurl
- * @property object|null $photos
+ * @property array|null $photos
  * @property bool|null $status;
  * @property \App\Models\Flickr\Photo[]|null $ref_photos;
  */

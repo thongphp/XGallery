@@ -151,8 +151,10 @@ class FlickrController extends BaseController
      */
     public function contact(string $nsid)
     {
-        $contact = app(ContactRepository::class)->findOrCreateByNsId($nsid);
-        $items = $contact->refPhotos()->where([Photo::KEY_STATUS => true])
+        $items = app(ContactRepository::class)
+            ->findOrCreateByNsId($nsid)
+            ->refPhotos()
+            ->where([Photo::KEY_STATUS => true])
             ->paginate(30);
 
         return view(

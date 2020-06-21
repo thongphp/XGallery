@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Flickr;
 
+use App\Exceptions\Flickr\FlickrApiGetGalleryPhotosException;
 use App\Facades\Flickr;
 use App\Facades\GooglePhotoFacade;
 use App\Jobs\Middleware\RateLimited;
@@ -13,7 +14,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use RuntimeException;
 
 class FlickrDownloadGallery implements ShouldQueue
 {
@@ -40,18 +40,17 @@ class FlickrDownloadGallery implements ShouldQueue
     }
 
     /**
-     * @throws \Exception
+     * @throws \App\Exceptions\Flickr\FlickrApiGetGalleryPhotosException
+     * @throws \App\Exceptions\Google\GooglePhotoApiCreateAlbumException
+     * @throws \JsonException
      */
     public function handle(): void
     {
         if (!$photos = Flickr::getGalleryPhotos($this->gallery->id)) {
-            return;
+            throw new FlickrApiGetGalleryPhotosException($this->gallery->id);
         }
 
-        if (!$googleAlbum = GooglePhotoFacade::createAlbum($this->gallery->title)) {
-            throw new RuntimeException('Can not create Google FlickrAlbumDownloadQueue from Gallery: '.$this->gallery->id);
-        }
-
+        $googleAlbum = GooglePhotoFacade::createAlbum($this->gallery->title);
         $googleAlbumId = $googleAlbum->id;
         $owner = $this->gallery->owner;
 

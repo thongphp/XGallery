@@ -3,11 +3,14 @@
 namespace App\Jobs\Flickr;
 
 use App\Crawlers\HttpClient;
+use App\Exceptions\CurlDownloadFileException;
+use App\Exceptions\Flickr\FlickrApiGetPhotoSizesException;
 use App\Facades\Flickr;
 use App\Facades\GooglePhotoFacade;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,7 +18,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use RuntimeException;
 
 class FlickrSyncToGooglePhoto implements ShouldQueue
 {
@@ -26,8 +28,6 @@ class FlickrSyncToGooglePhoto implements ShouldQueue
     private string $googleAlbumId;
 
     /**
-     * FlickrSyncToGooglePhoto constructor.
-     *
      * @param string $id
      * @param string $googleAlbumId
      */
@@ -47,44 +47,48 @@ class FlickrSyncToGooglePhoto implements ShouldQueue
     }
 
     /**
-     * @throws \Exception
+     * @throws \App\Exceptions\CurlDownloadFileException
+     * @throws \App\Exceptions\Flickr\FlickrApiGetPhotoSizesException
+     * @throws \App\Exceptions\Google\GooglePhotoApiMediaCreateException
+     * @throws \App\Exceptions\Google\GooglePhotoApiUploadException
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \JsonException
      */
     public function handle(): void
     {
+        /** @var Photo $photo */
         $photo = app(PhotoRepository::class)->findOrCreateById($this->id);
         $photo->touch();
 
         if (!$photo->hasSizes()) {
             if (!$sizes = Flickr::getPhotoSizes($photo->id)) {
-                throw new RuntimeException('Can not get photoSizes: '.$this->id);
+                throw new FlickrApiGetPhotoSizesException($this->id);
             }
 
-            $photo->sizes = $sizes->sizes->size;
-            $photo->save();
+            $photo->fill(['sizes' => $sizes->sizes->size])
+                ->save();
         }
 
-        if (!$filePath = $this->downloadPhoto($photo->sizes, $photo->owner)) {
-            throw new RuntimeException('Can not download photo: '.$this->id);
+        if (!$filePath = $this->downloadPhoto($photo)) {
+            throw new CurlDownloadFileException('Can not download photo: '.$this->id);
         }
 
-        if (!GooglePhotoFacade::uploadAndCreateMedia($filePath, $photo->id, $this->googleAlbumId)) {
-            throw new RuntimeException('Can not sync photo to Google Photo: '.$this->id);
-        }
-
+        GooglePhotoFacade::uploadAndCreateMedia($filePath, $photo->id, $this->googleAlbumId);
         Storage::delete($filePath);
     }
 
     /**
-     * @param array $photoSizes
-     * @param string $owner
+     * @param \App\Models\Flickr\Photo $photo
      *
      * @return bool|string
      */
-    private function downloadPhoto(array $photoSizes, string $owner)
+    private function downloadPhoto(Photo $photo)
     {
+        // Due to dynamic variable of MongoDB model, we can not do like this $sourceSize = end($photo-sizes);
+        $photoSizes = $photo->sizes;
         $sourceSize = end($photoSizes);
         $httpClient = app(HttpClient::class);
 
-        return $httpClient->download($sourceSize['source'], 'flickr/'.$owner);
+        return $httpClient->download($sourceSize['source'], 'flickr/'.$photo->owner);
     }
 }

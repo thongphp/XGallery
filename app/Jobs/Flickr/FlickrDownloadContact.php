@@ -2,6 +2,8 @@
 
 namespace App\Jobs\Flickr;
 
+use App\Exceptions\Flickr\FlickrApiGetContactInfoException;
+use App\Exceptions\Flickr\FlickrApiGetContactPhotosException;
 use App\Facades\Flickr;
 use App\Facades\GooglePhotoFacade;
 use App\Jobs\Middleware\RateLimited;
@@ -16,7 +18,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Laminas\Hydrator\ObjectPropertyHydrator;
-use RuntimeException;
 
 class FlickrDownloadContact implements ShouldQueue
 {
@@ -43,7 +44,10 @@ class FlickrDownloadContact implements ShouldQueue
     }
 
     /**
-     * @throws \Exception
+     * @throws \App\Exceptions\Flickr\FlickrApiGetContactInfoException
+     * @throws \App\Exceptions\Flickr\FlickrApiGetContactPhotosException
+     * @throws \App\Exceptions\Google\GooglePhotoApiCreateAlbumException
+     * @throws \JsonException
      */
     public function handle(): void
     {
@@ -52,7 +56,7 @@ class FlickrDownloadContact implements ShouldQueue
 
         if (!$contactModel->isDone()) {
             if (!$userInfo = Flickr::getUserInfo($contactModel->nsid)) {
-                throw new RuntimeException('Can not get user information of: '.$contactModel->nsid);
+                throw new FlickrApiGetContactInfoException($contactModel->nsid);
             }
 
             $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
@@ -61,12 +65,10 @@ class FlickrDownloadContact implements ShouldQueue
         }
 
         if (!$photos = Flickr::getUserPhotos($contactModel->nsid)) {
-            throw new RuntimeException('Can not get photos of contact: '.$contactModel->nsid);
+            throw new FlickrApiGetContactPhotosException($contactModel->nsid);
         }
 
-        if (!$googleAlbum = GooglePhotoFacade::createAlbum($contactModel->nsid)) {
-            throw new RuntimeException('Can not create Google FlickrAlbumDownloadQueue: '.$contactModel->nsid);
-        }
+        $googleAlbum = GooglePhotoFacade::createAlbum($contactModel->nsid);
 
         $this->syncPhotos($photos->photos->photo, $contactModel->nsid, $googleAlbum->id);
 

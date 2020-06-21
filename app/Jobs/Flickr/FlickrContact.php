@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Flickr;
 
+use App\Exceptions\Flickr\FlickrApiGetContactInfoException;
 use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
@@ -14,7 +15,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Laminas\Hydrator\ObjectPropertyHydrator;
-use RuntimeException;
 
 class FlickrContact implements ShouldQueue
 {
@@ -41,9 +41,7 @@ class FlickrContact implements ShouldQueue
     }
 
     /**
-     * Execute the job.
-     *
-     * @return void
+     * @throws \App\Exceptions\Flickr\FlickrApiGetContactInfoException
      */
     public function handle(): void
     {
@@ -54,7 +52,7 @@ class FlickrContact implements ShouldQueue
         }
 
         if (!$userInfo = Flickr::getUserInfo($contactModel->nsid)) {
-            throw new RuntimeException('Can not get user information for: '.$contactModel->nsid);
+            throw new FlickrApiGetContactInfoException($contactModel->nsid);
         }
 
         $contactModel->touch();

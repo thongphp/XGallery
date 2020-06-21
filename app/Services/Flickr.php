@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\Flickr\FlickrApiGetUserContactsException;
 use App\Oauth\OauthClient;
 use Illuminate\Support\Facades\Log;
 
@@ -116,11 +117,18 @@ class Flickr extends OauthClient
     /**
      * @param int|null $page
      *
-     * @return object|null
+     * @return object
+     * @throws \App\Exceptions\Flickr\FlickrApiGetUserContactsException
      */
     public function getContactsOfCurrentUser(?int $page = 1): ?object
     {
-        return $this->get(self::CONTACT_GET_LIST, ['page' => $page]);
+        $result = $this->get(self::CONTACT_GET_LIST, ['page' => $page]);
+
+        if (!$result) {
+            throw new FlickrApiGetUserContactsException($page);
+        }
+
+        return $result;
     }
 
     /**
