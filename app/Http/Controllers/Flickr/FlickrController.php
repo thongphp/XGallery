@@ -20,6 +20,7 @@ use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\ContactRepository;
 use App\Repositories\OAuthRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -92,46 +93,52 @@ class FlickrController extends BaseController
                 ->with('error', 'Could not detect type of URL');
         }
 
-        switch ($result->getType()) {
-            case FlickrUrlInterface::TYPE_ALBUM:
-                $albumInfo = Flickr::getAlbumInfo($result->getId());
+        try {
+            switch ($result->getType()) {
+                case FlickrUrlInterface::TYPE_ALBUM:
+                    $albumInfo = Flickr::getAlbumInfo($result->getId());
 
-                if (!$albumInfo || $albumInfo->photoset->photos === 0) {
-                    return redirect()->route('flickr.dashboard.view')
-                        ->with('error', 'Can not get Album information or album has no photos.');
-                }
+                    if (!$albumInfo || $albumInfo->photoset->photos === 0) {
+                        return redirect()->route('flickr.dashboard.view')
+                            ->with('error', 'Can not get Album information or album has no photos.');
+                    }
 
-                FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
+                    FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
 
-                $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successful';
+                    $flashMessage = 'Add album: '.$albumInfo->photoset->title.' ('.$albumInfo->photoset->id.') successful';
 
-                break;
+                    break;
 
-            case FlickrUrlInterface::TYPE_GALLERY:
-                $galleryInfo = Flickr::getGalleryInformation($result->getId());
+                case FlickrUrlInterface::TYPE_GALLERY:
+                    $galleryInfo = Flickr::getGalleryInformation($result->getId());
 
-                if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
-                    return redirect()->route('flickr.dashboard.view')
-                        ->with('error', 'Can not get Gallery information or gallery has no photos.');
-                }
+                    if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
+                        return redirect()->route('flickr.dashboard.view')
+                            ->with('error', 'Can not get Gallery information or gallery has no photos.');
+                    }
 
-                FlickrDownloadGallery::dispatchNow($galleryInfo->gallery);
+                    FlickrDownloadGallery::dispatchNow($galleryInfo->gallery);
 
-                $flashMessage = 'Add gallery: '.$galleryInfo->gallery->title.' ('.$galleryInfo->gallery->gallery_id.') successful';
-                break;
+                    $flashMessage = 'Add gallery: '.$galleryInfo->gallery->title.' ('.$galleryInfo->gallery->gallery_id.') successful';
+                    break;
 
-            case FlickrUrlInterface::TYPE_PROFILE:
-                FlickrDownloadContact::dispatchNow($result->getId());
+                case FlickrUrlInterface::TYPE_PROFILE:
+                    FlickrDownloadContact::dispatchNow($result->getId());
 
-                $flashMessage = 'Add user: '.$result->getId().' successful';
+                    $flashMessage = 'Add user: '.$result->getId().' successful';
 
-                break;
+                    break;
 
-            default:
-                return redirect()
-                    ->route('flickr.dashboard.view')
-                    ->with('error', 'Could not detect type of URL');
-                break;
+                default:
+                    return redirect()
+                        ->route('flickr.dashboard.view')
+                        ->with('error', 'Could not detect type of URL');
+                    break;
+            }
+        } catch (Exception $exception) {
+            return redirect()
+                ->route('flickr.dashboard.view')
+                ->with('error', 'Could not detect type of URL');
         }
 
         return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
