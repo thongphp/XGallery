@@ -105,6 +105,9 @@ final class FlickrPhotos extends BaseCommand
         );
 
         $this->progressBarInit($photos->photos->pages);
+        $this->progressBarSetStatus('QUEUED');
+        $this->progressBar->advance();
+
         $this->processPhotos($photos->photos->photo);
 
         if ($photos->photos->pages === 1) {

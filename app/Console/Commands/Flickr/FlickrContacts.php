@@ -48,11 +48,10 @@ final class FlickrContacts extends BaseCommand
 
         $this->processContacts($contacts->contacts->contact);
         $this->progressBarInit($contacts->contacts->pages);
+        $this->progressBarSetStatus('QUEUED');
+        $this->progressBar->advance();
 
         if ($contacts->contacts->pages === 1) {
-            $this->progressBarSetStatus('QUEUED');
-            $this->progressBar->advance();
-
             return true;
         }
 
