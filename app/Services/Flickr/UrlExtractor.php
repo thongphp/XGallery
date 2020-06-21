@@ -15,28 +15,28 @@ class UrlExtractor
 
     public const DETECTOR = [
         FlickrUrlInterface::TYPE_ALBUM => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+)\/albums\/(?:albumId\/)?(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/albums\/(?:albumId\/)?(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PHOTO => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+)\/(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_GALLERY => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+)\/galleries\/(\d+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/galleries\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PROFILE => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . '\w+\/(\d+@[\w-]{3}|\w+)/i',
+            self::REGEX => '/' . self::REGEX_DOMAIN . '\w+[.-]?\w+\/(\d+@[\w-]{3}|\w+([.-]?\w+))/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_ID => 1,
                 FlickrUrlInterface::KEY_OWNER => 1,

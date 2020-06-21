@@ -16,9 +16,15 @@ class UrlExtractorTest extends TestCase
     {
         return [
             [
-                'url' => 'https://www.flickr.com/photos/flickr/albums/72157707851154934',
+                'url' => 'https://www.flickr.com/photos/sta-art/albums/72157714761572487',
                 'expectType' => 'album',
-                'expectId' => '72157707851154934',
+                'expectId' => '72157714761572487',
+                'expectOwner' => '12345678@N01',
+            ],
+            [
+                'url' => 'https://www.flickr.com/photos/sta-art',
+                'expectType' => 'profile',
+                'expectId' => 'sta-art',
                 'expectOwner' => '12345678@N01',
             ],
             [
