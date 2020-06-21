@@ -2,7 +2,6 @@
 @section('content')
     @include('jav.includes.navbar')
     <div class="row">
-        @dump($items)
         @foreach ($items as $item)
             <div class="col-2">
                 <div class="card">
