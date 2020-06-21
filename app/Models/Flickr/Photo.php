@@ -6,7 +6,6 @@ use App\Database\Mongodb;
 
 class Photo extends Mongodb implements PhotoInterface
 {
-    public const KEY_ALBUM_ID = 'album_id';
     public const KEY_OWNER = 'owner';
     public const KEY_STATUS = 'status';
 

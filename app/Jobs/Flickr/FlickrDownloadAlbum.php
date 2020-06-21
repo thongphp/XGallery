@@ -7,6 +7,7 @@ use App\Facades\GooglePhotoFacade;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\PhotoRepository;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -55,26 +56,30 @@ class FlickrDownloadAlbum implements ShouldQueue
             throw new Exception('Can not create Google FlickrAlbumDownloadQueue: '.$this->album->id);
         }
 
-        $this->processPhotos($photos->photoset->photo, $googleAlbum->id);
+        $this->processPhotos($photos->photoset->photo, $this->album->owner, $googleAlbum->id);
+
+        dump('Process on : ' . $photos->photoset->page);
 
         if ($photos->photoset->page === 1) {
             return;
         }
 
         for ($page = 2; $page <= $photos->photoset->pages; $page++) {
+            dump('Process on next page ' . $page);
             if (!$photos = Flickr::getAlbumPhotos($this->album->id, $page)) {
                 continue;
             }
 
-            $this->processPhotos($photos->photoset->photo, $googleAlbum->id);
+            $this->processPhotos($photos->photoset->photo, $this->album->owner, $googleAlbum->id);
         }
     }
 
     /**
      * @param array $photos
+     * @param string $owner
      * @param string $googleAlbumId
      */
-    private function processPhotos(array $photos, string $googleAlbumId): void
+    private function processPhotos(array $photos, string $owner, string $googleAlbumId): void
     {
         $photoRepository = app(PhotoRepository::class);
         $hydrator = new ObjectPropertyHydrator();
@@ -87,7 +92,9 @@ class FlickrDownloadAlbum implements ShouldQueue
                 continue;
             }
 
-            $photoModel->fill($hydrator->extract($photo))
+            $photoModel->touch()
+                ->fill($hydrator->extract($photo))
+                ->setAttribute(Photo::KEY_OWNER, $owner)
                 ->save();
 
             FlickrSyncToGooglePhoto::dispatch($photoModel->id, $googleAlbumId);

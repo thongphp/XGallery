@@ -52,13 +52,14 @@ class FlickrSyncToGooglePhoto implements ShouldQueue
     public function handle(): void
     {
         $photo = app(PhotoRepository::class)->findOrCreateById($this->id);
+        $photo->touch();
 
         if (!$photo->hasSizes()) {
             if (!$sizes = Flickr::getPhotoSizes($photo->id)) {
                 throw new Exception('Can not get photoSizes: '.$this->id);
             }
 
-            $photo->sizes = $sizes;
+            $photo->sizes = $sizes->sizes->size;
             $photo->save();
         }
 

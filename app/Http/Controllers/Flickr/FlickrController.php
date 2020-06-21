@@ -16,6 +16,7 @@ use App\Http\Controllers\BaseController;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\ContactRepository;
+use App\Repositories\OAuthRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -45,6 +46,31 @@ class FlickrController extends BaseController
     public function __construct(ContactRepository $repository)
     {
         $this->repository = $repository;
+    }
+
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function dashboard(Request $request)
+    {
+        $oAuthRepository = app(OAuthRepository::class);
+        $flickrOAuth = $oAuthRepository->findBy(['name' => 'flickr']);
+        $googleOAuth = $oAuthRepository->findBy(['name' => 'google']);
+
+        if ($flickrOAuth && $googleOAuth) {
+            return parent::dashboard($request);
+        }
+
+        return view(
+            'flickr.authorization',
+            $this->getViewDefaultOptions([
+                'title' => 'Flickr',
+                'flickr' => (bool) $flickrOAuth,
+                'google' => (bool) $googleOAuth,
+            ])
+        );
     }
 
     /**
@@ -85,6 +111,8 @@ class FlickrController extends BaseController
                 break;
         }
 
+        exit;
+
         return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
     }
 
@@ -96,7 +124,7 @@ class FlickrController extends BaseController
     public function contact(string $nsid)
     {
         $contact = app(ContactRepository::class)->getContactByNsid($nsid);
-        $items = $contact->photos()->where([Photo::KEY_STATUS => true])
+        $items = $contact->refPhotos()->where([Photo::KEY_STATUS => true])
             ->paginate(30);
 
         return view(

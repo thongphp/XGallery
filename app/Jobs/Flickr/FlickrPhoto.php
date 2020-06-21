@@ -56,7 +56,8 @@ class FlickrPhoto implements ShouldQueue
             return;
         }
 
-        $photoModel->sizes = $sizes;
+        $photoModel->touch();
+        $photoModel->sizes = $sizes->sizes->size;
         $photoModel->save();
     }
 }
