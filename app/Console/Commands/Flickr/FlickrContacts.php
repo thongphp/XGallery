@@ -76,7 +76,6 @@ final class FlickrContacts extends BaseCommand
         $repository = app(ContactRepository::class);
 
         foreach ($contacts as $contact) {
-            /** @var \App\Models\Flickr\ContactInterface $contact */
             if ($repository->findOrCreateByNsId($contact->nsid)->isDone()) {
                 continue;
             }
