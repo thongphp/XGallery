@@ -8,13 +8,13 @@ use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Flickr\Contact;
 use App\Repositories\Flickr\ContactRepository;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use RuntimeException;
 
 class FlickrContact implements ShouldQueue
 {
@@ -53,10 +53,8 @@ class FlickrContact implements ShouldQueue
             return;
         }
 
-        $userInfo = Flickr::getUserInfo($contactModel->nsid);
-
-        if (!$userInfo) {
-            throw new Exception('Can not get user information for: '.$contactModel->nsid);
+        if (!$userInfo = Flickr::getUserInfo($contactModel->nsid)) {
+            throw new RuntimeException('Can not get user information for: '.$contactModel->nsid);
         }
 
         $contactModel->touch();

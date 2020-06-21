@@ -7,12 +7,12 @@
                     <div class="text-center">
                         @if (!$flickr)
                             <a href="{{url('oauth/flickr')}}" role="button" class="btn btn-outline-primary btn-lg">
-                                <i class="fas fa-globe"></i> Authenticate with Flickr
+                                <em class="fas fa-globe"></em> Authenticate with Flickr
                             </a>
                         @endif
                         @if (!$google)
                             <a href="{{url('oauth/google')}}" role="button" class="btn btn-outline-danger btn-lg">
-                                <i class="fas fa-globe"></i> Authenticate with Google
+                                <em class="fas fa-globe"></em> Authenticate with Google
                             </a>
                         @endif
                     </div>

@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use RuntimeException;
 
 class FlickrPhoto implements ShouldQueue
 {
@@ -50,10 +51,8 @@ class FlickrPhoto implements ShouldQueue
             return;
         }
 
-        $sizes = Flickr::getPhotoSizes($photoModel->id);
-
-        if (!$sizes) {
-            return;
+        if (!$sizes = Flickr::getPhotoSizes($photoModel->id)) {
+            throw new RuntimeException('Can not get sizes of photo: '.$photoModel->id);
         }
 
         $photoModel->touch();

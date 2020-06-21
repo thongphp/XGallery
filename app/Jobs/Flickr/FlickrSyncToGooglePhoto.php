@@ -9,13 +9,13 @@ use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Repositories\Flickr\PhotoRepository;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 class FlickrSyncToGooglePhoto implements ShouldQueue
 {
@@ -56,7 +56,7 @@ class FlickrSyncToGooglePhoto implements ShouldQueue
 
         if (!$photo->hasSizes()) {
             if (!$sizes = Flickr::getPhotoSizes($photo->id)) {
-                throw new Exception('Can not get photoSizes: '.$this->id);
+                throw new RuntimeException('Can not get photoSizes: '.$this->id);
             }
 
             $photo->sizes = $sizes->sizes->size;
@@ -64,11 +64,11 @@ class FlickrSyncToGooglePhoto implements ShouldQueue
         }
 
         if (!$filePath = $this->downloadPhoto($photo->sizes, $photo->owner)) {
-            throw new Exception('Can not download photo: '.$this->id);
+            throw new RuntimeException('Can not download photo: '.$this->id);
         }
 
         if (!GooglePhotoFacade::uploadAndCreateMedia($filePath, $photo->id, $this->googleAlbumId)) {
-            throw new Exception('Can not sync photo to Google Photo: '.$this->id);
+            throw new RuntimeException('Can not sync photo to Google Photo: '.$this->id);
         }
 
         Storage::delete($filePath);

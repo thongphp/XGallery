@@ -8,12 +8,12 @@ use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use RuntimeException;
 
 class FlickrDownloadAlbum implements ShouldQueue
 {
@@ -45,13 +45,11 @@ class FlickrDownloadAlbum implements ShouldQueue
     public function handle(): void
     {
         if (!$photos = Flickr::getAlbumPhotos($this->album->id)) {
-            return;
+            throw new RuntimeException('Can not get Photos of album: '.$this->album->id);
         }
 
-        $googleAlbum = GooglePhotoFacade::createAlbum($this->album->title);
-
-        if (!$googleAlbum) {
-            throw new Exception('Can not create Google FlickrAlbumDownloadQueue: '.$this->album->id);
+        if (!$googleAlbum = GooglePhotoFacade::createAlbum($this->album->title)) {
+            throw new RuntimeException('Can not create Google FlickrAlbumDownloadQueue: '.$this->album->id);
         }
 
         $googleAlbumId = $googleAlbum->id;

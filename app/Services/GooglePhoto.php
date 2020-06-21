@@ -61,11 +61,7 @@ class GooglePhoto extends GoogleOauthClient
      */
     public function uploadAndCreateMedia(string $file, string $photoId, string $googleAlbumId): bool
     {
-        $photo = app(PhotoRepository::class)->findById($photoId);
-
-        if (!$photo) {
-            return false;
-        }
+        $photo = app(PhotoRepository::class)->findOrCreateById($photoId);
 
         $uploadToken = $this->request(
             'post',

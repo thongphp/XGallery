@@ -10,13 +10,13 @@ use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
 use App\Models\Flickr\Contact;
 use App\Repositories\Flickr\ContactRepository;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use RuntimeException;
 
 class FlickrDownloadContact implements ShouldQueue
 {
@@ -51,10 +51,8 @@ class FlickrDownloadContact implements ShouldQueue
         $contactModel->touch();
 
         if (!$contactModel->isDone()) {
-            $userInfo = Flickr::getUserInfo($contactModel->nsid);
-
-            if (!$userInfo) {
-                throw new Exception('Can not get user information of: '.$contactModel->nsid);
+            if (!$userInfo = Flickr::getUserInfo($contactModel->nsid)) {
+                throw new RuntimeException('Can not get user information of: '.$contactModel->nsid);
             }
 
             $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
@@ -63,13 +61,11 @@ class FlickrDownloadContact implements ShouldQueue
         }
 
         if (!$photos = Flickr::getUserPhotos($contactModel->nsid)) {
-            throw new Exception('Can not get photos of contact: '.$contactModel->nsid);
+            throw new RuntimeException('Can not get photos of contact: '.$contactModel->nsid);
         }
 
-        $googleAlbum = GooglePhotoFacade::createAlbum($contactModel->nsid);
-
-        if (!$googleAlbum) {
-            throw new Exception('Can not create Google FlickrAlbumDownloadQueue: '.$contactModel->nsid);
+        if (!$googleAlbum = GooglePhotoFacade::createAlbum($contactModel->nsid)) {
+            throw new RuntimeException('Can not create Google FlickrAlbumDownloadQueue: '.$contactModel->nsid);
         }
 
         $this->syncPhotos($photos->photos->photo, $contactModel->nsid, $googleAlbum->id);

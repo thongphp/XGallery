@@ -43,7 +43,7 @@ class GoogleController extends BaseController
     public function callback(Request $request): RedirectResponse
     {
         if (!$user = Socialite::driver('Google')->user()) {
-            return redirect()->route('flickr.dashboard.view')->with('danger', 'Authenticate with Google fail.');;
+            return redirect()->route('flickr.dashboard.view')->with('danger', 'Authenticate with Google fail.');
         }
 
         $code = $request->get('code');
