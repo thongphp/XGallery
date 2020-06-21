@@ -2,14 +2,15 @@
 
 namespace App\Services;
 
+use App\Exceptions\Google\GooglePhotoApiCreateAlbumException;
+use App\Exceptions\Google\GooglePhotoApiMediaCreateException;
+use App\Exceptions\Google\GooglePhotoApiUploadException;
 use App\Oauth\GoogleOauthClient;
 use App\Repositories\Flickr\PhotoRepository;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class GooglePhoto extends GoogleOauthClient
 {
-    private const LOG_NAME = 'google';
     private const TITLE_MAX_LENGTH = 500;
     public const ALBUMS_ENDPOINT = 'https://photoslibrary.googleapis.com/v1/albums';
 
@@ -18,9 +19,12 @@ class GooglePhoto extends GoogleOauthClient
      *
      * @param string $title
      *
-     * @return object|null
+     * @return object
+     *
+     * @throws \App\Exceptions\Google\GooglePhotoApiCreateAlbumException
+     * @throws \JsonException
      */
-    public function createAlbum(string $title): ?object
+    public function createAlbum(string $title): object
     {
         $title = substr($title, 0, self::TITLE_MAX_LENGTH);
         $content = $this->request(
@@ -40,26 +44,25 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$content) {
-            Log::stack([self::LOG_NAME])->warning('Request responded with no content');
-            return null;
+            throw new GooglePhotoApiCreateAlbumException($title);
         }
 
         return $content;
     }
 
     /**
-     * https://developers.google.com/photos/library/guides/upload-media
+     * https://developers.google.com/photos/library/reference/rest/v1/mediaItems/batchCreate
      *
      * @param string $file
      * @param string $photoId
      * @param string $googleAlbumId
      *
-     * @return bool
-     * @throws \JsonException
-     *
+     * @throws \App\Exceptions\Google\GooglePhotoApiMediaCreateException
+     * @throws \App\Exceptions\Google\GooglePhotoApiUploadException
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \JsonException
      */
-    public function uploadAndCreateMedia(string $file, string $photoId, string $googleAlbumId): bool
+    public function uploadAndCreateMedia(string $file, string $photoId, string $googleAlbumId): void
     {
         $photo = app(PhotoRepository::class)->findOrCreateById($photoId);
 
@@ -77,8 +80,7 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$uploadToken) {
-            Log::stack([self::LOG_NAME])->alert('Can not add uploading media. PhotoId: '.$photo->id);
-            return false;
+            throw new GooglePhotoApiUploadException($file);
         }
 
         $response = $this->request(
@@ -102,16 +104,13 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$response) {
-            Log::stack([self::LOG_NAME])->alert('Can not add media into FlickrAlbumDownloadQueue. AlbumId: '.$photo->album->id.' / PhotoId: '.$photo->id);
-            return false;
+            throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId);
         }
 
         $newMediaItemResult = $response->newMediaItemResults[0];
         $photo->google_album_id = $googleAlbumId;
-        $photo->google_media_id = $newMediaItemResult->mediaItem;
+        $photo->google_media_id = $newMediaItemResult->mediaItem->id;
         $photo->status = true;
         $photo->save();
-
-        return true;
     }
 }

@@ -10,6 +10,9 @@ class Photo extends Mongodb implements PhotoInterface
     public const KEY_STATUS = 'status';
 
     protected $collection = 'flickr_photos';
+    protected $casts = [
+        'sizes' => 'json',
+    ];
     protected $fillable = [
         'id',
         'owner',
@@ -20,6 +23,7 @@ class Photo extends Mongodb implements PhotoInterface
         'ispublic',
         'isfriend',
         'isfamily',
+        'sizes'
     ];
 
     /**
@@ -31,11 +35,11 @@ class Photo extends Mongodb implements PhotoInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getCover(): string
+    public function getCover(): ?string
     {
-        return !$this->sizes ? '' : $this->sizes[0]['source'];
+        return $this->sizes ? $this->sizes[0]['source'] : null;
     }
 
     /**

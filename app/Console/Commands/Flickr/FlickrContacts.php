@@ -13,6 +13,7 @@ use App\Console\BaseCommand;
 use App\Facades\Flickr;
 use App\Jobs\Flickr\FlickrContact;
 use App\Repositories\Flickr\ContactRepository;
+use Exception;
 
 /**
  * @package App\Console\Commands\Flickr
@@ -38,7 +39,9 @@ final class FlickrContacts extends BaseCommand
      */
     public function fully(): bool
     {
-        if (!$contacts = Flickr::getContactsOfCurrentUser()) {
+        try {
+            $contacts = Flickr::getContactsOfCurrentUser();
+        } catch (Exception $exception) {
             return false;
         }
 
@@ -56,8 +59,10 @@ final class FlickrContacts extends BaseCommand
         }
 
         for ($page = 2; $page <= $contacts->contacts->pages; $page++) {
-            if (!$nextContacts = Flickr::getContactsOfCurrentUser($page)) {
-                continue;
+            try {
+                $nextContacts = Flickr::getContactsOfCurrentUser($page);
+            } catch (Exception $exception) {
+                return false;
             }
 
             $this->processContacts($nextContacts->contacts->contact);

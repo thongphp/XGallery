@@ -20,7 +20,6 @@ trait SyncPhotos
         $hydrator = new ObjectPropertyHydrator();
 
         foreach ($photos as $photo) {
-            /** @var \App\Models\Flickr\PhotoInterface $photo */
             $photoModel = $photoRepository->findOrCreateById($photo->id);
 
             if ($photoModel->isDone()) {

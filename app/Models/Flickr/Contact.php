@@ -20,6 +20,10 @@ class Contact extends Mongodb implements ContactInterface
     public const KEY_STATUS = 'status';
 
     protected $collection = 'flickr_contacts';
+    protected $casts = [
+        'timezone' => 'json',
+        'photos' => 'json',
+    ];
     protected $fillable = [
         'nsid',
         'ispro',

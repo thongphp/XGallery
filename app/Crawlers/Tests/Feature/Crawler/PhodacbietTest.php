@@ -36,4 +36,19 @@ class PhodacbietTest extends TestCase
     ];
 
     protected string $crawlerClass = Phodacbiet::class;
+
+    public function testGetItemLinks(): void
+    {
+        $this->markTestSkipped();
+    }
+
+    public function testGetIndexPagesCount(): void
+    {
+        $this->markTestSkipped();
+    }
+
+    public function testGetIndexLinksWithFromTo(): void
+    {
+        $this->markTestSkipped();
+    }
 }
