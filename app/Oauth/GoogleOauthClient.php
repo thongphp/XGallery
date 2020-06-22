@@ -14,6 +14,10 @@ use JsonException;
 use kamermans\OAuth2\GrantType\NullGrantType;
 use kamermans\OAuth2\OAuth2Middleware;
 
+/**
+ * Used to communicate with Google
+ * @package App\Oauth
+ */
 class GoogleOauthClient extends OauthClient
 {
     /**
@@ -43,7 +47,7 @@ class GoogleOauthClient extends OauthClient
     }
 
     /**
-     * @param \App\Models\Oauth $oauth
+     * @param  Oauth  $oauth
      *
      * @return string|null
      */
@@ -63,13 +67,11 @@ class GoogleOauthClient extends OauthClient
             return $oauth->getAttributeValue('token');
         }
 
-        $httpClient = new Client();
-
-        $response = $httpClient->post('https://oauth2.googleapis.com/token', [
+        $response = (new Client())->post('https://oauth2.googleapis.com/token', [
             'headers' => ['Content-Type: application/x-www-form-urlencoded'],
             'form_params' => [
-                'client_id' => env('GOOGLE_CLIENT_ID'),
-                'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+                'client_id' => config('auth.google.client_id'),
+                'client_secret' => config('auth.google.client_secret'),
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $oauth->getAttributeValue('refreshToken'),
             ],
@@ -88,7 +90,6 @@ class GoogleOauthClient extends OauthClient
         $oauth->setAttribute('scope', $response['scope']);
         $oauth->setAttribute('tokenType', $response['token_type']);
         $oauth->setAttribute('idToken', $response['id_token']);
-
         $oauth->save();
 
         return $oauth->getAttributeValue('token');
