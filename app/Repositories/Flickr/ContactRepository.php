@@ -4,21 +4,31 @@ namespace App\Repositories\Flickr;
 
 use App\Models\Flickr\Contact;
 use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class ContactRepository
+ * @package App\Repositories\Flickr
+ */
 class ContactRepository extends BaseRepository
 {
     /**
-     * @param \App\Models\Flickr\Contact $model
+     * @param  Contact  $model
      */
     public function __construct(Contact $model)
     {
         parent::__construct($model);
     }
 
+    public function getItemByCondition(array $filter = [])
+    {
+        return $this->getItems($filter)->first();
+    }
+
     /**
      * @param string $nsId
      *
-     * @return \App\Models\Flickr\Contact
+     * @return Contact
      */
     public function findOrCreateByNsId(string $nsId): Contact
     {
@@ -28,7 +38,7 @@ class ContactRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return \Illuminate\Database\Eloquent\Model|\App\Models\Flickr\Contact
+     * @return Model|Contact
      */
     public function save(array $data)
     {
