@@ -19,6 +19,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @TODO Actually we should use this job to sync file to Google. Not specific Flickr
+ * It also reduce process time
+ * @package App\Jobs\Flickr
+ */
 class FlickrSyncToGooglePhoto implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

@@ -60,6 +60,7 @@ final class FlickrContacts extends BaseCommand
 
         for ($page = 2; $page <= $contacts->contacts->pages; $page++) {
             try {
+                // @TODO It should be FlickrClient
                 $nextContacts = Flickr::getContactsOfCurrentUser($page);
             } catch (Exception $exception) {
                 return false;
@@ -74,6 +75,7 @@ final class FlickrContacts extends BaseCommand
     }
 
     /**
+     * @TODO Send batch to queues ( FLICK_CONTACT_BATCH_NUMBERS = 50 )
      * @param array $contacts
      */
     private function processContacts(array $contacts): void

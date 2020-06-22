@@ -34,6 +34,7 @@ final class FlickrPhotos extends BaseCommand
     protected $description = 'Fetching Flickr photos';
 
     /**
+     * @TODO Actually with current code we'll send thousand of jobs
      * @return bool
      */
     public function fully(): bool
@@ -45,9 +46,11 @@ final class FlickrPhotos extends BaseCommand
         }
 
         $total = $contacts->total();
-
         $this->output->note(sprintf('Got %d contacts', $total));
         $this->progressBarInit($total);
+        /**
+         * @TODO Nothing queue yet !
+         */
         $this->progressBarSetStatus('QUEUED');
         $this->progressBar->setMessage('Contacts', 'message');
 

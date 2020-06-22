@@ -29,7 +29,7 @@
         "laravel/tinker": "^2.3",
         "league/flysystem-sftp": "^1.0",
         "nao-pon/flysystem-google-drive": "~1.1",
-        "sentry/sentry-laravel": "1.7.0",
+        "sentry/sentry-laravel": "1.8.0",
         "socialiteproviders/flickr": "^3.0",
         "socialiteproviders/google": "^3.0",
         "spatie/url": "^1.3",

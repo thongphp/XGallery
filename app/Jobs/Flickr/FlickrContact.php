@@ -16,6 +16,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
+/**
+ * Class FlickrContact
+ * @package App\Jobs\Flickr
+ */
 class FlickrContact implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -24,15 +28,17 @@ class FlickrContact implements ShouldQueue
     private string $nsid;
 
     /**
-     * @param string $nsId
+     * @param string $nsid
      */
-    public function __construct(string $nsId)
+    public function __construct(string $nsid)
     {
-        $this->nsid = $nsId;
+        // @TODO Validate is valid nsid
+        $this->nsid = $nsid;
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
     /**
+     * @TODO RateLimit in this case is useless
      * @return RateLimited[]
      */
     public function middleware(): array
@@ -41,7 +47,7 @@ class FlickrContact implements ShouldQueue
     }
 
     /**
-     * @throws \App\Exceptions\Flickr\FlickrApiGetContactInfoException
+     * @throws FlickrApiGetContactInfoException
      */
     public function handle(): void
     {
@@ -51,16 +57,19 @@ class FlickrContact implements ShouldQueue
             return;
         }
 
+        /**
+         * @TODO If user is disabled / deleted than keep job succeed but do not store
+         */
         if (!$userInfo = Flickr::getUserInfo($contactModel->nsid)) {
             throw new FlickrApiGetContactInfoException($contactModel->nsid);
         }
 
         $contactModel->touch();
-
-        $hydrator = new ObjectPropertyHydrator();
-        $userInfo = $hydrator->extract($userInfo->person);
-
-        $contactModel->fill($userInfo)
+        /**
+         * @TODO What's status purpose
+         * @link https://softwareengineering.stackexchange.com/questions/219351/state-or-status-when-should-a-variable-name-contain-the-word-state-and-w
+         */
+        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
             ->setAttribute(Contact::KEY_STATUS, true)
             ->save();
     }

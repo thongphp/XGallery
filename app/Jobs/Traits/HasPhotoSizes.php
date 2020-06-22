@@ -15,7 +15,7 @@ trait HasPhotoSizes
      * @param array $photos
      * @param bool $shouldProcessOwner
      *
-     * @throws \App\Exceptions\Flickr\FlickrApiGetPhotoSizesException
+     * @throws FlickrApiGetPhotoSizesException
      */
     private function processGetSizesOfPhotos(array $photos, bool $shouldProcessOwner = false): void
     {
@@ -39,8 +39,7 @@ trait HasPhotoSizes
 
             $photo->sizes = $sizes->sizes->size;
 
-            $photoModel->fill($hydrator->extract($photo))
-                ->save();
+            $photoModel->fill($hydrator->extract($photo))->save();
 
             if (false === $shouldProcessOwner
                 || $contactRepository->findOrCreateByNsId($photoModel->owner)->isDone()) {

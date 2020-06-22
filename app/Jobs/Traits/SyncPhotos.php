@@ -26,6 +26,9 @@ trait SyncPhotos
                 continue;
             }
 
+            /**
+             * @TODO No need touch when we are saving
+             */
             $photoModel->touch();
 
             $photoModel->fill($hydrator->extract($photo))

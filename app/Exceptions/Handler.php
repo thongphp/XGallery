@@ -48,17 +48,12 @@ class Handler extends ExceptionHandler
     public function report(Throwable $exception)
     {
         // Only use for not local env
-        if (!App::environment('local')) {
-            if (app()->bound('sentry') && $this->shouldReport($exception)) {
-                app('sentry')->captureException($exception);
-            }
-            if ($exception instanceof Exception) {
-                // emails.exception is the template of your email
-                // it will have access to the $error that we are passing below
-                /*                Mail::send('emails.exception', ['exception' => $exception,], function ($m) {
-                                    $m->to(config('mail.to'))->subject(config('app.name'));
-                                });*/
-            }
+        if (App::environment('local')) {
+            parent::report($exception);
+        }
+
+        if (app()->bound('sentry') && $this->shouldReport($exception)) {
+            app('sentry')->captureException($exception);
         }
 
         parent::report($exception);

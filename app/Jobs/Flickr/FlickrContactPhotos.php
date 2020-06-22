@@ -3,6 +3,7 @@
 namespace App\Jobs\Flickr;
 
 use App\Exceptions\Flickr\FlickrApiGetContactPhotosException;
+use App\Exceptions\Flickr\FlickrApiGetPhotoSizesException;
 use App\Facades\Flickr;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
@@ -39,8 +40,8 @@ class FlickrContactPhotos implements ShouldQueue
     }
 
     /**
-     * @throws \App\Exceptions\Flickr\FlickrApiGetContactPhotosException
-     * @throws \App\Exceptions\Flickr\FlickrApiGetPhotoSizesException
+     * @throws FlickrApiGetContactPhotosException
+     * @throws FlickrApiGetPhotoSizesException
      */
     public function handle(): void
     {
