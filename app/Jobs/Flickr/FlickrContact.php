@@ -4,7 +4,6 @@ namespace App\Jobs\Flickr;
 
 use App\Exceptions\Flickr\FlickrApiGetContactInfoException;
 use App\Facades\Flickr;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Flickr\Contact;
@@ -28,22 +27,12 @@ class FlickrContact implements ShouldQueue
     private string $nsid;
 
     /**
-     * @param string $nsid
+     * @param  string  $nsid
      */
     public function __construct(string $nsid)
     {
-        // @TODO Validate is valid nsid
         $this->nsid = $nsid;
         $this->onQueue(Queues::QUEUE_FLICKR);
-    }
-
-    /**
-     * @TODO RateLimit in this case is useless
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
     }
 
     /**
@@ -51,6 +40,10 @@ class FlickrContact implements ShouldQueue
      */
     public function handle(): void
     {
+        if (!$this->validateNsid()) {
+            return;
+        }
+
         $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
 
         if ($contactModel->isDone()) {
@@ -72,5 +65,10 @@ class FlickrContact implements ShouldQueue
         $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
             ->setAttribute(Contact::KEY_STATUS, true)
             ->save();
+    }
+
+    private function validateNsid()
+    {
+        return true;
     }
 }
