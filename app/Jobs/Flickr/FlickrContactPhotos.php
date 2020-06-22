@@ -2,10 +2,7 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Exceptions\Flickr\FlickrApiGetContactPhotosException;
-use App\Exceptions\Flickr\FlickrApiGetPhotoSizesException;
-use App\Facades\Flickr;
-use App\Jobs\Middleware\RateLimited;
+use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\HasPhotoSizes;
@@ -32,22 +29,16 @@ class FlickrContactPhotos implements ShouldQueue
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
-    }
-
-    /**
-     * @throws FlickrApiGetContactPhotosException
-     * @throws FlickrApiGetPhotoSizesException
+     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetPhotosException
+     * @throws \App\Exceptions\Flickr\FlickrApiPhotoGetSizesException
      */
     public function handle(): void
     {
-        if (!$photos = Flickr::getUserPhotos($this->nsid)) {
-            throw new FlickrApiGetContactPhotosException($this->nsid);
+        if (!FlickrClient::validateNsId($this->nsid)) {
+            return;
         }
+
+        $photos = FlickrClient::getPeoplePhotos($this->nsid);
 
         $this->processGetSizesOfPhotos($photos->photos->photo);
 
@@ -56,7 +47,7 @@ class FlickrContactPhotos implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = Flickr::getUserPhotos($this->nsid, $page)) {
+            if (!$nextPhotos = FlickrClient::getPeoplePhotos($this->nsid, $page)) {
                 continue;
             }
 

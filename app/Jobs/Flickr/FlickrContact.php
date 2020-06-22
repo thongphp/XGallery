@@ -2,12 +2,14 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Exceptions\Flickr\FlickrApiGetContactInfoException;
-use App\Facades\Flickr;
+use App\Exceptions\Flickr\FlickrApiPeopleGetInfoInvalidUserException;
+use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
+use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Flickr\Contact;
 use App\Repositories\Flickr\ContactRepository;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -27,7 +29,7 @@ class FlickrContact implements ShouldQueue
     private string $nsid;
 
     /**
-     * @param  string  $nsid
+     * @param string $nsid
      */
     public function __construct(string $nsid)
     {
@@ -36,39 +38,28 @@ class FlickrContact implements ShouldQueue
     }
 
     /**
-     * @throws FlickrApiGetContactInfoException
+     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoException
      */
     public function handle(): void
     {
-        if (!$this->validateNsid()) {
+        if (!FlickrClient::validateNsId($this->nsid)) {
             return;
         }
 
         $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
 
-        if ($contactModel->isDone()) {
+        try {
+            $userInfo = FlickrClient::getPeopleInfo($contactModel->nsid);
+        } catch (FlickrApiPeopleGetInfoInvalidUserException $exception) {
+            $contactModel->delete();
+            return;
+        } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
+            $contactModel->delete();
+
             return;
         }
 
-        /**
-         * @TODO If user is disabled / deleted than keep job succeed but do not store
-         */
-        if (!$userInfo = Flickr::getUserInfo($contactModel->nsid)) {
-            throw new FlickrApiGetContactInfoException($contactModel->nsid);
-        }
-
-        $contactModel->touch();
-        /**
-         * @TODO What's status purpose
-         * @link https://softwareengineering.stackexchange.com/questions/219351/state-or-status-when-should-a-variable-name-contain-the-word-state-and-w
-         */
-        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
-            ->setAttribute(Contact::KEY_STATUS, true)
+        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))
             ->save();
-    }
-
-    private function validateNsid()
-    {
-        return true;
     }
 }

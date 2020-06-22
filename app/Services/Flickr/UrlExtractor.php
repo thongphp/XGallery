@@ -2,7 +2,7 @@
 
 namespace App\Services\Flickr;
 
-use App\Facades\Flickr;
+use App\Facades\FlickrClient;
 use App\Services\Flickr\Url\FlickrUrl;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 
@@ -122,7 +122,7 @@ class UrlExtractor
             return $owner;
         }
 
-        if (!$result = Flickr::get('urls.lookupUser', ['url' => $url]))
+        if (!$result = FlickrClient::get('urls.lookupUser', ['url' => $url]))
         {
             return null;
         }

@@ -2,9 +2,8 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Exceptions\Flickr\FlickrApiGetGalleryPhotosException;
-use App\Facades\Flickr;
-use App\Facades\GooglePhotoFacade;
+use App\Facades\FlickrClient;
+use App\Facades\GooglePhotoClient;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
@@ -40,17 +39,14 @@ class FlickrDownloadGallery implements ShouldQueue
     }
 
     /**
-     * @throws \App\Exceptions\Flickr\FlickrApiGetGalleryPhotosException
-     * @throws \App\Exceptions\Google\GooglePhotoApiCreateAlbumException
+     * @throws \App\Exceptions\Flickr\FlickrApiGalleryGetPhotosException
+     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
      * @throws \JsonException
      */
     public function handle(): void
     {
-        if (!$photos = Flickr::getGalleryPhotos($this->gallery->id)) {
-            throw new FlickrApiGetGalleryPhotosException($this->gallery->id);
-        }
-
-        $googleAlbum = GooglePhotoFacade::createAlbum($this->gallery->title);
+        $photos = FlickrClient::getGalleryPhotos($this->gallery->id);
+        $googleAlbum = GooglePhotoClient::createAlbum($this->gallery->title);
         $googleAlbumId = $googleAlbum->id;
         $owner = $this->gallery->owner;
 
@@ -63,7 +59,7 @@ class FlickrDownloadGallery implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = Flickr::getGalleryPhotos($this->gallery->id, $page)) {
+            if (!$nextPhotos = FlickrClient::getGalleryPhotos($this->gallery->id, $page)) {
                 continue;
             }
 

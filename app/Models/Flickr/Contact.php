@@ -17,13 +17,8 @@ use App\Database\Mongodb;
 class Contact extends Mongodb implements ContactInterface
 {
     public const KEY_NSID = 'nsid';
-    public const KEY_STATUS = 'status';
 
     protected $collection = 'flickr_contacts';
-    protected $casts = [
-        'timezone' => 'json',
-        'photos' => 'json',
-    ];
     protected $fillable = [
         'nsid',
         'ispro',
@@ -58,13 +53,5 @@ class Contact extends Mongodb implements ContactInterface
     public function refPhotos()
     {
         return $this->hasMany(Photo::class, Photo::KEY_OWNER, self::KEY_NSID);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDone(): bool
-    {
-        return (bool) $this->status;
     }
 }

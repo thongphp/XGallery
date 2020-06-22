@@ -2,15 +2,12 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Exceptions\Flickr\FlickrApiGetContactInfoException;
-use App\Exceptions\Flickr\FlickrApiGetContactPhotosException;
-use App\Facades\Flickr;
-use App\Facades\GooglePhotoFacade;
+use App\Facades\FlickrClient;
+use App\Facades\GooglePhotoClient;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
-use App\Models\Flickr\Contact;
 use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -44,31 +41,24 @@ class FlickrDownloadContact implements ShouldQueue
     }
 
     /**
-     * @throws \App\Exceptions\Flickr\FlickrApiGetContactInfoException
-     * @throws \App\Exceptions\Flickr\FlickrApiGetContactPhotosException
-     * @throws \App\Exceptions\Google\GooglePhotoApiCreateAlbumException
+     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetPhotosException
+     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoException
+     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoInvalidUserException
+     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException
+     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
      * @throws \JsonException
      */
     public function handle(): void
     {
         $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
+        $userInfo = FlickrClient::getPeopleInfo($contactModel->nsid);
+        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))
+            ->save();
+
         $contactModel->touch();
 
-        if (!$contactModel->isDone()) {
-            if (!$userInfo = Flickr::getUserInfo($contactModel->nsid)) {
-                throw new FlickrApiGetContactInfoException($contactModel->nsid);
-            }
-
-            $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo->person))
-                ->setAttribute(Contact::KEY_STATUS, true)
-                ->save();
-        }
-
-        if (!$photos = Flickr::getUserPhotos($contactModel->nsid)) {
-            throw new FlickrApiGetContactPhotosException($contactModel->nsid);
-        }
-
-        $googleAlbum = GooglePhotoFacade::createAlbum($contactModel->nsid);
+        $photos = FlickrClient::getPeoplePhotos($contactModel->nsid);
+        $googleAlbum = GooglePhotoClient::createAlbum($contactModel->nsid);
 
         $this->syncPhotos($photos->photos->photo, $contactModel->nsid, $googleAlbum->id);
 
@@ -77,7 +67,7 @@ class FlickrDownloadContact implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = Flickr::getUserPhotos($contactModel->nsid, $page)) {
+            if (!$nextPhotos = FlickrClient::getPeoplePhotos($contactModel->nsid, $page)) {
                 continue;
             }
 

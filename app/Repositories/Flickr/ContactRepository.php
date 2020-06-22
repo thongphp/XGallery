@@ -20,7 +20,12 @@ class ContactRepository extends BaseRepository
         parent::__construct($model);
     }
 
-    public function getItemByCondition(array $filter = [])
+    /**
+     * @param array $filter
+     *
+     * @return \App\Jobs\Flickr\FlickrContact|null
+     */
+    public function getItemByCondition(array $filter = []): ?Contact
     {
         return $this->getItems($filter)->first();
     }

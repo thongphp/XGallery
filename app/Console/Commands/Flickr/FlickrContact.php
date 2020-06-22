@@ -36,9 +36,11 @@ final class FlickrContact extends BaseCommand
      */
     public function fully(): bool
     {
-        $contact = app(ContactRepository::class)->getItemByCondition([
+        if (!$contact = app(ContactRepository::class)->getItemByCondition([
             'sort-by' => 'updated_at', 'cache' => 0
-        ]);
+        ])) {
+           return true;
+        }
 
         $contact->touch();
 

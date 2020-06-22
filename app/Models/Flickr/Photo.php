@@ -7,7 +7,6 @@ use App\Database\Mongodb;
 class Photo extends Mongodb implements PhotoInterface
 {
     public const KEY_OWNER = 'owner';
-    public const KEY_STATUS = 'status';
 
     protected $collection = 'flickr_photos';
     protected $casts = [
@@ -48,13 +47,5 @@ class Photo extends Mongodb implements PhotoInterface
     public function hasSizes(): bool
     {
         return !empty($this->sizes);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDone(): bool
-    {
-        return (bool) $this->status;
     }
 }

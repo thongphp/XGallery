@@ -5,7 +5,7 @@ namespace App\Exceptions\Google;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
-class GooglePhotoApiCreateAlbumException extends Exception
+class GooglePhotoApiAlbumCreateException extends Exception
 {
     /**
      * @param string $albumTitle
