@@ -9,10 +9,13 @@
 
 namespace App\Exceptions;
 
+use Doctrine\DBAL\Driver\PDOException;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use MongoDB\Driver\Exception\ConnectionTimeoutException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -47,17 +50,15 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        if ($exception instanceof ConnectionTimeoutException || $exception instanceof PDOException) {
+            Log::stack(['slack'])->critical($exception->getMessage());
+            return;
+        }
+
         // Only use for not local env
         if (!App::environment('local')) {
             if (app()->bound('sentry') && $this->shouldReport($exception)) {
                 app('sentry')->captureException($exception);
-            }
-            if ($exception instanceof Exception) {
-                // emails.exception is the template of your email
-                // it will have access to the $error that we are passing below
-                /*                Mail::send('emails.exception', ['exception' => $exception,], function ($m) {
-                                    $m->to(config('mail.to'))->subject(config('app.name'));
-                                });*/
             }
         }
 
