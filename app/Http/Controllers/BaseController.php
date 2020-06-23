@@ -11,6 +11,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
 use App\Traits\HasObject;
+use Illuminate\Config\Repository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -55,5 +57,13 @@ class BaseController extends Controller
             ],
             $options
         );
+    }
+
+    /**
+     * @return Repository|Application|mixed
+     */
+    public function routeNotificationForSlack()
+    {
+        return config('logging.channels.slack.url');
     }
 }

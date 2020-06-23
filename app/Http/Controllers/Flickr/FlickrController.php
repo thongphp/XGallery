@@ -18,6 +18,7 @@ use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
 use App\Models\Flickr\Photo;
+use App\Notifications\FlickrDownloadRequested;
 use App\Repositories\Flickr\ContactRepository;
 use App\Repositories\OAuthRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -28,6 +29,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -39,6 +41,7 @@ use Symfony\Component\HttpFoundation\Request;
 class FlickrController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use Notifiable;
 
     protected ContactRepository $repository;
 
@@ -95,6 +98,7 @@ class FlickrController extends BaseController
         }
 
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos in %s: <strong>%s</strong> / <span class="badge badge-secondary">%s</span>';
+        $this->notify(new FlickrDownloadRequested($result));
 
         try {
             /**
@@ -149,6 +153,7 @@ class FlickrController extends BaseController
                     break;
 
                 default:
+                    $this->notify(new FlickrDownloadRequested($result));
                     return redirect()
                         ->route('flickr.dashboard.view')
                         ->with('error', 'Could not detect type of URL');
@@ -156,7 +161,7 @@ class FlickrController extends BaseController
         } catch (Exception $exception) {
             return redirect()
                 ->route('flickr.dashboard.view')
-                ->with('error', 'Could not detect type of URL');
+                ->with('error', $exception->getMessage());
         }
 
         return redirect()->route('flickr.dashboard.view')->with('success', $flashMessage);
