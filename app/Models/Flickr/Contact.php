@@ -10,12 +10,16 @@
 namespace App\Models\Flickr;
 
 use App\Database\Mongodb;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 /**
  * @package App\Models
  */
 class Contact extends Mongodb implements ContactInterface
 {
+    use SoftDeletes;
+
     public const KEY_NSID = 'nsid';
 
     protected $collection = 'flickr_contacts';
@@ -48,7 +52,7 @@ class Contact extends Mongodb implements ContactInterface
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     * @return HasMany|\Jenssegers\Mongodb\Relations\HasMany
      */
     public function refPhotos()
     {
