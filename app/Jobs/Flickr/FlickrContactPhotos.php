@@ -5,7 +5,7 @@ namespace App\Jobs\Flickr;
 use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Jobs\Traits\HasPhotoSizes;
+use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 class FlickrContactPhotos implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use HasJob, HasPhotoSizes;
+    use HasJob;
 
     private string $nsid;
 
@@ -40,14 +40,8 @@ class FlickrContactPhotos implements ShouldQueue
             return;
         }
 
-        /**
-         * @todo We can not get all photos sizes of an NSID in same time
-         * If NSID have thousand photos ( usually ) we'll foreach and request thousand APIs in one job
-         */
-
         $photos = FlickrClient::getPeoplePhotos($this->nsid);
-
-        $this->processGetSizesOfPhotos($photos->photos->photo);
+        $this->storePhotos($photos->photos->photo);
 
         if ($photos->photos->pages === 1) {
             return;
@@ -58,7 +52,18 @@ class FlickrContactPhotos implements ShouldQueue
                 continue;
             }
 
-            $this->processGetSizesOfPhotos($nextPhotos->photos->photo);
+            $this->storePhotos($nextPhotos->photos->photo);
+        }
+    }
+
+    /**
+     * @param array $photos
+     */
+    private function storePhotos(array $photos)
+    {
+        $repository = app(PhotoRepository::class);
+        foreach ($photos as $photo) {
+            $repository->findOrCreateByIdWithData(get_object_vars($photo));
         }
     }
 }

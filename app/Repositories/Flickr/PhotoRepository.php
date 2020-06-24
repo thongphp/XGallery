@@ -8,7 +8,7 @@ use App\Repositories\BaseRepository;
 class PhotoRepository extends BaseRepository
 {
     /**
-     * @param \App\Models\Flickr\Photo $model
+     * @param Photo $model
      */
     public function __construct(Photo $model)
     {
@@ -18,7 +18,8 @@ class PhotoRepository extends BaseRepository
     /**
      * @param string $id
      *
-     * @return \App\Models\Flickr\Photo
+     * @return Photo
+     * @deprecated
      */
     public function findOrCreateById(string $id): Photo
     {
@@ -27,8 +28,17 @@ class PhotoRepository extends BaseRepository
 
     /**
      * @param array $data
+     * @return Photo
+     */
+    public function findOrCreateByIdWithData(array $data): Photo
+    {
+        return $this->model::firstOrCreate(['id' => $data['id']], $data);
+    }
+
+    /**
+     * @param array $data
      *
-     * @return \App\Models\Flickr\Photo|\Illuminate\Database\Eloquent\Model
+     * @return Photo|\Illuminate\Database\Eloquent\Model
      */
     public function save(array $data): Photo
     {

@@ -15,6 +15,7 @@ use App\Jobs\Flickr\FlickrContactPhotos;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
+ * Class FlickrPhotos
  * @package App\Console\Commands\Flickr
  */
 final class FlickrPhotos extends BaseCommand
@@ -38,14 +39,13 @@ final class FlickrPhotos extends BaseCommand
      */
     public function fully(): bool
     {
-        if (!$contact = app(ContactRepository::class)->getItemByCondition([
-            'sort-by' => 'updated_at', 'cache' => 0
-        ])) {
+        if (!$contact = app(ContactRepository::class)->getContactWithoutPhotos()) {
+            // @todo If found nothing then reset photo_state
             return false;
         }
 
-        $contact->touch();
-
+        $contact->photo_state = 1;
+        $contact->save();
         $this->output->note('Working on contact: '.$contact->nsid);
 
         FlickrContactPhotos::dispatch($contact->nsid);

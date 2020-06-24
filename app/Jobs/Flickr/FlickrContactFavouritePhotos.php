@@ -5,7 +5,7 @@ namespace App\Jobs\Flickr;
 use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Jobs\Traits\HasPhotoSizes;
+use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,9 +19,10 @@ use Illuminate\Queue\SerializesModels;
 class FlickrContactFavouritePhotos implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use HasJob, HasPhotoSizes;
+    use HasJob;
 
     private string $nsid;
+    private array $owners = [];
 
     /**
      * @param string $nsId
@@ -39,8 +40,7 @@ class FlickrContactFavouritePhotos implements ShouldQueue
         }
 
         $photos = FlickrClient::getFavouritePhotosOfUser($this->nsid);
-
-        $this->processGetSizesOfPhotos($photos->photos->photo, true);
+        $this->storePhotos($photos->photos->photo);
 
         if ($photos->photos->pages === 1) {
             return;
@@ -51,7 +51,24 @@ class FlickrContactFavouritePhotos implements ShouldQueue
                 continue;
             }
 
-            $this->processGetSizesOfPhotos($nextPhotos->photos->photo, true);
+            $this->storePhotos($nextPhotos->photos->photo);
+        }
+    }
+
+    /**
+     * @param array $photos
+     */
+    private function storePhotos(array $photos)
+    {
+        $repository = app(PhotoRepository::class);
+        foreach ($photos as $photo) {
+            $repository->findOrCreateByIdWithData(get_object_vars($photo));
+            if (in_array($photo->owner, $this->owners)) {
+                continue;
+            }
+
+            $this->owners[] = $photo->owner;
+            FlickrContact::dispatch($photo->owner);
         }
     }
 }

@@ -21,6 +21,13 @@ class ContactRepository extends BaseRepository
         parent::__construct($model);
     }
 
+    public function getContactWithoutPhotos(): ?Contact
+    {
+        return $this->model
+            ->where(['photo_state' => null])
+            ->first();
+    }
+
     /**
      * @param array $filter
      *
