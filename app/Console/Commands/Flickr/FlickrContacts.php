@@ -14,6 +14,7 @@ use App\Facades\FlickrClient;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
+ * Get and store Flickr' contacts of authorized user
  * @package App\Console\Commands\Flickr
  */
 final class FlickrContacts extends BaseCommand
@@ -30,7 +31,7 @@ final class FlickrContacts extends BaseCommand
      *
      * @var string
      */
-    protected $description = 'Fetching Flickr contacts';
+    protected $description = 'Get Flickr contacts of authorized user';
 
     /**
      * @return bool
@@ -73,7 +74,7 @@ final class FlickrContacts extends BaseCommand
         foreach ($contacts as $index => $contact) {
             $this->progressBarSetStep($index + 1);
             $repository->findOrCreateByNsId($contact->nsid);
-            $this->progressBarSetStatus('QUEUED');
+            $this->progressBarSetStatus('FINISHED');
         }
     }
 }
