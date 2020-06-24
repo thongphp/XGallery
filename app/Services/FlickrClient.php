@@ -14,9 +14,14 @@ use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Oauth\OauthClient;
+use App\Services\Flickr\Response\PeopleResponseInterface;
 use Illuminate\Support\Facades\Log;
 
-class Flickr extends OauthClient
+/**
+ * Class FlickrClient
+ * @package App\Services
+ */
+class FlickrClient extends OauthClient
 {
     public const REST_ENDPOINT = 'https://api.flickr.com/services/rest';
 
@@ -37,7 +42,7 @@ class Flickr extends OauthClient
      * @param int|null $page
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException
+     * @throws FlickrApiPhotoSetGetPhotosException
      */
     public function getPhotoSetPhotos(string $photoSetId, ?int $page = 1): ?object
     {
@@ -78,7 +83,7 @@ class Flickr extends OauthClient
         }
 
         if ($content->stat !== self::RESPONSE_STAT_OK) {
-            Log::stack(['oauth'])->warning('Flickr request failed');
+            Log::stack(['oauth'])->warning('FlickrClient request failed');
         }
 
         return $this->removeContentObject($content);
@@ -170,7 +175,7 @@ class Flickr extends OauthClient
      * @param int|null $page
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiAuthorizedUserGetFavouritePhotosException
+     * @throws FlickrApiAuthorizedUserGetFavouritePhotosException
      */
     public function getFavouritePhotosOfUser(string $userId, ?int $page = 1): ?object
     {
@@ -187,7 +192,7 @@ class Flickr extends OauthClient
      * @param string $albumId
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException
+     * @throws FlickrApiPhotoSetsGetInfoException
      */
     public function getPhotoSetInfo(string $albumId): ?object
     {
@@ -204,7 +209,7 @@ class Flickr extends OauthClient
      * @param string $id
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiGalleryGetInfoException
+     * @throws FlickrApiGalleryGetInfoException
      */
     public function getGalleryInformation(string $id): ?object
     {
@@ -221,10 +226,10 @@ class Flickr extends OauthClient
      * @param string $nsid
      * @param bool $force
      *
-     * @return \App\Services\Flickr\Response\PeopleResponseInterface|object
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoException
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoInvalidUserException
+     * @return PeopleResponseInterface|object
+     * @throws FlickrApiPeopleGetInfoException
+     * @throws FlickrApiPeopleGetInfoUserDeletedException
+     * @throws FlickrApiPeopleGetInfoInvalidUserException
      */
     public function getPeopleInfo(string $nsid, bool $force = false)
     {
@@ -250,7 +255,7 @@ class Flickr extends OauthClient
      * @param int|null $page
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetPhotosException
+     * @throws FlickrApiPeopleGetPhotosException
      */
     public function getPeoplePhotos(string $userId, ?int $page = 1): ?object
     {
