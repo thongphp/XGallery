@@ -5,7 +5,11 @@ namespace App\Console\Commands\Flickr;
 use App\Console\BaseCommand;
 use App\Repositories\Flickr\PhotoRepository;
 
-class FlickrPhotoSizes extends BaseCommand
+/**
+ * Class FlickrPhotoSizes
+ * @package App\Console\Commands\Flickr
+ */
+final class FlickrPhotoSizes extends BaseCommand
 {
     /**
      * The name and signature of the console command.

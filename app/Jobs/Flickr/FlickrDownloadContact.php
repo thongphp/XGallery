@@ -15,6 +15,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
+/**
+ * Class FlickrDownloadContact
+ * @package App\Jobs\Flickr
+ */
 class FlickrDownloadContact implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

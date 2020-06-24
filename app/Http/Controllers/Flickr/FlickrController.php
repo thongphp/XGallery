@@ -109,6 +109,7 @@ class FlickrController extends BaseController
                             ->with('error', 'Can not get Album information or album has no photos.');
                     }
 
+                    // @todo Create photoset object
                     FlickrDownloadAlbum::dispatch($albumInfo->photoset);
 
                     $flashMessage = sprintf(

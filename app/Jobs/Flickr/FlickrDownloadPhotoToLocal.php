@@ -16,6 +16,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Download Flickr photo and trigger sync with Google
+ * @package App\Jobs\Flickr
+ */
 class FlickrDownloadPhotoToLocal implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

@@ -13,6 +13,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class FlickrDownloadAlbum
+ * @package App\Jobs\Flickr
+ */
 class FlickrDownloadAlbum implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -34,7 +38,11 @@ class FlickrDownloadAlbum implements ShouldQueue
     public function handle(): void
     {
         $photos = FlickrClient::getPhotoSetPhotos($this->album->id);
+        // @todo Trigger notification if can't get photos
+
         $googleAlbum = GooglePhotoClient::createAlbum($this->album->title);
+        // @todo Trigger notification if can't create album
+
         $googleAlbumId = $googleAlbum->id;
         $owner = $this->album->owner;
 

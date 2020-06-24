@@ -7,6 +7,10 @@ use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\PhotoRepository;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
+/**
+ * Trait SyncPhotos
+ * @package App\Jobs\Traits
+ */
 trait SyncPhotos
 {
     /**
