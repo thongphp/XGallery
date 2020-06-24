@@ -9,10 +9,13 @@
 
 namespace App\Exceptions;
 
+use Doctrine\DBAL\Driver\PDOException;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use MongoDB\Driver\Exception\ConnectionTimeoutException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -47,9 +50,14 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        // Only use for not local env
+        if ($exception instanceof ConnectionTimeoutException || $exception instanceof PDOException) {
+            Log::stack(['slack'])->critical($exception->getMessage());
+            return;
+        }
+
         if (App::environment('local')) {
             parent::report($exception);
+            return;
         }
 
         if (app()->bound('sentry') && $this->shouldReport($exception)) {
@@ -57,6 +65,7 @@ class Handler extends ExceptionHandler
         }
 
         parent::report($exception);
+        return;
     }
 
     /**
