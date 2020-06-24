@@ -5,7 +5,7 @@ namespace App\Exceptions\Flickr;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
-class FlickrApiGetUserContactsException extends Exception
+class FlickrApiAuthorizedUserGetContactsException extends Exception
 {
     public function __construct(int $page = 1)
     {

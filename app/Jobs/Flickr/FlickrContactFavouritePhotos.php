@@ -2,9 +2,7 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Exceptions\Flickr\FlickrApiGetContactFavouritePhotosException;
-use App\Facades\Flickr;
-use App\Jobs\Middleware\RateLimited;
+use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\HasPhotoSizes;
@@ -14,6 +12,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class FlickrContactFavouritePhotos
+ * @package App\Jobs\Flickr
+ */
 class FlickrContactFavouritePhotos implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -30,23 +32,13 @@ class FlickrContactFavouritePhotos implements ShouldQueue
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
-    /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
-    }
-
-    /**
-     * @throws \App\Exceptions\Flickr\FlickrApiGetContactFavouritePhotosException
-     * @throws \App\Exceptions\Flickr\FlickrApiGetPhotoSizesException
-     */
     public function handle(): void
     {
-        if (!$photos = Flickr::getFavouritePhotosOfUser($this->nsid)) {
-            throw new FlickrApiGetContactFavouritePhotosException($this->nsid);
+        if (!FlickrClient::validateNsId($this->nsid)) {
+            return;
         }
+
+        $photos = FlickrClient::getFavouritePhotosOfUser($this->nsid);
 
         $this->processGetSizesOfPhotos($photos->photos->photo, true);
 
@@ -55,7 +47,7 @@ class FlickrContactFavouritePhotos implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = Flickr::getFavouritePhotosOfUser($this->nsid, $page)) {
+            if (!$nextPhotos = FlickrClient::getFavouritePhotosOfUser($this->nsid, $page)) {
                 continue;
             }
 

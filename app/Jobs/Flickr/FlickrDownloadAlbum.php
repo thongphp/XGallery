@@ -2,10 +2,8 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Exceptions\Flickr\FlickrApiGetAlbumPhotosException;
-use App\Facades\Flickr;
-use App\Facades\GooglePhotoFacade;
-use App\Jobs\Middleware\RateLimited;
+use App\Facades\FlickrClient;
+use App\Facades\GooglePhotoClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
@@ -32,25 +30,11 @@ class FlickrDownloadAlbum implements ShouldQueue
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
-    }
-
-    /**
-     * @throws \App\Exceptions\Flickr\FlickrApiGetAlbumPhotosException
-     * @throws \App\Exceptions\Google\GooglePhotoApiCreateAlbumException
-     * @throws \JsonException
      */
     public function handle(): void
     {
-        if (!$photos = Flickr::getAlbumPhotos($this->album->id)) {
-            throw new FlickrApiGetAlbumPhotosException($this->album->id);
-        }
-
-        $googleAlbum = GooglePhotoFacade::createAlbum($this->album->title);
+        $photos = FlickrClient::getPhotoSetPhotos($this->album->id);
+        $googleAlbum = GooglePhotoClient::createAlbum($this->album->title);
         $googleAlbumId = $googleAlbum->id;
         $owner = $this->album->owner;
 
@@ -63,7 +47,7 @@ class FlickrDownloadAlbum implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-            if (!$nextPhotos = Flickr::getAlbumPhotos($this->album->id, $page)) {
+            if (!$nextPhotos = FlickrClient::getPhotoSetPhotos($this->album->id, $page)) {
                 continue;
             }
 

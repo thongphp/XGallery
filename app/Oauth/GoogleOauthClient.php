@@ -25,7 +25,6 @@ class GoogleOauthClient extends OauthClient
      */
     protected function getClient(): ?Client
     {
-        /** @var OAuthRepository $repository */
         $repository = app(OAuthRepository::class);
 
         if (!$oauth = $repository->findBy(['name' => 'google'])) {

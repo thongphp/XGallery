@@ -24,15 +24,23 @@ use Illuminate\Support\Facades\Log;
 class OauthClient
 {
     /**
-     * @param  string  $method
-     * @param  string  $uri
-     * @param  array  $parameters
+     * @param string $method
+     * @param string $uri
+     * @param array $parameters
+     * @param bool $force
+     *
      * @return string|object
      */
-    public function request(string $method, string $uri, array $parameters = [])
+    public function request(string $method, string $uri, array $parameters = [], bool $force = false)
     {
         $key = md5(serialize([$method, $uri, $parameters]));
         $isCached = Cache::has($key);
+
+        if ($force) {
+            Cache::delete($key);
+            $isCached = false;
+        }
+
         Log::stack(['oauth'])->info(
             $isCached ? 'Requesting '.$uri.' with CACHE'
                 : 'Requesting '.$uri,

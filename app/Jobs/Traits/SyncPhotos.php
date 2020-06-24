@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Traits;
 
-use App\Jobs\Flickr\FlickrSyncToGooglePhoto;
+use App\Jobs\Flickr\FlickrDownloadPhotoToLocal;
 use App\Models\Flickr\Photo;
 use App\Repositories\Flickr\PhotoRepository;
 use Laminas\Hydrator\ObjectPropertyHydrator;
@@ -22,17 +22,11 @@ trait SyncPhotos
         foreach ($photos as $photo) {
             $photoModel = $photoRepository->findOrCreateById($photo->id);
 
-            if ($photoModel->isDone()) {
-                continue;
-            }
-
-            $photoModel->touch();
-
             $photoModel->fill($hydrator->extract($photo))
                 ->setAttribute(Photo::KEY_OWNER, $owner)
                 ->save();
 
-            FlickrSyncToGooglePhoto::dispatch($photoModel->id, $googleAlbumId);
+            FlickrDownloadPhotoToLocal::dispatch($photoModel->id, $googleAlbumId);
         }
     }
 }

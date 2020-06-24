@@ -55,14 +55,17 @@ class Handler extends ExceptionHandler
             return;
         }
 
-        // Only use for not local env
-        if (!App::environment('local')) {
-            if (app()->bound('sentry') && $this->shouldReport($exception)) {
-                app('sentry')->captureException($exception);
-            }
+        if (App::environment('local')) {
+            parent::report($exception);
+            return;
+        }
+
+        if (app()->bound('sentry') && $this->shouldReport($exception)) {
+            app('sentry')->captureException($exception);
         }
 
         parent::report($exception);
+        return;
     }
 
     /**

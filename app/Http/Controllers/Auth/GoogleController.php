@@ -48,7 +48,6 @@ class GoogleController extends BaseController
 
         $code = $request->get('code');
 
-        /** @var Oauth $model */
         $model = app(Oauth::class);
 
         foreach ($user as $key => $value) {

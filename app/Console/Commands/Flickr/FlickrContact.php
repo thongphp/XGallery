@@ -10,46 +10,42 @@
 namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
-use App\Jobs\Flickr\FlickrContactFavouritePhotos;
-use App\Jobs\Flickr\FlickrContactPhotos;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
  * @package App\Console\Commands\Flickr
  */
-final class FlickrPhotos extends BaseCommand
+final class FlickrContact extends BaseCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'flickr:photos {task=fully}';
+    protected $signature = 'flickr:contact {task=fully}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Fetching Flickr photos of a contact';
+    protected $description = 'Update Flickr contact detail';
 
     /**
      * @return bool
      */
     public function fully(): bool
     {
-        if (!$contact = app(ContactRepository::class)->getItemByCondition([
+        if (!$contact = app(ContactRepository::class)->getItemByConditions([
             'sort-by' => 'updated_at', 'cache' => 0
         ])) {
-            return false;
+            return true;
         }
 
         $contact->touch();
 
-        $this->output->note('Working on contact: '.$contact->nsid);
-
-        FlickrContactPhotos::dispatch($contact->nsid);
-        FlickrContactFavouritePhotos::dispatch($contact->nsid);
+        $this->output->note(sprintf('Working on %s contact', $contact->nsid));
+        \App\Jobs\Flickr\FlickrContact::dispatch($contact->nsid);
 
         return true;
     }

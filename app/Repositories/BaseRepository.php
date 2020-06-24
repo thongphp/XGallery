@@ -25,17 +25,25 @@ class BaseRepository
     public function getItems(array $filter = [])
     {
         $id = get_class($this).':'.__FUNCTION__.':'.serialize($filter);
-        if (isset($filter['cache']) && $filter['cache'] == 0) {
+        if (isset($filter['cache']) && $filter['cache'] === 0) {
             Cache::forget($id);
         }
+
+        $orderBy = $filter['sort-by'] ?? 'id';
+        $orderDir = $filter['sort-dir'] ?? 'asc';
+        $perPage = isset($filter['per-page']) ? (int) $filter['per-page'] : 15;
+        $page = request()->except('page');
+
+        unset($filter['cache'], $filter['sort-by'], $filter['sort-dir'], $filter['per-page']);
 
         return Cache::remember(
             $id,
             self::CACHE_INTERVAL,
-            function () use ($filter) {
-                $this->builder->orderBy($filter['sort-by'] ?? 'id', $filter['sort-dir'] ?? 'asc');
-                return $this->builder->paginate(isset($filter['per-page']) ? (int) $filter['per-page'] : 15)
-                    ->appends(request()->except('page'));
+            function () use ($page, $perPage, $orderBy, $orderDir, $filter) {
+                return $this->builder->where($filter)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($perPage)
+                    ->appends($page);
             }
         );
     }
