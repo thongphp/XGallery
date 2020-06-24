@@ -16,6 +16,15 @@ class PhotoRepository extends BaseRepository
     }
 
     /**
+     * @param int $limit
+     * @return mixed
+     */
+    public function getPhotosWithNoSizes(int $limit = 100)
+    {
+        return $this->getItems(['sizes' => null, 'per-page' => $limit, 'cache' =>0]);
+    }
+
+    /**
      * @param string $id
      *
      * @return Photo

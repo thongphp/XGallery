@@ -3,15 +3,16 @@
 namespace App\Models\Flickr;
 
 use App\Database\Mongodb;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 class Photo extends Mongodb implements PhotoInterface
 {
+    use SoftDeletes;
+
     public const KEY_OWNER = 'owner';
 
     protected $collection = 'flickr_photos';
-    protected $casts = [
-        'sizes' => 'json',
-    ];
     protected $fillable = [
         'id',
         'owner',
@@ -26,7 +27,7 @@ class Photo extends Mongodb implements PhotoInterface
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     * @return BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
      */
     public function refOwner()
     {
