@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\Google\GooglePhotoApiCreateAlbumException;
+use App\Exceptions\Google\GooglePhotoApiAlbumCreateException;
 use App\Exceptions\Google\GooglePhotoApiMediaCreateException;
 use App\Exceptions\Google\GooglePhotoApiUploadException;
 use App\Oauth\GoogleOauthClient;
@@ -21,7 +21,7 @@ class GooglePhoto extends GoogleOauthClient
      *
      * @return object
      *
-     * @throws \App\Exceptions\Google\GooglePhotoApiCreateAlbumException
+     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
      * @throws \JsonException
      */
     public function createAlbum(string $title): object
@@ -44,17 +44,17 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$content) {
-            throw new GooglePhotoApiCreateAlbumException($title);
+            throw new GooglePhotoApiAlbumCreateException($title);
         }
 
         return $content;
     }
 
     /**
-     * https://developers.google.com/photos/library/reference/rest/v1/mediaItems/batchCreate
+     * https://developers.google.com/photos/library/reference/rest/v1/mediaItems/batchCreate¬
      *
      * @param string $file
-     * @param string $photoId
+     * @param string $title
      * @param string $googleAlbumId
      *
      * @throws \App\Exceptions\Google\GooglePhotoApiMediaCreateException
@@ -62,10 +62,8 @@ class GooglePhoto extends GoogleOauthClient
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      * @throws \JsonException
      */
-    public function uploadAndCreateMedia(string $file, string $photoId, string $googleAlbumId): void
+    public function uploadAndCreateMedia(string $file, string $title, string $googleAlbumId): void
     {
-        $photo = app(PhotoRepository::class)->findOrCreateById($photoId);
-
         $uploadToken = $this->request(
             'post',
             'https://photoslibrary.googleapis.com/v1/uploads',
@@ -92,7 +90,7 @@ class GooglePhoto extends GoogleOauthClient
                     'albumId' => $googleAlbumId,
                     'newMediaItems' => [
                         [
-                            'description' => $photo->title,
+                            'description' => $title,
                             'simpleMediaItem' => [
                                 'fileName' => basename($file),
                                 'uploadToken' => $uploadToken
@@ -106,11 +104,5 @@ class GooglePhoto extends GoogleOauthClient
         if (!$response) {
             throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId);
         }
-
-        $newMediaItemResult = $response->newMediaItemResults[0];
-        $photo->google_album_id = $googleAlbumId;
-        $photo->google_media_id = $newMediaItemResult->mediaItem->id;
-        $photo->status = true;
-        $photo->save();
     }
 }

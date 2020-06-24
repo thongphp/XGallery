@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services\Flickr;
 
-use App\Facades\Flickr;
+use App\Facades\FlickrClient;
 use App\Services\Flickr\Url\FlickrUrl;
 use App\Services\Flickr\UrlExtractor;
 use Tests\TestCase;
@@ -112,7 +112,7 @@ class UrlExtractorTest extends TestCase
      */
     public function testExtractFromUrl(string $url, string $expectType, string $expectId, string $expectOwner): void
     {
-        Flickr::shouldReceive('get')
+        FlickrClient::shouldReceive('get')
             ->withAnyArgs()
             ->andReturn((object) ['user' => (object) ['id' => '12345678@N01']]);
 

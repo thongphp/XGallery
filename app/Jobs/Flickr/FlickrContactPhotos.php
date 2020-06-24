@@ -2,9 +2,7 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Exceptions\Flickr\FlickrApiGetContactPhotosException;
-use App\Facades\Flickr;
-use App\Jobs\Middleware\RateLimited;
+use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\HasPhotoSizes;
@@ -14,6 +12,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class FlickrContactPhotos
+ * @package App\Jobs\Flickr
+ */
 class FlickrContactPhotos implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -31,22 +33,19 @@ class FlickrContactPhotos implements ShouldQueue
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
-    }
-
-    /**
-     * @throws \App\Exceptions\Flickr\FlickrApiGetContactPhotosException
-     * @throws \App\Exceptions\Flickr\FlickrApiGetPhotoSizesException
      */
     public function handle(): void
     {
-        if (!$photos = Flickr::getUserPhotos($this->nsid)) {
-            throw new FlickrApiGetContactPhotosException($this->nsid);
+        if (!FlickrClient::validateNsId($this->nsid)) {
+            return;
         }
+
+        /**
+         * @todo We can not get all photos sizes of an NSID in same time
+         * If NSID have thousand photos ( usually ) we'll foreach and request thousand APIs in one job
+         */
+
+        $photos = FlickrClient::getPeoplePhotos($this->nsid);
 
         $this->processGetSizesOfPhotos($photos->photos->photo);
 
@@ -55,7 +54,7 @@ class FlickrContactPhotos implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = Flickr::getUserPhotos($this->nsid, $page)) {
+            if (!$nextPhotos = FlickrClient::getPeoplePhotos($this->nsid, $page)) {
                 continue;
             }
 

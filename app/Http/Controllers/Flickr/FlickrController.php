@@ -10,15 +10,13 @@
 
 namespace App\Http\Controllers\Flickr;
 
-use App\Facades\Flickr;
 use App\Facades\Flickr\UrlExtractor;
+use App\Facades\FlickrClient;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
-use App\Models\Flickr\Photo;
-use App\Notifications\FlickrDownloadRequested;
 use App\Repositories\Flickr\ContactRepository;
 use App\Repositories\OAuthRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -91,6 +89,9 @@ class FlickrController extends BaseController
             return;
         }
 
+        /**
+         * @var FlickrUrlInterface $result
+         */
         if (!$result = UrlExtractor::extract($url)) {
             return redirect()
                 ->route('flickr.dashboard.view')
@@ -98,22 +99,18 @@ class FlickrController extends BaseController
         }
 
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos in %s: <strong>%s</strong> / <span class="badge badge-secondary">%s</span>';
-        $this->notify(new FlickrDownloadRequested($result));
 
         try {
-            /**
-             * @var FlickrUrlInterface $result
-             */
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
-                    $albumInfo = Flickr::getAlbumInfo($result->getId());
+                    $albumInfo = FlickrClient::getPhotoSetInfo($result->getId());
 
                     if (!$albumInfo || $albumInfo->photoset->photos === 0) {
                         return redirect()->route('flickr.dashboard.view')
                             ->with('error', 'Can not get Album information or album has no photos.');
                     }
 
-                    FlickrDownloadAlbum::dispatchNow($albumInfo->photoset);
+                    FlickrDownloadAlbum::dispatch($albumInfo->photoset);
 
                     $flashMessage = sprintf(
                         $flashMessage,
@@ -126,14 +123,14 @@ class FlickrController extends BaseController
                     break;
 
                 case FlickrUrlInterface::TYPE_GALLERY:
-                    $galleryInfo = Flickr::getGalleryInformation($result->getId());
+                    $galleryInfo = FlickrClient::getGalleryInformation($result->getId());
 
                     if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
                         return redirect()->route('flickr.dashboard.view')
                             ->with('error', 'Can not get Gallery information or gallery has no photos.');
                     }
 
-                    FlickrDownloadGallery::dispatchNow($galleryInfo->gallery);
+                    FlickrDownloadGallery::dispatch($galleryInfo->gallery);
 
                     $flashMessage = sprintf(
                         $flashMessage,
@@ -146,14 +143,13 @@ class FlickrController extends BaseController
                     break;
 
                 case FlickrUrlInterface::TYPE_PROFILE:
-                    FlickrDownloadContact::dispatchNow($result->getOwner());
+                    FlickrDownloadContact::dispatch($result->getOwner());
 
                     $flashMessage = 'Added user <strong>'.$result->getOwner().'</strong>';
 
                     break;
 
                 default:
-                    $this->notify(new FlickrDownloadRequested($result));
                     return redirect()
                         ->route('flickr.dashboard.view')
                         ->with('error', 'Could not detect type of URL');
@@ -177,7 +173,6 @@ class FlickrController extends BaseController
         $items = app(ContactRepository::class)
             ->findOrCreateByNsId($nsid)
             ->refPhotos()
-            ->where([Photo::KEY_STATUS => true])
             ->paginate(30);
 
         return view(

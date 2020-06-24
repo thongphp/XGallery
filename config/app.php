@@ -1,8 +1,6 @@
 <?php
 
-use App\Facades\Flickr;
 use App\Facades\GoogleDriveFacade;
-use App\Facades\GooglePhotoFacade;
 use SocialiteProviders\Manager\ServiceProvider;
 
 return [
@@ -254,9 +252,8 @@ return [
 
         'Es' => Elasticquent\ElasticquentElasticsearchFacade::class,
         'GoogleDrive' => GoogleDriveFacade::class,
-        'GooglePhoto' => GooglePhotoFacade::class,
-        'Flickr' => Flickr::class,
-        'flickr\urlextractor' => Flickr\UrlExtractor::class,
+        'GooglePhotoClient' => App\Facades\GooglePhotoClient::class,
+        'FlickrClient' => App\Facades\FlickrClient::class,
+        'FlickrUrlExtractor' => App\Facades\Flickr\UrlExtractor::class,
     ],
-
 ];

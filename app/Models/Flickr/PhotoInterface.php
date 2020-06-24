@@ -13,7 +13,6 @@ namespace App\Models\Flickr;
  * @property int|null $isfriend
  * @property int|null $isfamily
  * @property array|null $sizes
- * @property bool|null $status
  * @property \App\Models\Flickr\Contact|null $ref_owner;
  * @property string|null $google_album_id;
  * @property string|null $google_media_id;
@@ -24,9 +23,4 @@ interface PhotoInterface
      * @return bool
      */
     public function hasSizes(): bool;
-
-    /**
-     * @return bool
-     */
-    public function isDone(): bool;
 }

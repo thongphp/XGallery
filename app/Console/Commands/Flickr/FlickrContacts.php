@@ -10,10 +10,8 @@
 namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
-use App\Facades\Flickr;
-use App\Jobs\Flickr\FlickrContact;
+use App\Facades\FlickrClient;
 use App\Repositories\Flickr\ContactRepository;
-use Exception;
 
 /**
  * @package App\Console\Commands\Flickr
@@ -39,19 +37,14 @@ final class FlickrContacts extends BaseCommand
      */
     public function fully(): bool
     {
-        try {
-            $contacts = Flickr::getContactsOfCurrentUser();
-        } catch (Exception $exception) {
-            return false;
-        }
+        $contacts = FlickrClient::getContactsOfCurrentUser();
 
         $this->output->note(
             sprintf('Got %d contacts in %d pages', $contacts->contacts->total, $contacts->contacts->pages)
         );
 
-        $this->processContacts($contacts->contacts->contact);
         $this->progressBarInit($contacts->contacts->pages);
-        $this->progressBarSetStatus('QUEUED');
+        $this->processContacts($contacts->contacts->contact);
         $this->progressBar->advance();
 
         if ($contacts->contacts->pages === 1) {
@@ -59,14 +52,9 @@ final class FlickrContacts extends BaseCommand
         }
 
         for ($page = 2; $page <= $contacts->contacts->pages; $page++) {
-            try {
-                $nextContacts = Flickr::getContactsOfCurrentUser($page);
-            } catch (Exception $exception) {
-                return false;
-            }
+            $nextContacts = FlickrClient::getContactsOfCurrentUser($page);
 
             $this->processContacts($nextContacts->contacts->contact);
-            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }
 
@@ -74,18 +62,18 @@ final class FlickrContacts extends BaseCommand
     }
 
     /**
+     * Store array of contact into database with NSID only
      * @param array $contacts
      */
     private function processContacts(array $contacts): void
     {
         $repository = app(ContactRepository::class);
+        $this->progressBarSetSteps(count($contacts));
 
-        foreach ($contacts as $contact) {
-            if ($repository->findOrCreateByNsId($contact->nsid)->isDone()) {
-                continue;
-            }
-
-            FlickrContact::dispatch($contact->nsid);
+        foreach ($contacts as $index => $contact) {
+            $this->progressBarSetStep($index + 1);
+            $repository->findOrCreateByNsId($contact->nsid);
+            $this->progressBarSetStatus('QUEUED');
         }
     }
 }
