@@ -13,6 +13,7 @@ use App\Console\BaseCommand;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
+ * Get and push a Flickr' contact to queue for getting detail
  * @package App\Console\Commands\Flickr
  */
 final class FlickrContact extends BaseCommand
