@@ -33,7 +33,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class FlickrController
- *
  * @package App\Http\Controllers\Flickr
  */
 class FlickrController extends BaseController

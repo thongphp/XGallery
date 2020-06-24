@@ -20,6 +20,11 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        SocialiteWasCalled::class => [
+            // add your listeners (aka providers) here
+            'SocialiteProviders\\FlickrClient\\FlickrExtendSocialite@handle',
+            'SocialiteProviders\\Google\\GoogleExtendSocialite@handle',
+        ],
     ];
 
     /**

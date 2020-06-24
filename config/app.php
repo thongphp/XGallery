@@ -181,6 +181,9 @@ return [
         App\Providers\RouteServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
 
+        // SocialiteProviders
+        ServiceProvider::class,
+
         /**
          * Crawler
          */
@@ -245,7 +248,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        //'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
         'Es' => Elasticquent\ElasticquentElasticsearchFacade::class,
         'GoogleDrive' => GoogleDriveFacade::class,

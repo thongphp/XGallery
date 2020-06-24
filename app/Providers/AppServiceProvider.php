@@ -9,8 +9,8 @@
 
 namespace App\Providers;
 
-use App\Services\Flickr;
 use App\Services\Flickr\UrlExtractor;
+use App\Services\FlickrClient;
 use App\Services\GoogleDrive;
 use App\Services\GooglePhoto;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('flickr', function () {
-            return new Flickr;
+            return new FlickrClient;
         });
 
         $this->app->bind('flickr\urlextractor', function () {

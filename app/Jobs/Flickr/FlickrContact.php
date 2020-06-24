@@ -37,6 +37,7 @@ class FlickrContact implements ShouldQueue
 
     public function handle(): void
     {
+        // @todo Create FlickrValidate as facade instead FlickrClient
         if (!FlickrClient::validateNsId($this->nsid)) {
             return;
         }
