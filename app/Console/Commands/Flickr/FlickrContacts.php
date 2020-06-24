@@ -34,7 +34,6 @@ final class FlickrContacts extends BaseCommand
 
     /**
      * @return bool
-     * @throws \App\Exceptions\Flickr\FlickrApiAuthorizedUserGetContactsException
      */
     public function fully(): bool
     {
@@ -63,6 +62,7 @@ final class FlickrContacts extends BaseCommand
     }
 
     /**
+     * Store array of contact into database with NSID only
      * @param array $contacts
      */
     private function processContacts(array $contacts): void

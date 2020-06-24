@@ -17,8 +17,6 @@ use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
-use App\Models\Flickr\Photo;
-use App\Notifications\FlickrDownloadRequested;
 use App\Repositories\Flickr\ContactRepository;
 use App\Repositories\OAuthRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -91,6 +89,9 @@ class FlickrController extends BaseController
             return;
         }
 
+        /**
+         * @var FlickrUrlInterface $result
+         */
         if (!$result = UrlExtractor::extract($url)) {
             return redirect()
                 ->route('flickr.dashboard.view')
@@ -98,12 +99,8 @@ class FlickrController extends BaseController
         }
 
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos in %s: <strong>%s</strong> / <span class="badge badge-secondary">%s</span>';
-        $this->notify(new FlickrDownloadRequested($result));
 
         try {
-            /**
-             * @var FlickrUrlInterface $result
-             */
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
                     $albumInfo = FlickrClient::getPhotoSetInfo($result->getId());
@@ -153,7 +150,6 @@ class FlickrController extends BaseController
                     break;
 
                 default:
-                    $this->notify(new FlickrDownloadRequested($result));
                     return redirect()
                         ->route('flickr.dashboard.view')
                         ->with('error', 'Could not detect type of URL');

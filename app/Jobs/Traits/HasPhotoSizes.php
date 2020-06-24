@@ -13,7 +13,6 @@ trait HasPhotoSizes
      * @param array $photos
      * @param bool $shouldProcessOwner
      *
-     * @throws \App\Exceptions\Flickr\FlickrApiPhotoGetSizesException
      */
     private function processGetSizesOfPhotos(array $photos, bool $shouldProcessOwner = false): void
     {
@@ -23,12 +22,12 @@ trait HasPhotoSizes
         foreach ($photos as $photo) {
             $photoModel = $photoRepository->findOrCreateById($photo->id);
 
+            // Photo already has sizes
             if ($photoModel->hasSizes()) {
                 continue;
             }
 
-            $sizes = FlickrClient::getPhotoSizes($photoModel->id);
-            $photo->sizes = $sizes->sizes->size;
+            $photo->sizes = FlickrClient::getPhotoSizes($photoModel->id)->sizes->size;
             $photoModel->fill($hydrator->extract($photo))->save();
 
             if (false === $shouldProcessOwner) {

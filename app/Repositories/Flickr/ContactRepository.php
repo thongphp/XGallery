@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Flickr;
 
+use App\Jobs\Flickr\FlickrContact;
 use App\Models\Flickr\Contact;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -23,9 +24,9 @@ class ContactRepository extends BaseRepository
     /**
      * @param array $filter
      *
-     * @return \App\Jobs\Flickr\FlickrContact|null
+     * @return FlickrContact|null
      */
-    public function getItemByCondition(array $filter = []): ?Contact
+    public function getItemByConditions(array $filter = []): ?Contact
     {
         return $this->getItems($filter)->first();
     }

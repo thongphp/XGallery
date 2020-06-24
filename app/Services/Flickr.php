@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Exceptions\Flickr\FlickrApiGalleryGetInfoException;
-use App\Exceptions\Flickr\FlickrApiAuthorizedUserGetFavouritePhotosException;
-use App\Exceptions\Flickr\FlickrApiPeopleGetPhotosException;
-use App\Exceptions\Flickr\FlickrApiGalleryGetPhotosException;
-use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Exceptions\Flickr\FlickrApiAuthorizedUserGetContactsException;
+use App\Exceptions\Flickr\FlickrApiAuthorizedUserGetFavouritePhotosException;
+use App\Exceptions\Flickr\FlickrApiGalleryGetInfoException;
+use App\Exceptions\Flickr\FlickrApiGalleryGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPeopleGetInfoException;
 use App\Exceptions\Flickr\FlickrApiPeopleGetInfoInvalidUserException;
 use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
+use App\Exceptions\Flickr\FlickrApiPeopleGetPhotosException;
+use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Oauth\OauthClient;
@@ -118,7 +118,7 @@ class Flickr extends OauthClient
      * @param int|null $page
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiGalleryGetPhotosException
+     * @throws FlickrApiGalleryGetPhotosException
      */
     public function getGalleryPhotos(string $id, ?int $page = 1): ?object
     {
@@ -135,7 +135,7 @@ class Flickr extends OauthClient
      * @param string $photoId
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiPhotoGetSizesException
+     * @throws FlickrApiPhotoGetSizesException
      */
     public function getPhotoSizes(string $photoId): ?object
     {
@@ -152,7 +152,7 @@ class Flickr extends OauthClient
      * @param int|null $page
      *
      * @return object
-     * @throws \App\Exceptions\Flickr\FlickrApiAuthorizedUserGetContactsException
+     * @throws FlickrApiAuthorizedUserGetContactsException
      */
     public function getContactsOfCurrentUser(?int $page = 1): ?object
     {

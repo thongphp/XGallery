@@ -6,7 +6,6 @@ use App\Crawlers\HttpClient;
 use App\Exceptions\CurlDownloadFileException;
 use App\Facades\FlickrClient;
 use App\Jobs\Google\SyncPhotoToGooglePhoto;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Flickr\Photo;
@@ -37,16 +36,7 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
-    }
-
-    /**
-     * @throws \App\Exceptions\CurlDownloadFileException
-     * @throws \App\Exceptions\Flickr\FlickrApiPhotoGetSizesException
+     * @throws CurlDownloadFileException
      */
     public function handle(): void
     {
@@ -68,7 +58,7 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     }
 
     /**
-     * @param \App\Models\Flickr\Photo $photo
+     * @param Photo $photo
      *
      * @return bool|string
      */

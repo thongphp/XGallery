@@ -4,7 +4,6 @@ namespace App\Jobs\Flickr;
 
 use App\Facades\FlickrClient;
 use App\Facades\GooglePhotoClient;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
@@ -31,16 +30,6 @@ class FlickrDownloadAlbum implements ShouldQueue
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
-    }
-
-    /**
-     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
-     * @throws \JsonException
      */
     public function handle(): void
     {

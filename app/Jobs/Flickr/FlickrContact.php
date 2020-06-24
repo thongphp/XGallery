@@ -7,9 +7,7 @@ use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
 use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Flickr\Contact;
 use App\Repositories\Flickr\ContactRepository;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,9 +35,6 @@ class FlickrContact implements ShouldQueue
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
-    /**
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoException
-     */
     public function handle(): void
     {
         if (!FlickrClient::validateNsId($this->nsid)) {
@@ -50,16 +45,10 @@ class FlickrContact implements ShouldQueue
 
         try {
             $userInfo = FlickrClient::getPeopleInfo($contactModel->nsid);
-        } catch (FlickrApiPeopleGetInfoInvalidUserException $exception) {
+            $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))->save();
+        } catch (FlickrApiPeopleGetInfoInvalidUserException | FlickrApiPeopleGetInfoUserDeletedException $exception) {
+            // Do delete invalid NSID
             $contactModel->delete();
-            return;
-        } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
-            $contactModel->delete();
-
-            return;
         }
-
-        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))
-            ->save();
     }
 }

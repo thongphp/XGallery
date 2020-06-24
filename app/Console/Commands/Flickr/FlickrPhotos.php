@@ -13,7 +13,6 @@ use App\Console\BaseCommand;
 use App\Jobs\Flickr\FlickrContactFavouritePhotos;
 use App\Jobs\Flickr\FlickrContactPhotos;
 use App\Repositories\Flickr\ContactRepository;
-use Flickr;
 
 /**
  * @package App\Console\Commands\Flickr
@@ -32,7 +31,7 @@ final class FlickrPhotos extends BaseCommand
      *
      * @var string
      */
-    protected $description = 'Fetching Flickr photos';
+    protected $description = 'Fetching Flickr photos of a contact';
 
     /**
      * @return bool

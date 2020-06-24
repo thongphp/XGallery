@@ -4,7 +4,6 @@ namespace App\Jobs\Flickr;
 
 use App\Facades\FlickrClient;
 use App\Facades\GooglePhotoClient;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
@@ -32,22 +31,6 @@ class FlickrDownloadContact implements ShouldQueue
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
-    /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('flickr')];
-    }
-
-    /**
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetPhotosException
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoException
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoInvalidUserException
-     * @throws \App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException
-     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
-     * @throws \JsonException
-     */
     public function handle(): void
     {
         $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);

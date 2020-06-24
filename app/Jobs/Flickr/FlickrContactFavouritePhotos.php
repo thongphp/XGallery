@@ -12,6 +12,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class FlickrContactFavouritePhotos
+ * @package App\Jobs\Flickr
+ */
 class FlickrContactFavouritePhotos implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -28,10 +32,6 @@ class FlickrContactFavouritePhotos implements ShouldQueue
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
-    /**
-     * @throws \App\Exceptions\Flickr\FlickrApiAuthorizedUserGetFavouritePhotosException
-     * @throws \App\Exceptions\Flickr\FlickrApiPhotoGetSizesException
-     */
     public function handle(): void
     {
         if (!FlickrClient::validateNsId($this->nsid)) {

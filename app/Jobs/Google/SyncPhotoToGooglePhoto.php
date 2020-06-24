@@ -44,14 +44,12 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
      */
     public function middleware(): array
     {
+        // @todo update ratelimit config
         return [new RateLimited('google')];
     }
 
     /**
-     * @throws \App\Exceptions\Google\GooglePhotoApiMediaCreateException
-     * @throws \App\Exceptions\Google\GooglePhotoApiUploadException
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     * @throws \JsonException
+     * @throws FileNotFoundException
      */
     public function handle(): void
     {
