@@ -21,6 +21,7 @@ class Contact extends Mongodb implements ContactInterface
     use SoftDeletes;
 
     public const KEY_NSID = 'nsid';
+    public const STATE_CONTACT_DETAIL = 1;
 
     protected $collection = 'flickr_contacts';
     protected $fillable = [
@@ -49,12 +50,14 @@ class Contact extends Mongodb implements ContactInterface
         'profileurl',
         'mobileurl',
         'photos',
+        'state'
     ];
 
     /**
+     * @todo Use photos() instead
      * @return HasMany|\Jenssegers\Mongodb\Relations\HasMany
      */
-    public function refPhotos()
+    public function photos()
     {
         return $this->hasMany(Photo::class, Photo::KEY_OWNER, self::KEY_NSID);
     }

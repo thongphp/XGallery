@@ -37,15 +37,13 @@ final class FlickrContact extends BaseCommand
      */
     public function fully(): bool
     {
-        // @todo Store contact_state to know if we have processed this contact
         if (!$contact = app(ContactRepository::class)->getItemByConditions([
-            'sort-by' => 'updated_at', 'cache' => 0
+            'sort-by' => 'updated_at', 'state' => null, 'cache' => 0
         ])) {
             return true;
         }
 
         $contact->touch();
-
         $this->output->note(sprintf('Working on %s contact', $contact->nsid));
         \App\Jobs\Flickr\FlickrContact::dispatch($contact->nsid);
 
