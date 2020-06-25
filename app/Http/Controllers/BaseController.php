@@ -10,10 +10,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
+use App\Repositories\OAuthRepository;
 use App\Traits\HasObject;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Routing\Controller;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -65,5 +68,26 @@ class BaseController extends Controller
     public function routeNotificationForSlack()
     {
         return config('logging.channels.slack.url');
+    }
+
+    /**
+     * @return Application|Factory|View|void
+     */
+    protected function validateAuthenticate()
+    {
+        $oAuthRepository = app(OAuthRepository::class);
+        $flickrOAuth = $oAuthRepository->findBy(['name' => 'flickr']);
+        $googleOAuth = $oAuthRepository->findBy(['name' => 'google']);
+
+        if (!$flickrOAuth || !$googleOAuth) {
+            return view(
+                'includes.authorization',
+                $this->getViewDefaultOptions(
+                    ['flickr' => (bool) $flickrOAuth, 'google' => (bool) $googleOAuth, 'title' => 'Authorization']
+                )
+            );
+        }
+
+        return;
     }
 }

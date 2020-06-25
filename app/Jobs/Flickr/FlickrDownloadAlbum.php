@@ -43,6 +43,8 @@ class FlickrDownloadAlbum implements ShouldQueue
         // @todo Trigger notification if can't create album
         $googleAlbum = GooglePhotoClient::createAlbum($this->album->title);
 
+        // @todo Save contact if not exist
+
         $googleAlbumId = $googleAlbum->id;
         $owner = $this->album->owner;
 

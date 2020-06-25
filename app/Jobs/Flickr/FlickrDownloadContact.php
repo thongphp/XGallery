@@ -39,10 +39,7 @@ class FlickrDownloadContact implements ShouldQueue
     {
         $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
         $userInfo = FlickrClient::getPeopleInfo($contactModel->nsid);
-        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))
-            ->save();
-
-        $contactModel->touch();
+        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))->save();
 
         $photos = FlickrClient::getPeoplePhotos($contactModel->nsid);
         $googleAlbum = GooglePhotoClient::createAlbum($contactModel->nsid);

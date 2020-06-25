@@ -17,7 +17,6 @@ use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
 use App\Repositories\Flickr\ContactRepository;
-use App\Repositories\OAuthRepository;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -53,37 +52,27 @@ class FlickrController extends BaseController
 
     /**
      * @param  Request  $request
-     *
-     * @return Application|Factory|View
+     * @return Application|Factory|RedirectResponse|View
      */
     public function dashboard(Request $request)
     {
-        // @todo Move to dashboard instead Flickr
-        $oAuthRepository = app(OAuthRepository::class);
-        $flickrOAuth = $oAuthRepository->findBy(['name' => 'flickr']);
-        $googleOAuth = $oAuthRepository->findBy(['name' => 'google']);
-
-        if ($flickrOAuth && $googleOAuth) {
-            return parent::dashboard($request);
+        if ($view = $this->validateAuthenticate()) {
+            return $view;
         }
 
-        return view(
-            'flickr.authorization',
-            $this->getViewDefaultOptions([
-                'title' => 'Flickr',
-                'flickr' => (bool) $flickrOAuth,
-                'google' => (bool) $googleOAuth,
-            ])
-        );
+        return parent::dashboard($request);
     }
 
     /**
      * @param  FlickrDownloadRequest  $request
-     *
-     * @return RedirectResponse|void
+     * @return Application|Factory|RedirectResponse|View
      */
     public function download(FlickrDownloadRequest $request)
     {
+        if ($view = $this->validateAuthenticate()) {
+            return $view;
+        }
+
         if (!$result = $request->getUrl()) {
             return redirect()
                 ->route('flickr.dashboard.view')
@@ -158,11 +147,14 @@ class FlickrController extends BaseController
 
     /**
      * @param  string  $nsid
-     *
-     * @return Application|Factory|View
+     * @return Application|Factory|RedirectResponse|View
      */
     public function contact(string $nsid)
     {
+        if ($view = $this->validateAuthenticate()) {
+            return $view;
+        }
+
         $items = app(ContactRepository::class)
             ->findOrCreateByNsId($nsid)
             ->refPhotos()
