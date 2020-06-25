@@ -43,16 +43,19 @@ class FlickrContact implements ShouldQueue
             return;
         }
 
-        $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
-
         try {
-            $userInfo = FlickrClient::getPeopleInfo($contactModel->nsid);
+            $userInfo = FlickrClient::getPeopleInfo($this->nsid);
+            $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
             $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))->save();
             $contactModel->state = Contact::STATE_CONTACT_DETAIL;
             $contactModel->save();
-        } catch (FlickrApiPeopleGetInfoInvalidUserException | FlickrApiPeopleGetInfoUserDeletedException $exception) {
-            // Do delete invalid NSID
-            $contactModel->delete();
+        } catch (FlickrApiPeopleGetInfoInvalidUserException $exception) {
+            // This user is not valid than do nothing
+            return;
+        } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
+            // Do delete deleted user
+            Contact::where(['nsid' => $this->nsid])->first()->delete();
+            return;
         }
     }
 }
