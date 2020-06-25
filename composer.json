@@ -25,6 +25,7 @@
         "laminas/laminas-hydrator": "^3.0",
         "laravel/framework": "^6.0",
         "laravel/horizon": "3.7.2",
+        "laravel/slack-notification-channel": "^2.0",
         "laravel/socialite": "^4.3",
         "league/flysystem-sftp": "^1.0",
         "nao-pon/flysystem-google-drive": "~1.1",
