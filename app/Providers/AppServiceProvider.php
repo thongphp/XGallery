@@ -41,9 +41,7 @@ class AppServiceProvider extends ServiceProvider
             return new UrlExtractor;
         });
 
-        if ($this->app->environment() !== 'production') {
-            $this->app->register(IdeHelperServiceProvider::class);
-        }
+        $this->app->register(IdeHelperServiceProvider::class);
     }
 
     /**
