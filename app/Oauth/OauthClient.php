@@ -97,8 +97,8 @@ class OauthClient
         $middleware = new Oauth1([
             'consumer_key' => config('auth.flickr.token'),
             'consumer_secret' => config('auth.flickr.token_secret'),
-            'token' => $client->oauth_token,
-            'token_secret' => $client->oauth_token_secret,
+            'token' => $client->token,
+            'token_secret' => $client->tokenSecret,
         ]);
         $stack->push($middleware);
 
