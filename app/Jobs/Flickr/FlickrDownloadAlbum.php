@@ -37,11 +37,11 @@ class FlickrDownloadAlbum implements ShouldQueue
      */
     public function handle(): void
     {
-        $photos = FlickrClient::getPhotoSetPhotos($this->album->id);
         // @todo Trigger notification if can't get photos
+        $photos = FlickrClient::getPhotoSetPhotos($this->album->id);
 
-        $googleAlbum = GooglePhotoClient::createAlbum($this->album->title);
         // @todo Trigger notification if can't create album
+        $googleAlbum = GooglePhotoClient::createAlbum($this->album->title);
 
         $googleAlbumId = $googleAlbum->id;
         $owner = $this->album->owner;

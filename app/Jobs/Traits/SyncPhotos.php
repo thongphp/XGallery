@@ -25,7 +25,6 @@ trait SyncPhotos
 
         foreach ($photos as $photo) {
             $photoModel = $photoRepository->findOrCreateById($photo->id);
-
             $photoModel->fill($hydrator->extract($photo))
                 ->setAttribute(Photo::KEY_OWNER, $owner)
                 ->save();

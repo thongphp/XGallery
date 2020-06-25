@@ -2,6 +2,8 @@
 
 namespace App\Jobs\Google;
 
+use App\Exceptions\Google\GooglePhotoApiMediaCreateException;
+use App\Exceptions\Google\GooglePhotoApiUploadException;
 use App\Facades\GooglePhotoClient;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
@@ -36,7 +38,8 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
         $this->filePath = $filePath;
         $this->description = $description;
         $this->googleAlbumId = $googleAlbumId;
-        $this->onQueue(Queues::QUEUE_FLICKR);
+
+        $this->onQueue(Queues::QUEUE_GOOGLE);
     }
 
     /**
@@ -50,6 +53,9 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
 
     /**
      * @throws FileNotFoundException
+     * @throws GooglePhotoApiMediaCreateException
+     * @throws GooglePhotoApiUploadException
+     * @throws \JsonException
      */
     public function handle(): void
     {

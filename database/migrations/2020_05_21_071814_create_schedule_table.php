@@ -23,6 +23,31 @@ class CreateScheduleTable extends Migration
 
         DB::table('schedules')->insert(
             [
+                // Flickr
+                [
+                    'command' => 'flickr:contacts',
+                    'every' => 'weekly',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ],
+                [
+                    'command' => 'flickr:contact',
+                    'every' => 'everyFifteenMinutes',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ],
+                [
+                    'command' => 'flickr:photos',
+                    'every' => 'everyThirtyMinutes',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ],
+                [
+                    'command' => 'flickr:photossizes',
+                    'every' => 'everyFifteenMinutes',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ],
                 [
                     'command' => 'cache:clear',
                     'every' => 'daily',
@@ -53,12 +78,7 @@ class CreateScheduleTable extends Migration
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
-                [
-                    'command' => 'flickr:contacts',
-                    'every' => 'daily',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ],
+
                 [
                     'command' => 'batdongsan',
                     'every' => 'everyMinute',
@@ -107,18 +127,7 @@ class CreateScheduleTable extends Migration
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
-                [
-                    'command' => 'flickr:photos',
-                    'every' => 'everyFiveMinutes',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ],
-                [
-                    'command' => 'flickr:photossizes',
-                    'every' => 'everyFiveMinutes',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ],
+
                 [
                     'command' => 'truyentranh:truyenchon',
                     'every' => 'everyFifteenMinutes',

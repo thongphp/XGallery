@@ -2,8 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Facades\Flickr\UrlExtractor;
+use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class FlickrDownloadRequest
+ * @package App\Http\Requests
+ */
 class FlickrDownloadRequest extends FormRequest
 {
     /**
@@ -23,8 +29,17 @@ class FlickrDownloadRequest extends FormRequest
      */
     public function rules()
     {
+        //  @todo Validate url
         return [
-            'url' => 'required|string',
+            'url' => 'required|url',
         ];
+    }
+
+    /**
+     * @return FlickrUrlInterface|null
+     */
+    public function getUrl(): ?FlickrUrlInterface
+    {
+        return UrlExtractor::extract($this->input('url'));
     }
 }

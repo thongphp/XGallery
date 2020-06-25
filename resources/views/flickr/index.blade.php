@@ -13,7 +13,7 @@
                 <div class="card-footer">
                     <small class="text-muted"><i class="far fa-calendar-alt mr-1"></i>{{$item->updated_at}}</small>
                     <small class="text-muted pull-right float-right"><i
-                            class="far fa-calendar-alt mr-1"></i>{{$item->refPhotos()->count()}}</small>
+                            class="far fa-calendar-alt mr-1"></i>{{$item->photos->count()}}</small>
                 </div>
             </div>
         @endforeach

@@ -6,6 +6,11 @@ use App\Database\Mongodb;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
+/**
+ * Class Photo
+ * @package App\Models\Flickr
+ * @todo Rename to FlickrPhoto. Laravel will handle collection name
+ */
 class Photo extends Mongodb implements PhotoInterface
 {
     use SoftDeletes;
@@ -28,6 +33,7 @@ class Photo extends Mongodb implements PhotoInterface
 
     /**
      * @return BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
+     * @todo Not sure but use owner() won't work
      */
     public function refOwner()
     {

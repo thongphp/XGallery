@@ -41,8 +41,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('system:database')->everyMinute()->withoutOverlapping();
 
         foreach ($commands as $command) {
-            if ($command->every === null)
-            {
+            if ($command->every === null) {
                 continue;
             }
             $schedule->command($command->command)

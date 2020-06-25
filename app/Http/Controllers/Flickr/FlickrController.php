@@ -10,7 +10,6 @@
 
 namespace App\Http\Controllers\Flickr;
 
-use App\Facades\Flickr\UrlExtractor;
 use App\Facades\FlickrClient;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\FlickrDownloadRequest;
@@ -59,6 +58,7 @@ class FlickrController extends BaseController
      */
     public function dashboard(Request $request)
     {
+        // @todo Move to dashboard instead Flickr
         $oAuthRepository = app(OAuthRepository::class);
         $flickrOAuth = $oAuthRepository->findBy(['name' => 'flickr']);
         $googleOAuth = $oAuthRepository->findBy(['name' => 'google']);
@@ -84,14 +84,7 @@ class FlickrController extends BaseController
      */
     public function download(FlickrDownloadRequest $request)
     {
-        if (!$url = $request->get('url')) {
-            return;
-        }
-
-        /**
-         * @var FlickrUrlInterface $result
-         */
-        if (!$result = UrlExtractor::extract($url)) {
+        if (!$result = $request->getUrl()) {
             return redirect()
                 ->route('flickr.dashboard.view')
                 ->with('error', 'Could not detect type of URL');

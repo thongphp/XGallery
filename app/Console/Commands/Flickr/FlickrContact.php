@@ -40,6 +40,7 @@ final class FlickrContact extends BaseCommand
         if (!$contact = app(ContactRepository::class)->getItemByConditions([
             'sort-by' => 'updated_at', 'state' => null, 'cache' => 0
         ])) {
+            // @todo if found nothing than reset state
             return true;
         }
 

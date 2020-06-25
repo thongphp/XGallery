@@ -12,4 +12,5 @@ class Queues
     const QUEUE_BATDONGSAN    = 'batdongsan'; // 6
     const QUEUE_PHOTOS        = 'photos';
     const QUEUE_FLICKR        = 'flickr'; // 4
+    const QUEUE_GOOGLE        = 'google'; // 4
 }

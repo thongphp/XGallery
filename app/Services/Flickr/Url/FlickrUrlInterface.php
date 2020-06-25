@@ -2,6 +2,10 @@
 
 namespace App\Services\Flickr\Url;
 
+/**
+ * Interface FlickrUrlInterface
+ * @package App\Services\Flickr\Url
+ */
 interface FlickrUrlInterface
 {
     public const KEY_URL = 'url';
