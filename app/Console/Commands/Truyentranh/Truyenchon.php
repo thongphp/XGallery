@@ -10,11 +10,12 @@
 namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCrawlerCommand;
+use App\Repositories\TruyenchonRepository;
 use Exception;
 use Illuminate\Support\Collection;
 
 /**
- * Class Truyenchon
+ * Class TruyenchonRepository
  * @package App\Console\Commands\Truyentranh
  */
 final class Truyenchon extends BaseCrawlerCommand
@@ -43,6 +44,10 @@ final class Truyenchon extends BaseCrawlerCommand
             return false;
         }
 
+        if ($pages->isEmpty()) {
+            return true;
+        }
+
         $this->progressBarInit($pages->count());
 
         // Process all pages
@@ -57,10 +62,9 @@ final class Truyenchon extends BaseCrawlerCommand
             $this->progressBarSetSteps($stories->count());
 
             // Process items on page
-            $stories->each(function ($story) {
-                \App\Models\Truyenchon::firstOrCreate([
-                    'url' => $story['url'], 'cover' => $story['cover'], 'title' => $story['title']
-                ]);
+            $repository = app(TruyenchonRepository::class);
+            $stories->each(function ($story) use ($repository) {
+                $repository->firstOrCreate($story['url'], $story['cover'], $story['title']);
                 $this->progressBarAdvanceStep();
             });
             $this->progressBar->advance();

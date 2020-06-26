@@ -11,7 +11,8 @@ namespace App\Http\Controllers\Truyenchon;
 
 use App\Http\Controllers\BaseController;
 use App\Jobs\Truyenchon\TruyenchonDownload;
-use App\Models\Truyenchon;
+use App\Models\TruyenchonModel;
+use App\Repositories\TruyenchonRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -27,9 +28,9 @@ class TruyenchonController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected \App\Repositories\Truyenchon $repository;
+    protected TruyenchonRepository $repository;
 
-    public function __construct(\App\Repositories\Truyenchon $repository)
+    public function __construct(TruyenchonRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -41,7 +42,7 @@ class TruyenchonController extends BaseController
      */
     public function story(string $id, string $chapter)
     {
-        $story = Truyenchon::find($id);
+        $story = TruyenchonModel::find($id);
         $keys = array_keys($story->chapters);
         $keys = array_reverse($keys);
         $position = array_search($chapter, $keys);

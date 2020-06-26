@@ -9,9 +9,10 @@
 
 namespace App\Jobs\Truyenchon;
 
+use App\Crawlers\Crawler\Truyenchon;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\TruyenchonChapter;
+use App\Repositories\TruyenchonRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,11 +42,11 @@ class Chapters implements ShouldQueue
 
     public function handle()
     {
-        if (!$chapter = TruyenchonChapter::where(['chapterUrl' => $this->chapterUrl])->first()) {
+        if (!$chapter =  app(TruyenchonRepository::class)->getChapterByUrl($this->chapterUrl)) {
             return;
         }
 
-        $detail = app(\App\Crawlers\Crawler\Truyenchon::class)->getItemDetail($this->chapterUrl);
+        $detail = app(Truyenchon::class)->getItemDetail($this->chapterUrl);
         $chapter->images = $detail->images->toArray();
         $chapter->save();
     }

@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
 
 /**
  * Request download a book
- * @package App\Jobs\Truyenchon
+ * @package App\Jobs\TruyenchonRepository
  */
 class TruyenchonDownload implements ShouldQueue
 {
@@ -57,7 +57,7 @@ class TruyenchonDownload implements ShouldQueue
      */
     public function handle()
     {
-        $model = \App\Models\Truyenchon::find($this->id);
+        $model = \App\Models\TruyenchonModel::find($this->id);
 
         $crawler = app(Truyenchon::class);
         if (!$chapters = $crawler->getItemChapters($model->url)) {

@@ -5,6 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Class CreateScheduleTable
+ */
 class CreateScheduleTable extends Migration
 {
     /**
@@ -44,6 +47,19 @@ class CreateScheduleTable extends Migration
                 ],
                 [
                     'command' => 'flickr:photossizes',
+                    'every' => 'everyFifteenMinutes',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ],
+                // Truyenchon
+                [
+                    'command' => 'truyentranh:truyenchon',
+                    'every' => 'everyTenMinutes',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ],
+                [
+                    'command' => 'truyentranh:truyenchonstory',
                     'every' => 'everyFifteenMinutes',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
@@ -127,13 +143,6 @@ class CreateScheduleTable extends Migration
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
-
-                [
-                    'command' => 'truyentranh:truyenchon',
-                    'every' => 'everyFifteenMinutes',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ]
             ]
         );
     }

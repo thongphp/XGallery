@@ -11,7 +11,8 @@ namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCrawlerCommand;
 use App\Jobs\Truyenchon\Chapters;
-use App\Models\TruyenchonChapter;
+use App\Models\TruyenchonModel;
+use App\Repositories\TruyenchonRepository;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -42,14 +43,12 @@ final class TruyenchonStory extends BaseCrawlerCommand
     protected function fully(): bool
     {
         // Get story is not completed
-        /**
-         * @var \App\Models\Truyenchon $story
-         */
-        if (!$story = \App\Models\Truyenchon::where(['state' => null])->first()) {
+        $repository = app(TruyenchonRepository::class);
+        if (!$story = $repository->getStoryByState()) {
             return true;
         }
 
-        $story->state = \App\Models\Truyenchon::STATE_PROCESSED;
+        $story->state = TruyenchonModel::STATE_PROCESSED;
         $story->save();
 
         $crawler = app(\App\Crawlers\Crawler\Truyenchon::class);
@@ -70,9 +69,7 @@ final class TruyenchonStory extends BaseCrawlerCommand
         })->toArray();
 
         foreach ($chapters as $chapter) {
-            TruyenchonChapter::firstOrCreate([
-                'storyUrl' => $story['url'], 'chapterUrl' => $chapter['url'], 'chapter' => $chapter['chapter']
-            ]);
+            $repository->firstOrCreateChapter($story['url'], $chapter['url'], $chapter['chapter']);
             Chapters::dispatch($chapter['url']);
         }
 
