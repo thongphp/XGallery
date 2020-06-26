@@ -9,17 +9,16 @@
 
 namespace App\Jobs\Truyenchon;
 
-use App\Crawlers\Crawler\Truyenchon;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Repositories\TruyenchonRepository;
+use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Imagick;
-use ImagickException;
+use Illuminate\Support\Facades\File;
 
 /**
  * Process download each book' chapter
@@ -30,58 +29,45 @@ class TruyenchonChapterDownload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private array  $images;
-    /**
-     * @var string Save to path
-     */
-    private string $path;
+    private string $chapterUrl;
 
     /**
-     * Create a new job instance.
-     *
-     * @param  array  $images
-     * @param  string  $path
+     * TruyenchonChapterDownload constructor.
+     * @param  string  $chapterUrl
      */
-    public function __construct(array $images, string $path)
+    public function __construct(string $chapterUrl)
     {
-        $this->images = $images;
-        $this->path = $path;
+        $this->chapterUrl = $chapterUrl;
         $this->onQueue(Queues::QUEUE_DOWNLOADS);
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware()
-    {
-        return [new RateLimited('truyenchon')];
-    }
-
-    /**
-     * @throws ImagickException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle()
     {
-        $crawler = app(Truyenchon::class);
-        $files = [];
-        foreach ($this->images as $image) {
-            $files[] = storage_path('app/'.$crawler->download(
-                    $image,
-                    'truyenchon'.$this->path
-                ));
-        }
-
-        $chapter = explode('/', $this->path);
-        $chapter = end($chapter);
-
-        $pdf = new Imagick($files);
-        $pdf->setImageFormat('pdf');
-        if (!$pdf->writeImages(storage_path('app/chapter-'.$chapter).'.pdf', true)) {
-            return;
-        }
-
+        $chapter = app(TruyenchonRepository::class)->getChapterByUrl($this->chapterUrl);
         /**
-         * Upload file to drive
+         * We are using GuzzleHttp instead our Client because it's required for custom header
          */
+        $client = new Client();
+
+        $parts = explode('/', $this->chapterUrl);
+        $savePath = storage_path('app/truyenchon/'.$parts[4].'/'.$parts[5]);
+
+        if (!File::exists($savePath)) {
+            File::makeDirectory($savePath, 0755, true);
+        }
+
+        foreach ($chapter->images as $index => $image) {
+            $resource = fopen($savePath.'/'.$index.'.jpeg', 'w');
+            $client->request('GET', $image, [
+                'headers' => [
+                    'Cache-Control' => 'no-cache',
+                    'Referer' => $chapter->chapterUrl
+                ],
+                'sink' => $resource,
+            ]);
+        }
     }
 }

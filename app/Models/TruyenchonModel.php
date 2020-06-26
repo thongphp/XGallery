@@ -14,13 +14,17 @@ use App\Models\Traits\HasCover;
 use App\Models\Traits\HasUrl;
 
 /**
- * Class Truyenchon
+ * Class TruyenchonRepository
  * @package App\Models
  */
-class Truyenchon extends Mongodb
+class TruyenchonModel extends Mongodb
 {
     use HasUrl;
     use HasCover;
 
+    const STATE_PROCESSED = 1;
+
     public $collection = 'truyenchon';
+
+    protected $fillable = ['url', 'cover', 'title'];
 }

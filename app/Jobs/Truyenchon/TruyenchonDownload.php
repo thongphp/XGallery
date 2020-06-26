@@ -9,45 +9,35 @@
 
 namespace App\Jobs\Truyenchon;
 
-use App\Crawlers\Crawler\Truyenchon;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\TruyenchonChapterModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
 
 /**
  * Request download a book
- * @package App\Jobs\Truyenchon
+ * @package App\Jobs\TruyenchonRepository
  */
 class TruyenchonDownload implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $id;
+    private string $storyUrl;
 
     /**
      * Create a new job instance.
      *
-     * @param  string  $id
+     * @param  string  $storyUrl
      */
-    public function __construct(string $id)
+    public function __construct(string $storyUrl)
     {
-        $this->id = $id;
+        $this->storyUrl = $storyUrl;
         $this->onQueue(Queues::QUEUE_TRUYENTRANH);
-    }
-
-    /**
-     * @return RateLimited[]
-     */
-    public function middleware()
-    {
-        return [new RateLimited('truyenchon')];
     }
 
     /**
@@ -57,21 +47,10 @@ class TruyenchonDownload implements ShouldQueue
      */
     public function handle()
     {
-        $model = \App\Models\Truyenchon::find($this->id);
+        $chapters = TruyenchonChapterModel::where(['storyUrl' => $this->storyUrl]);
 
-        $crawler = app(Truyenchon::class);
-        if (!$chapters = $crawler->getItemChapters($model->url)) {
-            return;
+        foreach ($chapters as $chapter) {
+            TruyenchonChapterDownload::dispatch($chapter->chapterUrl);
         }
-
-        $chapters->each(function ($chapter, $index) use ($crawler, $model) {
-            if (!$item = $crawler->getItemDetail($chapter)) {
-                return;
-            }
-            TruyenchonChapterDownload::dispatch(
-                $item->images->toArray(),
-                DIRECTORY_SEPARATOR.Str::slug($model->title).DIRECTORY_SEPARATOR.$index
-            )->onQueue('downloads');
-        });
     }
 }
