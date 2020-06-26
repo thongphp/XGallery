@@ -10,9 +10,7 @@
 namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCrawlerCommand;
-use App\Jobs\Truyenchon\Chapters;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
@@ -33,7 +31,7 @@ final class Truyenchon extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $description = 'Fetching data from http://truyenchon.com/';
+    protected $description = 'Fetching stories from http://truyenchon.com/';
 
     /**
      * @return bool
@@ -48,93 +46,26 @@ final class Truyenchon extends BaseCrawlerCommand
         $this->progressBarInit($pages->count());
 
         // Process all pages
-        $pages->each(function ($page) {
+        $pages->each(function ($stories) {
             /**
-             * @var Collection $page
+             * @var Collection $stories
              */
-            if ($page->isEmpty()) {
+            if ($stories->isEmpty()) {
                 $this->progressBar->advance();
                 return;
             }
-            $this->progressBarSetSteps($page->count());
+            $this->progressBarSetSteps($stories->count());
+
             // Process items on page
-            $page->each(function ($story, $index) {
-                $this->progressBarSetInfo($story['url']);
-                $this->progressBarSetStatus('FETCHING');
-                // Save a book with information only
-                $this->insertItem($story);
-                /**
-                 * Update chapters for each book
-                 * @TODO Reduce update if chapters already here
-                 */
-                if (!$chapters = $this->crawler->getItemChapters($story['url'])) {
-                    $this->progressBarAdvanceStep();
-                    $this->progressBarSetStatus('SKIPPED');
-
-                    return;
-                }
-                $chapters = array_chunk($chapters->toArray(), 10);
-                foreach ($chapters as $chaptersChunk) {
-                    Chapters::dispatch($story, $chaptersChunk);
-                }
-
+            $stories->each(function ($story) {
+                \App\Models\Truyenchon::firstOrCreate([
+                    'url' => $story['url'], 'cover' => $story['cover'], 'title' => $story['title']
+                ]);
                 $this->progressBarAdvanceStep();
-                $this->progressBarSetStatus('QUEUED');
             });
             $this->progressBar->advance();
         });
 
         return true;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function item(): bool
-    {
-        if (!$url = $this->getOptionUrl()) {
-            return false;
-        }
-
-        if (!$itemDetail = $this->getCrawler()->getItemDetail($url)) {
-            return false;
-        }
-
-        $this->insertItem(get_object_vars($itemDetail));
-
-        return true;
-    }
-
-    /**
-     * Update chapters for a story
-     * @return bool
-     */
-    protected function story(): bool
-    {
-        if (!$url = $this->getOptionUrl()) {
-            return false;
-        }
-
-        if (!$chapters = $this->getCrawler()->getItemChapters($url)) {
-            return false;
-        }
-
-        if (!$entity = \App\Models\Truyenchon::where(['url' => $url])->first()) {
-            return false;
-        }
-
-        foreach ($chapters as $chapterUrl) {
-            Chapters::dispatch(['url' => $url], $chapterUrl);
-        }
-
-        return true;
-    }
-
-    /**
-     * @return Model
-     */
-    protected function getModel(): Model
-    {
-        return app(\App\Models\Truyenchon::class);
     }
 }

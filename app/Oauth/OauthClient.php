@@ -16,6 +16,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Class OauthClient
@@ -24,12 +25,13 @@ use Illuminate\Support\Facades\Log;
 class OauthClient
 {
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array $parameters
-     * @param bool $force
-     *
-     * @return string|object
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $parameters
+     * @param  bool|false  $force
+     * @return mixed|string|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws InvalidArgumentException
      */
     public function request(string $method, string $uri, array $parameters = [], bool $force = false)
     {

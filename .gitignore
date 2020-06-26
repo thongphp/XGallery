@@ -23,7 +23,6 @@ Homestead.json
 /package-lock.json
 /phing-latest.phar
 /.idea/
-/composer.lock
 /.env.testing
 /yarn.lock
 /vendor/
