@@ -46,6 +46,6 @@ class TruyenchonRepository extends BaseRepository
 
     public function getChapterByUrl(string $url)
     {
-        return TruyenchonChapterModel::where(['chapterUrl' => $this->$url])->first();
+        return TruyenchonChapterModel::where(['chapterUrl' => $url])->first();
     }
 }
