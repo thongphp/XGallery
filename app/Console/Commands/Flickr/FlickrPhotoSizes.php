@@ -34,7 +34,7 @@ final class FlickrPhotoSizes extends BaseCommand
             return true;
         }
 
-        $this->output->note('Working on %d photos', $photos->count());
+        $this->output->note(sprintf('Working on %d photos', $photos->count()));
         $this->progressBarInit($photos->count());
         $this->progressBarSetMessage('Photos', 'message');
 

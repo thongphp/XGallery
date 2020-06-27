@@ -21,7 +21,7 @@ class ContactRepository extends BaseRepository
     }
 
     /**
-     * @return FlickrContactModel|null
+     * @return FlickrContactModel|Model|null
      */
     public function getContactWithoutPhotos(): ?FlickrContactModel
     {
@@ -33,7 +33,7 @@ class ContactRepository extends BaseRepository
     /**
      * @param array $filter
      *
-     * @return FlickrContactModel|null
+     * @return FlickrContactModel|Model|null
      */
     public function getItemByConditions(array $filter = []): ?FlickrContactModel
     {
@@ -43,7 +43,7 @@ class ContactRepository extends BaseRepository
     /**
      * @param string $nsId
      *
-     * @return FlickrContactModel
+     * @return FlickrContactModel|Model
      */
     public function findOrCreateByNsId(string $nsId): FlickrContactModel
     {

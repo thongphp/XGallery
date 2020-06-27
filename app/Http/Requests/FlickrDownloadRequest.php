@@ -36,7 +36,7 @@ class FlickrDownloadRequest extends FormRequest
     }
 
     /**
-     * @return \App\Services\Flickr\FlickrUrlInterface|null
+     * @return FlickrUrlInterface|null
      */
     public function getUrl(): ?FlickrUrlInterface
     {
