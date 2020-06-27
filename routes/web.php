@@ -53,7 +53,6 @@ Route::namespace('App\Http\Controllers\Flickr')
     ->group(function () {
         Route::get('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
         Route::post('/download', [FlickrController::class, 'download'])->name('flickr.download.request');
-        Route::get('/contact/{nsid}', [FlickrController::class, 'contact'])->name('flickr.contact.view');
     });
 
 Route::namespace('App\Http\Controllers\Auth')

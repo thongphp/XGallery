@@ -151,30 +151,4 @@ class FlickrController extends BaseController
             'html' => Toast::success('Download', $flashMessage)
         ]);
     }
-
-    /**
-     * @param string $nsid
-     *
-     * @return Application|Factory|RedirectResponse|View
-     */
-    public function contact(string $nsid)
-    {
-        if ($view = $this->validateAuthenticate()) {
-            return $view;
-        }
-
-        $items = app(ContactRepository::class)
-            ->findOrCreateByNsId($nsid)
-            ->flickrPhotos()
-            ->whereNotNull(FlickrPhotoModel::KEY_SIZES)
-            ->paginate(30);
-
-        return view(
-            'flickr.photos',
-            $this->getViewDefaultOptions([
-                'items' => $items,
-                'title' => 'Flickr',
-            ])
-        );
-    }
 }
