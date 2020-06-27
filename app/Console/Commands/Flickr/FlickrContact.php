@@ -45,7 +45,10 @@ final class FlickrContact extends BaseCommand
         ])) {
             $contactRepository->resetStates();
             $this->output->note('Reset state of all contacts');
-            return true;
+
+            $contact = $contactRepository->getItemByConditions([
+                'sort-by' => 'updated_at', FlickrContactModel::KEY_STATE => null, 'cache' => 0
+            ]);
         }
 
         $contact->touch();

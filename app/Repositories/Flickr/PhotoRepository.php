@@ -4,6 +4,7 @@ namespace App\Repositories\Flickr;
 
 use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 
 class PhotoRepository extends BaseRepository
 {
@@ -49,7 +50,7 @@ class PhotoRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return FlickrPhotoModel|\Illuminate\Database\Eloquent\Model
+     * @return FlickrPhotoModel|Model
      */
     public function save(array $data): FlickrPhotoModel
     {

@@ -70,9 +70,9 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param \App\Http\Requests\FlickrDownloadRequest $request
+     * @param FlickrDownloadRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function download(FlickrDownloadRequest $request): JsonResponse
     {
@@ -113,7 +113,8 @@ class FlickrController extends BaseController
 
                     if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
                         return response()->json([
-                            'html' => Toast::warning('Download', 'Can not get Gallery information or gallery has no photos')
+                            'html' => Toast::warning('Download',
+                                'Can not get Gallery information or gallery has no photos')
                         ]);
                     }
 

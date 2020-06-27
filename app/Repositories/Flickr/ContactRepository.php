@@ -4,6 +4,7 @@ namespace App\Repositories\Flickr;
 
 use App\Models\Flickr\FlickrContactModel;
 use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ContactRepository
@@ -20,7 +21,7 @@ class ContactRepository extends BaseRepository
     }
 
     /**
-     * @return \App\Models\Flickr\FlickrContactModel|null
+     * @return FlickrContactModel|null
      */
     public function getContactWithoutPhotos(): ?FlickrContactModel
     {
@@ -32,7 +33,7 @@ class ContactRepository extends BaseRepository
     /**
      * @param array $filter
      *
-     * @return \App\Models\Flickr\FlickrContactModel|null
+     * @return FlickrContactModel|null
      */
     public function getItemByConditions(array $filter = []): ?FlickrContactModel
     {
@@ -42,7 +43,7 @@ class ContactRepository extends BaseRepository
     /**
      * @param string $nsId
      *
-     * @return \App\Models\Flickr\FlickrContactModel
+     * @return FlickrContactModel
      */
     public function findOrCreateByNsId(string $nsId): FlickrContactModel
     {
@@ -72,7 +73,7 @@ class ContactRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return \Illuminate\Database\Eloquent\Model|\App\Models\Flickr\FlickrContactModel
+     * @return Model|FlickrContactModel
      */
     public function save(array $data)
     {

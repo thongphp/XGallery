@@ -45,8 +45,7 @@ final class FlickrPhotos extends BaseCommand
         if (!$contact = $contactRepository->getContactWithoutPhotos()) {
             $contactRepository->resetPhotoStates();
             $this->output->note('Reset Photo State of all contacts');
-
-            return true;
+            $contact = $contactRepository->getContactWithoutPhotos();
         }
 
         $contact->{FlickrContactModel::KEY_PHOTO_STATE} = 1;

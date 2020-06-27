@@ -274,7 +274,7 @@ class FlickrClient extends OauthClient
      * @param string $url
      *
      * @return object|null
-     * @throws \App\Exceptions\Flickr\FlickrApiUrlLookupUserException
+     * @throws FlickrApiUrlLookupUserException
      */
     public function lookUpUser(string $url): ?object
     {

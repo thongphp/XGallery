@@ -50,7 +50,7 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
     public function getCover(): ?string
     {
         if (empty($this->{self::KEY_SIZES})) {
-            return null;
+            return 'https://via.placeholder.com/150';
         }
 
         return $this->{self::KEY_SIZES}[0]['source'];

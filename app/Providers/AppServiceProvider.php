@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
             return new FlickrValidate;
         });
 
-        $this->app->bind('flickr\urlextractor', function () {
+        $this->app->bind('flickrurlextractor', function () {
             return new UrlExtractor;
         });
     }
