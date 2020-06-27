@@ -8,7 +8,7 @@ use App\Facades\FlickrClient;
 use App\Jobs\Google\SyncPhotoToGooglePhoto;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Flickr\Photo;
+use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -62,11 +62,11 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     }
 
     /**
-     * @param Photo $photo
+     * @param FlickrPhotoModel $photo
      *
      * @return bool|string
      */
-    private function downloadPhoto(Photo $photo)
+    private function downloadPhoto(FlickrPhotoModel $photo)
     {
         // Due to dynamic variable of MongoDB model, we can not do like this $sourceSize = end($photo-sizes);
         $photoSizes = $photo->sizes;

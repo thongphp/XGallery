@@ -12,6 +12,7 @@ namespace App\Console\Commands\Flickr;
 use App\Console\BaseCommand;
 use App\Jobs\Flickr\FlickrContactFavouritePhotos;
 use App\Jobs\Flickr\FlickrContactPhotos;
+use App\Models\Flickr\FlickrContactModel;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
@@ -39,12 +40,16 @@ final class FlickrPhotos extends BaseCommand
      */
     public function fully(): bool
     {
-        if (!$contact = app(ContactRepository::class)->getContactWithoutPhotos()) {
-            // @todo If found nothing then reset photo_state
-            return false;
+        $contactRepository = app(ContactRepository::class);
+
+        if (!$contact = $contactRepository->getContactWithoutPhotos()) {
+            $contactRepository->resetPhotoStates();
+            $this->output->note('Reset Photo State of all contacts');
+
+            return true;
         }
 
-        $contact->photo_state = 1;
+        $contact->{FlickrContactModel::KEY_PHOTO_STATE} = 1;
         $contact->save();
         $this->output->note('Working on contact: '.$contact->nsid);
 

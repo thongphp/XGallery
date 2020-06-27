@@ -5,7 +5,7 @@ namespace App\Jobs\Flickr;
 use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Flickr\Photo;
+use App\Models\Flickr\FlickrPhotoModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,7 +35,7 @@ class FlickrPhotoSizes implements ShouldQueue
     public function handle(): void
     {
         try {
-            $photo = Photo::where(['id' => $this->id])->first();
+            $photo = FlickrPhotoModel::where(['id' => $this->id])->first();
             if (!$photo) {
                 return;
             }

@@ -10,7 +10,7 @@
                     </div>
                     <div class="card-footer">
                         <small class="text-muted pull-left float-left">{{$item->id}}</small>
-                        <small class="text-muted pull-right float-right">{{$item->refOwner->realname}}</small>
+                        <small class="text-muted pull-right float-right">{{$item->flickrcontact->realname}}</small>
                     </div>
                 </div>
             </div>

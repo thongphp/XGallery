@@ -16,6 +16,7 @@ use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
+use App\Models\Flickr\FlickrPhotoModel;
 use App\Notifications\FlickrRequestDownload;
 use App\Notifications\FlickrRequestException;
 use App\Repositories\Flickr\ContactRepository;
@@ -161,7 +162,8 @@ class FlickrController extends BaseController
 
         $items = app(ContactRepository::class)
             ->findOrCreateByNsId($nsid)
-            ->refPhotos()
+            ->flickrPhotos()
+            ->whereNotNull(FlickrPhotoModel::KEY_SIZES)
             ->paginate(30);
 
         return view(

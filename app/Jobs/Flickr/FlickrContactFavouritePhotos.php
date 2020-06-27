@@ -3,6 +3,7 @@
 namespace App\Jobs\Flickr;
 
 use App\Facades\FlickrClient;
+use App\Facades\FlickrValidate;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Repositories\Flickr\PhotoRepository;
@@ -35,7 +36,7 @@ class FlickrContactFavouritePhotos implements ShouldQueue
 
     public function handle(): void
     {
-        if (!FlickrClient::validateNsId($this->nsid)) {
+        if (!FlickrValidate::validateNsId($this->nsid)) {
             return;
         }
 

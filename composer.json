@@ -10,25 +10,21 @@
     "require": {
         "php": "^7.4",
         "ext-curl": "*",
+        "ext-imagick": "*",
         "ext-json": "*",
         "ext-mongodb": "*",
         "ext-simplexml": "*",
-        "ext-imagick": "*",
         "campo/random-user-agent": "^1.3",
         "doctrine/dbal": "^2.10",
-
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
-        "guzzlehttp/guzzle": "^6.5",
         "guzzlehttp/oauth-subscriber": "^0.3.0",
         "jenssegers/mongodb": "^3.6",
         "kamermans/guzzle-oauth2-subscriber": "^1.0",
         "laminas/laminas-hydrator": "^3.0",
         "laravel/framework": "^6.0",
-
         "laravel/slack-notification-channel": "^2.0",
-        "laravel/socialite": "^4.3",
-
+        "laravel/socialite": "^4.4",
         "league/flysystem-sftp": "^1.0",
         "nao-pon/flysystem-google-drive": "~1.1",
         "sentry/sentry-laravel": "1.8.0",
@@ -38,7 +34,6 @@
         "symfony/console": "^4.3.4",
         "symfony/dom-crawler": "^5.0",
         "symfony/http-client": "^5.0"
-
     },
     "require-dev": {
         "laravel/tinker": "^2.3",

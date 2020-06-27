@@ -16,11 +16,13 @@ use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 /**
  * @package App\Models
  */
-class Contact extends Mongodb implements ContactInterface
+class FlickrContactModel extends Mongodb implements FlickrContactInterface
 {
     use SoftDeletes;
 
     public const KEY_NSID = 'nsid';
+    public const KEY_STATE = 'state';
+    public const KEY_PHOTO_STATE = 'photo_state';
     public const STATE_CONTACT_DETAIL = 1;
 
     protected $collection = 'flickr_contacts';
@@ -54,11 +56,15 @@ class Contact extends Mongodb implements ContactInterface
     ];
 
     /**
-     * @todo Use photos() instead
+     * Getting owner (Contact) of this photo
+     * Example:
+     * $this->flickrphotos // Get array of associated FlickPhotoModel
+     * $this->flickrPhotos() // Get query builder
+     *
      * @return HasMany|\Jenssegers\Mongodb\Relations\HasMany
      */
-    public function photos()
+    public function flickrPhotos()
     {
-        return $this->hasMany(Photo::class, Photo::KEY_OWNER, self::KEY_NSID);
+        return $this->hasMany(FlickrPhotoModel::class, FlickrPhotoModel::KEY_OWNER, self::KEY_NSID);
     }
 }

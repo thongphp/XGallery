@@ -79,7 +79,7 @@ class FlickrClient extends OauthClient
 
         if (!$content) {
             Log::stack(['oauth'])->warning('Request responded with no content');
-            return null;
+            return (object)['stat' => 'fail'];
         }
 
         if ($content->stat !== self::RESPONSE_STAT_OK) {
@@ -266,15 +266,5 @@ class FlickrClient extends OauthClient
         }
 
         throw new FlickrApiPeopleGetPhotosException($userId);
-    }
-
-    /**
-     * @param string $nsid
-     *
-     * @return bool
-     */
-    public function validateNsId(string $nsid): bool
-    {
-        return strpos($nsid, '@') !== false;
     }
 }

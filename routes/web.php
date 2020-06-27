@@ -59,8 +59,8 @@ Route::namespace('App\Http\Controllers\Flickr')
 Route::namespace('App\Http\Controllers\Auth')
     ->prefix('oauth')
     ->group(function () {
-        Route::get('flickr', [\App\Http\Controllers\Auth\FlickrController::class, 'login']);
-        Route::get('flickr/callback', [\App\Http\Controllers\Auth\FlickrController::class, 'callback']);
+        Route::get('flickr', [FlickrController::class, 'login']);
+        Route::get('flickr/callback', [FlickrController::class, 'callback']);
         Route::get('google', [GoogleController::class, 'login']);
         Route::get('google/callback', [GoogleController::class, 'callback']);
     });

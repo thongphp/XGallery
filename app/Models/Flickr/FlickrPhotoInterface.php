@@ -13,11 +13,10 @@ namespace App\Models\Flickr;
  * @property int|null $isfriend
  * @property int|null $isfamily
  * @property array|null $sizes
- * @property \App\Models\Flickr\Contact|null $ref_owner;
- * @property string|null $google_album_id;
- * @property string|null $google_media_id;
+ *
+ * @property \App\Models\Flickr\FlickrContactModel|null $flickrcontact;
  */
-interface PhotoInterface
+interface FlickrPhotoInterface
 {
     /**
      * @return bool
