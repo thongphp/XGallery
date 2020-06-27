@@ -2,6 +2,7 @@
 
 namespace App\Services\Flickr;
 
+use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
 use App\Facades\FlickrClient;
 use App\Services\Flickr\Url\FlickrUrl;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -45,9 +46,9 @@ class UrlExtractor
     ];
 
     /**
-     * @param  string  $url
+     * @param string $url
      *
-     * @return FlickrUrlInterface|null
+     * @return \App\Services\Flickr\Url\FlickrUrlInterface|null
      */
     public function extract(string $url): ?FlickrUrlInterface
     {
@@ -111,8 +112,8 @@ class UrlExtractor
     }
 
     /**
-     * @param  string  $owner
-     * @param  string  $url
+     * @param string $owner
+     * @param string $url
      *
      * @return string|null
      */
@@ -122,11 +123,12 @@ class UrlExtractor
             return $owner;
         }
 
-        if (!$result = FlickrClient::get('urls.lookupUser', ['url' => $url]))
-        {
+        try {
+            $result = FlickrClient::lookUpUser($url);
+
+            return $result->user->id;
+        } catch (FlickrApiUrlLookupUserException $e) {
             return null;
         }
-
-        return $result->user->id;
     }
 }

@@ -13,6 +13,7 @@ use App\Exceptions\Flickr\FlickrApiPeopleGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
+use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
 use App\Oauth\OauthClient;
 use App\Services\Flickr\Response\PeopleResponseInterface;
 use Illuminate\Support\Facades\Log;
@@ -36,6 +37,7 @@ class FlickrClient extends OauthClient
     private const PHOTOSETS_GET_PHOTOS = 'photosets.getPhotos';
     private const PEOPLE_GET_INFO = 'people.getInfo';
     private const PEOPLE_GET_PHOTOS = 'people.getPhotos';
+    private const URL_LOOKUP_USER = 'urls.lookupUser';
 
     /**
      * @param string $photoSetId
@@ -266,5 +268,22 @@ class FlickrClient extends OauthClient
         }
 
         throw new FlickrApiPeopleGetPhotosException($userId);
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return object|null
+     * @throws \App\Exceptions\Flickr\FlickrApiUrlLookupUserException
+     */
+    public function lookUpUser(string $url): ?object
+    {
+        $result = $this->get(self::URL_LOOKUP_USER, ['url' => $url]);
+
+        if ($result->stat === self::RESPONSE_STAT_OK) {
+            return $result;
+        }
+
+        throw new FlickrApiUrlLookupUserException($url);
     }
 }

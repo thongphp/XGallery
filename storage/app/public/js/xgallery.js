@@ -59,6 +59,11 @@
         init: function () {
             jQuery('body').on('click', '.ajax-pool', function () {
                 xgallery.ajax.request(jQuery(this).data());
+            });
+
+            jQuery('body').on('submit', '.ajax-form', function (e) {
+                e.preventDefault();
+                xgallery.ajax.request({ 'url': jQuery(this).find('input[name="url"]').val(), 'ajaxUrl': jQuery(this).attr('action') });
             })
         }
     }

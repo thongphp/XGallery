@@ -52,7 +52,7 @@ Route::namespace('App\Http\Controllers\Flickr')
     ->prefix('flickr')
     ->group(function () {
         Route::get('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
-        Route::post('/', [FlickrController::class, 'download'])->name('flickr.download.request');
+        Route::post('/download', [FlickrController::class, 'download'])->name('flickr.download.request');
         Route::get('/contact/{nsid}', [FlickrController::class, 'contact'])->name('flickr.contact.view');
     });
 
