@@ -53,6 +53,8 @@ final class FlickrContact extends BaseCommand
 
         $contact->touch();
         $this->output->note(sprintf('Working on %s contact', $contact->nsid));
+
+        // @todo Message "QUEUED"
         \App\Jobs\Flickr\FlickrContact::dispatch($contact->nsid);
 
         return true;

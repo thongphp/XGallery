@@ -35,12 +35,18 @@ final class FlickrPhotoSizes extends BaseCommand
         }
 
         $this->output->note(sprintf('Working on %d photos', $photos->count()));
+
+        if ($photos->isEmpty()) {
+            return true;
+        }
+
         $this->progressBarInit($photos->count());
         $this->progressBarSetMessage('Photos', 'message');
 
         foreach ($photos as $photo) {
             \App\Jobs\Flickr\FlickrPhotoSizes::dispatch($photo->id);
-            $this->progressBarAdvanceStep();
+            $this->progressBarSetStatus('QUEUED');
+            $this->progressBar->advance();
         }
 
         return true;
