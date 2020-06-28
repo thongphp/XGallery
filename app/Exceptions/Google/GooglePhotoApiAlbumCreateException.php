@@ -13,7 +13,7 @@ class GooglePhotoApiAlbumCreateException extends Exception
     public function __construct(string $albumTitle)
     {
         $message = 'Can not create album with title: '.$albumTitle;
-        Log::stack(['google'])->alert($message);
+        Log::stack(['slack', 'google'])->alert($message);
 
         parent::__construct($message);
     }

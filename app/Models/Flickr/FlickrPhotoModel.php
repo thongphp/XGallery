@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 /**
- * Class Photo
+ * Class FlickrPhotoModel
  * @package App\Models\Flickr
- * @todo Rename to FlickrPhoto. Laravel will handle collection name
  */
-class Photo extends Mongodb implements PhotoInterface
+class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
 {
     use SoftDeletes;
 
     public const KEY_OWNER = 'owner';
+    public const KEY_SIZES = 'sizes';
 
     protected $collection = 'flickr_photos';
     protected $fillable = [
@@ -32,12 +32,16 @@ class Photo extends Mongodb implements PhotoInterface
     ];
 
     /**
+     * Getting owner (Contact) of this photo
+     * Example:
+     * $this->flickrcontact // Get FlickrModelContact object
+     * $this->flickrContact() // Get query builder
+     *
      * @return BelongsTo|\Jenssegers\Mongodb\Relations\BelongsTo
-     * @todo Not sure but use owner() won't work
      */
-    public function refOwner()
+    public function flickrContact()
     {
-        return $this->belongsTo(Contact::class, self::KEY_OWNER, Contact::KEY_NSID);
+        return $this->belongsTo(FlickrContactModel::class, self::KEY_OWNER, FlickrContactModel::KEY_NSID);
     }
 
     /**
@@ -45,7 +49,11 @@ class Photo extends Mongodb implements PhotoInterface
      */
     public function getCover(): ?string
     {
-        return $this->sizes ? $this->sizes[0]['source'] : null;
+        if (empty($this->{self::KEY_SIZES})) {
+            return 'https://via.placeholder.com/150';
+        }
+
+        return $this->{self::KEY_SIZES}[0]['source'];
     }
 
     /**
@@ -53,6 +61,6 @@ class Photo extends Mongodb implements PhotoInterface
      */
     public function hasSizes(): bool
     {
-        return !empty($this->sizes);
+        return !empty($this->{self::KEY_SIZES});
     }
 }

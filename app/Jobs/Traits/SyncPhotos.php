@@ -3,7 +3,7 @@
 namespace App\Jobs\Traits;
 
 use App\Jobs\Flickr\FlickrDownloadPhotoToLocal;
-use App\Models\Flickr\Photo;
+use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\Flickr\PhotoRepository;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
@@ -26,7 +26,7 @@ trait SyncPhotos
         foreach ($photos as $photo) {
             $photoModel = $photoRepository->findOrCreateById($photo->id);
             $photoModel->fill($hydrator->extract($photo))
-                ->setAttribute(Photo::KEY_OWNER, $owner)
+                ->setAttribute(FlickrPhotoModel::KEY_OWNER, $owner)
                 ->save();
 
             FlickrDownloadPhotoToLocal::dispatch($photoModel->id, $googleAlbumId);

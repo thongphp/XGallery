@@ -28,8 +28,11 @@ namespace App\Models\Flickr;
  * @property string|null $profileurl
  * @property string|null $mobileurl
  * @property array|null $photos
- * @property \App\Models\Flickr\Photo[]|null $ref_photos;
+ *
+ * @property \App\Models\Flickr\FlickrPhotoModel[]|null $flickrphotos;
+ * @property int|null $state
+ * @property int|null $photo_state
  */
-interface ContactInterface
+interface FlickrContactInterface
 {
 }

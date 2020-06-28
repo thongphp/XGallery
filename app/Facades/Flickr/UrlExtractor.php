@@ -8,6 +8,6 @@ class UrlExtractor extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'flickr\urlextractor';
+        return 'flickrurlextractor';
     }
 }

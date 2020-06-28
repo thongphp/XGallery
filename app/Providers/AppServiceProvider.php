@@ -11,6 +11,7 @@ namespace App\Providers;
 
 use App\Services\Flickr\UrlExtractor;
 use App\Services\FlickrClient;
+use App\Services\FlickrValidate;
 use App\Services\GoogleDrive;
 use App\Services\GooglePhoto;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
@@ -25,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        if ($this->app->environment() === 'local') {
+            $this->app->register(IdeHelperServiceProvider::class);
+        }
+
         $this->app->bind('googledrive', function () {
             return new GoogleDrive;
         });
@@ -37,13 +42,13 @@ class AppServiceProvider extends ServiceProvider
             return new FlickrClient;
         });
 
-        $this->app->bind('flickr\urlextractor', function () {
-            return new UrlExtractor;
+        $this->app->bind('flickrvalidate', function () {
+            return new FlickrValidate;
         });
 
-        if ($this->app->environment() === 'local') {
-            $this->app->register(IdeHelperServiceProvider::class);
-        }
+        $this->app->bind('flickrurlextractor', function () {
+            return new UrlExtractor;
+        });
     }
 
     /**
@@ -55,6 +60,5 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
 
 }

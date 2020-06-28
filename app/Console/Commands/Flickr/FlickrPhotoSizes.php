@@ -30,13 +30,17 @@ final class FlickrPhotoSizes extends BaseCommand
      */
     public function fully(): bool
     {
-        // @todo Progressbar
         if (!$photos = app(PhotoRepository::class)->getPhotosWithNoSizes()) {
             return true;
         }
 
+        $this->output->note(sprintf('Working on %d photos', $photos->count()));
+        $this->progressBarInit($photos->count());
+        $this->progressBarSetMessage('Photos', 'message');
+
         foreach ($photos as $photo) {
             \App\Jobs\Flickr\FlickrPhotoSizes::dispatch($photo->id);
+            $this->progressBarAdvanceStep();
         }
 
         return true;

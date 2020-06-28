@@ -10458,10 +10458,10 @@
     "platform": {
         "php": "^7.4",
         "ext-curl": "*",
+        "ext-imagick": "*",
         "ext-json": "*",
         "ext-mongodb": "*",
-        "ext-simplexml": "*",
-        "ext-imagick": "*"
+        "ext-simplexml": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "1.1.0"

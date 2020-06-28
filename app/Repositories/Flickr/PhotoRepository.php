@@ -2,44 +2,47 @@
 
 namespace App\Repositories\Flickr;
 
-use App\Models\Flickr\Photo;
+use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 
 class PhotoRepository extends BaseRepository
 {
     /**
-     * @param Photo $model
+     * @param FlickrPhotoModel $model
      */
-    public function __construct(Photo $model)
+    public function __construct(FlickrPhotoModel $model)
     {
         parent::__construct($model);
     }
 
     /**
      * @param int $limit
+     *
      * @return mixed
      */
     public function getPhotosWithNoSizes(int $limit = 100)
     {
-        return $this->getItems(['sizes' => null, 'per-page' => $limit, 'cache' =>0]);
+        return $this->getItems([FlickrPhotoModel::KEY_SIZES => null, 'per-page' => $limit, 'cache' => 0]);
     }
 
     /**
      * @param string $id
      *
-     * @return Photo
+     * @return FlickrPhotoModel
      * @deprecated
      */
-    public function findOrCreateById(string $id): Photo
+    public function findOrCreateById(string $id): FlickrPhotoModel
     {
         return $this->model::firstOrCreate(['id' => $id]);
     }
 
     /**
      * @param array $data
-     * @return Photo
+     *
+     * @return FlickrPhotoModel
      */
-    public function findOrCreateByIdWithData(array $data): Photo
+    public function findOrCreateByIdWithData(array $data): FlickrPhotoModel
     {
         return $this->model::firstOrCreate(['id' => $data['id']], $data);
     }
@@ -47,9 +50,9 @@ class PhotoRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return Photo|\Illuminate\Database\Eloquent\Model
+     * @return FlickrPhotoModel|Model
      */
-    public function save(array $data): Photo
+    public function save(array $data): FlickrPhotoModel
     {
         $model = clone($this->model);
 

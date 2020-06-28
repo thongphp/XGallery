@@ -26,4 +26,5 @@ Homestead.json
 /.env.testing
 /yarn.lock
 /vendor/
-/_ide_helper.php
+_ide_helper.php
+.phpstorm.meta.php

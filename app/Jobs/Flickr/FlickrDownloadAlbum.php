@@ -7,6 +7,7 @@ use App\Facades\GooglePhotoClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
+use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,21 +35,21 @@ class FlickrDownloadAlbum implements ShouldQueue
     }
 
     /**
+     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
+     * @throws \JsonException
      */
     public function handle(): void
     {
-        // @todo Trigger notification if can't get photos
         $photos = FlickrClient::getPhotoSetPhotos($this->album->id);
-
-        // @todo Trigger notification if can't create album
         $googleAlbum = GooglePhotoClient::createAlbum($this->album->title);
-
-        // @todo Save contact if not exist
 
         $googleAlbumId = $googleAlbum->id;
         $owner = $this->album->owner;
 
-        FlickrContact::dispatch($owner);
+        // If owner is not exist, start new queue for getting this contact information.
+        if (!app(ContactRepository::class)->isExist($owner)) {
+            FlickrContact::dispatch($owner);
+        }
 
         $this->syncPhotos($photos->photoset->photo, $owner, $googleAlbumId);
 
