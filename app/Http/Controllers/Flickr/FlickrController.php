@@ -16,12 +16,12 @@ use App\Facades\FlickrClient;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
-use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
 use App\Notifications\FlickrRequestDownload;
 use App\Notifications\FlickrRequestException;
 use App\Repositories\Flickr\ContactRepository;
+use App\Services\Flickr\Objects\FlickrAlbum;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -115,22 +115,24 @@ class FlickrController extends BaseController
         try {
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
-                    $albumInfo = FlickrClient::getPhotoSetInfo($result->getId());
+                    $album = new FlickrAlbum($result->getId());
 
-                    if ($albumInfo->photoset->photos === 0) {
+                    if ($album->load() && $album->getPhotosCount() === 0) {
                         return response()->json([
-                            'html' => Toast::warning('Download', 'Can not get Album information or album has no photos')
+                            'html' => Toast::warning(
+                                'Download',
+                                'Can not get Album information or album has no photos'
+                            )
                         ]);
                     }
 
-                    // @todo Create photoset object
-                    FlickrDownloadAlbum::dispatch($albumInfo);
+                    $album->download();
 
                     $flashMessage = sprintf(
                         $flashMessage,
-                        $albumInfo->photoset->photos,
+                        $album->getPhotos(),
                         'album',
-                        $albumInfo->photoset->title
+                        $album->getTitle()
                     );
 
                     break;

@@ -8,6 +8,7 @@ use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
 use App\Repositories\Flickr\ContactRepository;
+use App\Services\Flickr\Objects\FlickrAlbum;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,9 +27,9 @@ class FlickrDownloadAlbum implements ShouldQueue
     private object $album;
 
     /**
-     * @param object $album
+     * @param  FlickrAlbum  $album
      */
-    public function __construct(object $album)
+    public function __construct(FlickrAlbum $album)
     {
         $this->album = $album;
         $this->onQueue(Queues::QUEUE_FLICKR);
@@ -40,11 +41,11 @@ class FlickrDownloadAlbum implements ShouldQueue
      */
     public function handle(): void
     {
-        $photos = FlickrClient::getPhotoSetPhotos($this->album->id);
-        $googleAlbum = GooglePhotoClient::createAlbum($this->album->title);
+        $photos = $this->album->getPhotos();
+        $googleAlbum = GooglePhotoClient::createAlbum($this->album->getTitle());
 
         $googleAlbumId = $googleAlbum->id;
-        $owner = $this->album->owner;
+        $owner = $this->album->getOwner();
 
         // If owner is not exist, start new queue for getting this contact information.
         if (!app(ContactRepository::class)->isExist($owner)) {
@@ -58,7 +59,7 @@ class FlickrDownloadAlbum implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-            if (!$nextPhotos = FlickrClient::getPhotoSetPhotos($this->album->id, $page)) {
+            if (!$nextPhotos = FlickrClient::getPhotoSetPhotos($this->album->getId(), $page)) {
                 continue;
             }
 
