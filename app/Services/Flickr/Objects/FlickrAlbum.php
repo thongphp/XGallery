@@ -6,6 +6,10 @@ use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 
+/**
+ * Class FlickrAlbum
+ * @package App\Services\Flickr\Objects
+ */
 class FlickrAlbum
 {
     private string $id;
@@ -20,6 +24,9 @@ class FlickrAlbum
         $this->id = $id;
     }
 
+    /**
+     * @return string
+     */
     public function getId(): string
     {
         return $this->id;
@@ -53,7 +60,7 @@ class FlickrAlbum
     public function getPhotos(): ?object
     {
         if (!$this->isValid()) {
-            null;
+            return null;
         }
 
         return FlickrClient::getPhotoSetPhotos($this->getId());
