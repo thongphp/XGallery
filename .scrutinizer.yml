@@ -1,0 +1,30 @@
+build:
+  nodes:
+    environment:
+      php:
+        version: 7.4  # or any other released version
+    analysis:
+      project_setup:
+        override:
+          - 'true'
+      tests:
+        override:
+          - php-scrutinizer-run
+          -
+            command: phpcs-run
+            use_website_config: true
+          - js-scrutinizer-run
+    tests: true
+filter:
+  paths:
+    - 'app/*'
+  excluded_paths:
+    - 'app/views/*'
+    - 'app/config/*'
+    - 'app/database/*'
+    - '*/vendor/*'
+checks:
+  php: true
+  javascript: true
+coding_style:
+  php: {  }
