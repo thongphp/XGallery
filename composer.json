@@ -36,7 +36,7 @@
         "symfony/http-client": "^5.0"
     },
     "require-dev": {
-        "laravel/tinker": "^2.3",
+        "laravel/tinker": "^2.4",
         "barryvdh/laravel-ide-helper": "^2.7",
         "facade/ignition": "^1.16",
         "friendsofphp/php-cs-fixer": "^2.16",
