@@ -57,6 +57,7 @@ class BaseController extends Controller
         return array_merge(
             [
                 'sidebar' => $this->getMenuItems(),
+                'title' => ucfirst($this->getName()),
             ],
             $options
         );

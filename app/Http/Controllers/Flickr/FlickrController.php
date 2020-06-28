@@ -10,6 +10,8 @@
 
 namespace App\Http\Controllers\Flickr;
 
+use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
+use App\Facades\Flickr\UrlExtractor;
 use App\Facades\FlickrClient;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
@@ -17,7 +19,6 @@ use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
-use App\Models\Flickr\FlickrPhotoModel;
 use App\Notifications\FlickrRequestDownload;
 use App\Notifications\FlickrRequestException;
 use App\Repositories\Flickr\ContactRepository;
@@ -48,7 +49,7 @@ class FlickrController extends BaseController
     /**
      * FlickrController constructor.
      *
-     * @param ContactRepository $repository
+     * @param  ContactRepository  $repository
      */
     public function __construct(ContactRepository $repository)
     {
@@ -56,7 +57,7 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return Application|Factory|RedirectResponse|View
      */
@@ -66,11 +67,37 @@ class FlickrController extends BaseController
             return $view;
         }
 
+        if ($url = $request->get('url')) {
+            $result = UrlExtractor::extract($url);
+            try {
+                $profile = FlickrClient::getPeopleInfo($result->getOwner());
+                $message = 'URL type is <span class="badge badge-primary">%s</span>';
+                switch ($result->getType()) {
+                    case FlickrUrlInterface::TYPE_ALBUM:
+                        $message = sprintf($message, FlickrUrlInterface::TYPE_ALBUM);
+                        $data = FlickrClient::getPhotoSetInfo($result->getId());
+                        break;
+                }
+            } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
+                return redirect()->route('flickr.dashboard.view')->with('warning', 'User has been deleted');
+            }
+
+            return view(
+                $this->getName().'.index',
+                $this->getViewDefaultOptions([
+                    'profile' => $profile ?? null,
+                    'message' => $message,
+                    'type' => $result->getType(),
+                    'data' => $data ?? null,
+                ])
+            );
+        }
+
         return parent::dashboard($request);
     }
 
     /**
-     * @param FlickrDownloadRequest $request
+     * @param  FlickrDownloadRequest  $request
      *
      * @return JsonResponse
      */
@@ -113,8 +140,10 @@ class FlickrController extends BaseController
 
                     if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
                         return response()->json([
-                            'html' => Toast::warning('Download',
-                                'Can not get Gallery information or gallery has no photos')
+                            'html' => Toast::warning(
+                                'Download',
+                                'Can not get Gallery information or gallery has no photos'
+                            )
                         ]);
                     }
 
@@ -137,7 +166,6 @@ class FlickrController extends BaseController
                     break;
                 default:
                     throw new Exception();
-                    break;
             }
         } catch (Exception $exception) {
             $this->notify(new FlickrRequestException($exception->getMessage(), $request->get('url')));
