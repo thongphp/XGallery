@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Apis\Batdongsan;
+namespace App\Http\Apis\Controllers\Batdaongsan;
 
-use App\Http\Controllers\Apis\ApiController;
+use App\Http\Apis\ApiController;
 use App\Repositories\BatdongsanRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

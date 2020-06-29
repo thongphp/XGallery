@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Apis\Jav;
+namespace App\Http\Apis\Controllers\Jav;
 
-use App\Http\Controllers\Apis\ApiController;
+use App\Http\Apis\ApiController;
 use App\Repositories\JavMovies;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Apis\Batdongsan\BatdongsanController;
-use App\Http\Apis\Jav\JavController;
-use App\Http\Controllers\Apis\Nhaccuatui\NhaccuatuiController;
+use App\Http\Apis\Controllers\Batdaongsan\BatdongsanController;
+use App\Http\Apis\Controllers\Jav\JavController;
+use App\Http\Apis\Controllers\Nhaccuatui\NhaccuatuiController;
 use Illuminate\Support\Facades\Route;
 
 /*

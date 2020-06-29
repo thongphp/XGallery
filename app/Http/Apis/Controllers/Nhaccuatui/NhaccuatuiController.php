@@ -7,9 +7,9 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Http\Controllers\Apis\Nhaccuatui;
+namespace App\Http\Apis\Controllers\Nhaccuatui;
 
-use App\Http\Controllers\Apis\ApiController;
+use App\Http\Apis\ApiController;
 use App\Repositories\NhaccuatuiRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
