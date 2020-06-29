@@ -47,7 +47,7 @@ class TruyenchonDownload implements ShouldQueue
      */
     public function handle()
     {
-        $chapters = TruyenchonChapterModel::where(['storyUrl' => $this->storyUrl]);
+        $chapters = TruyenchonChapterModel::where(['storyUrl' => $this->storyUrl])->get();
 
         foreach ($chapters as $chapter) {
             TruyenchonChapterDownload::dispatch($chapter->chapterUrl);
