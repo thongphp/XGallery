@@ -112,7 +112,7 @@ class UrlExtractorTest extends TestCase
      */
     public function testExtractFromUrl(string $url, string $expectType, string $expectId, string $expectOwner): void
     {
-        FlickrClient::shouldReceive('get')
+        FlickrClient::shouldReceive('lookUpUser')
             ->withAnyArgs()
             ->andReturn((object) ['user' => (object) ['id' => '12345678@N01']]);
 
