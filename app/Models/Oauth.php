@@ -23,12 +23,12 @@ class Oauth extends Mongodb implements Authenticatable
 
     public function getAuthIdentifierName()
     {
-        // TODO: Implement getAuthIdentifierName() method.
+        return 'id';
     }
 
     public function getAuthIdentifier()
     {
-        // TODO: Implement getAuthIdentifier() method.
+       return $this->id;
     }
 
     public function getAuthPassword()
