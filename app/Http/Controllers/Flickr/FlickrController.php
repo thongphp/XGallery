@@ -10,6 +10,7 @@
 
 namespace App\Http\Controllers\Flickr;
 
+use App\Events\UserActivity;
 use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
 use App\Facades\Flickr\UrlExtractor;
 use App\Facades\FlickrClient;
@@ -18,8 +19,6 @@ use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
-use App\Notifications\FlickrRequestDownload;
-use App\Notifications\FlickrRequestException;
 use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Objects\FlickrAlbum;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -111,7 +110,7 @@ class FlickrController extends BaseController
         }
 
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos of %s <strong>%s</strong>';
-        $this->notify(new FlickrRequestDownload($result));
+        //$this->notify(new FlickrRequestDownload($result));
 
         try {
             switch ($result->getType()) {
@@ -136,7 +135,9 @@ class FlickrController extends BaseController
                         ]);
                     }
 
-                    $album->download();
+                    event(new UserActivity('download', $album));
+
+                    //$album->download();
 
                     $flashMessage = sprintf(
                         $flashMessage,
@@ -180,7 +181,7 @@ class FlickrController extends BaseController
                     throw new Exception();
             }
         } catch (Exception $exception) {
-            $this->notify(new FlickrRequestException($exception->getMessage(), $request->get('url')));
+            //$this->notify(new FlickrRequestException($exception->getMessage(), $request->get('url')));
 
             return response()->json([
                 'html' => Toast::warning('Download', $exception->getMessage())

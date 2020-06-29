@@ -24,6 +24,10 @@ class EventServiceProvider extends ServiceProvider
             // add your listeners (aka providers) here
             'SocialiteProviders\\Flickr\\FlickrExtendSocialite@handle',
             //'SocialiteProviders\\Google\\GoogleExtendSocialite@handle',
+
+        ],
+        'App\Events\UserActivity' => [
+            'App\Listeners\SaveUserActivity',
         ],
     ];
 
