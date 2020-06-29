@@ -41,7 +41,7 @@ class SocialiteController extends BaseController
         }
 
         $code = $request->get('code');
-        $model = app(Oauth::class);
+        $model = Oauth::firstOrCreate(['id' => $user->getId()]);
 
         foreach ($user as $key => $value) {
             if ($key === 'accessTokenResponseBody') {
@@ -53,6 +53,8 @@ class SocialiteController extends BaseController
         $model->setAttribute('name', strtolower($this->drive))
             ->setAttribute('code', $code)
             ->save();
+
+        auth()->login($model, true);
 
         return redirect()
             ->route('dashboard.dashboard.view')
