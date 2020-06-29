@@ -23,6 +23,7 @@ use App\Notifications\FlickrRequestException;
 use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Objects\FlickrAlbum;
 use App\Services\Flickr\Url\FlickrUrlInterface;
+use App\Traits\Notifications\HasSlackNotification;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -42,7 +43,7 @@ use Symfony\Component\HttpFoundation\Request;
 class FlickrController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    use Notifiable;
+    use Notifiable, HasSlackNotification;
 
     protected ContactRepository $repository;
 
@@ -115,6 +116,7 @@ class FlickrController extends BaseController
         try {
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
+                    // @todo Actually it should be model instead
                     $album = new FlickrAlbum($result->getId());
                     if (!$album->load()) {
                         return response()->json([
