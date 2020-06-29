@@ -40,6 +40,9 @@ class FlickrDownloadRequest extends FormRequest
      */
     public function getUrl(): ?FlickrUrlInterface
     {
+        /**
+         * @todo return object with interface
+         */
         return UrlExtractor::extract($this->input('url'));
     }
 }

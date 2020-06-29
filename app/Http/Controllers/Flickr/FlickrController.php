@@ -67,33 +67,33 @@ class FlickrController extends BaseController
             return $view;
         }
 
-        if ($url = $request->get('url')) {
-            $result = UrlExtractor::extract($url);
-            try {
-                $profile = FlickrClient::getPeopleInfo($result->getOwner());
-                $message = 'URL type is <span class="badge badge-primary">%s</span>';
-                switch ($result->getType()) {
-                    case FlickrUrlInterface::TYPE_ALBUM:
-                        $message = sprintf($message, FlickrUrlInterface::TYPE_ALBUM);
-                        $data = FlickrClient::getPhotoSetInfo($result->getId());
-                        break;
-                }
-            } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
-                return redirect()->route('flickr.dashboard.view')->with('warning', 'User has been deleted');
-            }
-
-            return view(
-                $this->getName().'.index',
-                $this->getViewDefaultOptions([
-                    'profile' => $profile ?? null,
-                    'message' => $message,
-                    'type' => $result->getType(),
-                    'data' => $data ?? null,
-                ])
-            );
+        if (!$url = $request->get('url')) {
+            return parent::dashboard($request);
         }
 
-        return parent::dashboard($request);
+        $result = UrlExtractor::extract($url);
+        try {
+            $profile = FlickrClient::getPeopleInfo($result->getOwner());
+            $message = 'URL type is <span class="badge badge-primary">%s</span>';
+            switch ($result->getType()) {
+                case FlickrUrlInterface::TYPE_ALBUM:
+                    $message = sprintf($message, FlickrUrlInterface::TYPE_ALBUM);
+                    $data = FlickrClient::getPhotoSetInfo($result->getId());
+                    break;
+            }
+        } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
+            return redirect()->route('flickr.dashboard.view')->with('warning', 'User has been deleted');
+        }
+
+        return view(
+            $this->getName().'.index',
+            $this->getViewDefaultOptions([
+                'profile' => $profile ?? null,
+                'message' => $message,
+                'type' => $result->getType(),
+                'data' => $data ?? null,
+            ])
+        );
     }
 
     /**
@@ -116,12 +116,20 @@ class FlickrController extends BaseController
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
                     $album = new FlickrAlbum($result->getId());
-
-                    if ($album->load() && $album->getPhotosCount() === 0) {
+                    if (!$album->load()) {
                         return response()->json([
                             'html' => Toast::warning(
                                 'Download',
-                                'Can not get Album information or album has no photos'
+                                'Can not get Album information'
+                            )
+                        ]);
+                    }
+
+                    if ($album->getPhotosCount() === 0) {
+                        return response()->json([
+                            'html' => Toast::warning(
+                                'Download',
+                                'Album has no photos'
                             )
                         ]);
                     }
@@ -130,7 +138,7 @@ class FlickrController extends BaseController
 
                     $flashMessage = sprintf(
                         $flashMessage,
-                        $album->getPhotos(),
+                        $album->getPhotosCount(),
                         'album',
                         $album->getTitle()
                     );

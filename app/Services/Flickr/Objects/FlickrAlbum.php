@@ -51,7 +51,7 @@ class FlickrAlbum
      */
     public function getPhotosCount(): int
     {
-        return (int) $this->album->photoset->photos;
+        return (int) $this->album->photoset->count_photos;
     }
 
     /**

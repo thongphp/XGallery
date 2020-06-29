@@ -23,6 +23,7 @@ trait SyncPhotos
         $photoRepository = app(PhotoRepository::class);
         $hydrator = new ObjectPropertyHydrator();
 
+        // Store photos into database and trigger download
         foreach ($photos as $photo) {
             $photoModel = $photoRepository->findOrCreateById($photo->id);
             $photoModel->fill($hydrator->extract($photo))

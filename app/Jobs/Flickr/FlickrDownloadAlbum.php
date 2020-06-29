@@ -42,10 +42,9 @@ class FlickrDownloadAlbum implements ShouldQueue
     public function handle(): void
     {
         $photos = $this->album->getPhotos();
-        $googleAlbum = GooglePhotoClient::createAlbum($this->album->getTitle());
-
-        $googleAlbumId = $googleAlbum->id;
         $owner = $this->album->getOwner();
+        $googleAlbum = GooglePhotoClient::createAlbum($this->album->getTitle());
+        $googleAlbumId = $googleAlbum->id;
 
         // If owner is not exist, start new queue for getting this contact information.
         if (!app(ContactRepository::class)->isExist($owner)) {
