@@ -10,18 +10,20 @@
 
 namespace App\Http\Controllers\Flickr;
 
+use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
+use App\Facades\Flickr\UrlExtractor;
 use App\Facades\FlickrClient;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
-use App\Jobs\Flickr\FlickrDownloadAlbum;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Jobs\Flickr\FlickrDownloadGallery;
-use App\Models\Flickr\FlickrPhotoModel;
 use App\Notifications\FlickrRequestDownload;
 use App\Notifications\FlickrRequestException;
 use App\Repositories\Flickr\ContactRepository;
+use App\Services\Flickr\Objects\FlickrAlbum;
 use App\Services\Flickr\Url\FlickrUrlInterface;
+use App\Traits\Notifications\HasSlackNotification;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -41,14 +43,14 @@ use Symfony\Component\HttpFoundation\Request;
 class FlickrController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    use Notifiable;
+    use Notifiable, HasSlackNotification;
 
     protected ContactRepository $repository;
 
     /**
      * FlickrController constructor.
      *
-     * @param ContactRepository $repository
+     * @param  ContactRepository  $repository
      */
     public function __construct(ContactRepository $repository)
     {
@@ -56,7 +58,7 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return Application|Factory|RedirectResponse|View
      */
@@ -66,11 +68,37 @@ class FlickrController extends BaseController
             return $view;
         }
 
-        return parent::dashboard($request);
+        if (!$url = $request->get('url')) {
+            return parent::dashboard($request);
+        }
+
+        $result = UrlExtractor::extract($url);
+        try {
+            $profile = FlickrClient::getPeopleInfo($result->getOwner());
+            $message = 'URL type is <span class="badge badge-primary">%s</span>';
+            switch ($result->getType()) {
+                case FlickrUrlInterface::TYPE_ALBUM:
+                    $message = sprintf($message, FlickrUrlInterface::TYPE_ALBUM);
+                    $data = FlickrClient::getPhotoSetInfo($result->getId());
+                    break;
+            }
+        } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
+            return redirect()->route('flickr.dashboard.view')->with('warning', 'User has been deleted');
+        }
+
+        return view(
+            $this->getName().'.index',
+            $this->getViewDefaultOptions([
+                'profile' => $profile ?? null,
+                'message' => $message,
+                'type' => $result->getType(),
+                'data' => $data ?? null,
+            ])
+        );
     }
 
     /**
-     * @param FlickrDownloadRequest $request
+     * @param  FlickrDownloadRequest  $request
      *
      * @return JsonResponse
      */
@@ -88,22 +116,33 @@ class FlickrController extends BaseController
         try {
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
-                    $albumInfo = FlickrClient::getPhotoSetInfo($result->getId());
-
-                    if ($albumInfo->photoset->photos === 0) {
+                    // @todo Actually it should be model instead
+                    $album = new FlickrAlbum($result->getId());
+                    if (!$album->load()) {
                         return response()->json([
-                            'html' => Toast::warning('Download', 'Can not get Album information or album has no photos')
+                            'html' => Toast::warning(
+                                'Download',
+                                'Can not get Album information'
+                            )
                         ]);
                     }
 
-                    // @todo Create photoset object
-                    FlickrDownloadAlbum::dispatch($albumInfo);
+                    if ($album->getPhotosCount() === 0) {
+                        return response()->json([
+                            'html' => Toast::warning(
+                                'Download',
+                                'Album has no photos'
+                            )
+                        ]);
+                    }
+
+                    $album->download();
 
                     $flashMessage = sprintf(
                         $flashMessage,
-                        $albumInfo->photoset->photos,
+                        $album->getPhotosCount(),
                         'album',
-                        $albumInfo->photoset->title
+                        $album->getTitle()
                     );
 
                     break;
@@ -113,8 +152,10 @@ class FlickrController extends BaseController
 
                     if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
                         return response()->json([
-                            'html' => Toast::warning('Download',
-                                'Can not get Gallery information or gallery has no photos')
+                            'html' => Toast::warning(
+                                'Download',
+                                'Can not get Gallery information or gallery has no photos'
+                            )
                         ]);
                     }
 
@@ -137,7 +178,6 @@ class FlickrController extends BaseController
                     break;
                 default:
                     throw new Exception();
-                    break;
             }
         } catch (Exception $exception) {
             $this->notify(new FlickrRequestException($exception->getMessage(), $request->get('url')));

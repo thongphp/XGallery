@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Download Flickr photo and trigger sync with Google
@@ -54,6 +55,8 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
 
         $photo->touch();
 
+        // If we can't get size then do not trigger download
+
         if (!$filePath = $this->downloadPhoto($photo)) {
             throw new CurlDownloadFileException('Can not download photo: '.$this->id);
         }
@@ -73,6 +76,11 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
         $sourceSize = end($photoSizes);
         $httpClient = app(HttpClient::class);
 
-        return $httpClient->download($sourceSize['source'], 'flickr/'.$photo->owner);
+        Log::debug(__FUNCTION__, [$sourceSize, $photo]);
+
+        return $httpClient->download(
+            $sourceSize['source'],
+            'flickr/'.$photo->owner
+        );
     }
 }

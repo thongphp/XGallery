@@ -12,7 +12,6 @@ namespace App\Http\Controllers;
 use App\Http\Traits\HasMenu;
 use App\Repositories\OAuthRepository;
 use App\Traits\HasObject;
-use Illuminate\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Routing\Controller;
@@ -57,17 +56,10 @@ class BaseController extends Controller
         return array_merge(
             [
                 'sidebar' => $this->getMenuItems(),
+                'title' => ucfirst($this->getName()),
             ],
             $options
         );
-    }
-
-    /**
-     * @return Repository|Application|mixed
-     */
-    public function routeNotificationForSlack()
-    {
-        return config('logging.channels.slack.url');
     }
 
     /**
