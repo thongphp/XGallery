@@ -41,4 +41,12 @@ class DashboardController extends BaseController
             ])
         );
     }
+
+    public function login(Request $request)
+    {
+        return view(
+            'login',
+            $this->getViewDefaultOptions(['sidebar' => []])
+        );
+    }
 }
