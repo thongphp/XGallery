@@ -10,7 +10,6 @@
 
 namespace App\Http\Controllers\Flickr;
 
-use App\Events\UserActivity;
 use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
 use App\Facades\Flickr\UrlExtractor;
 use App\Facades\FlickrClient;
@@ -110,7 +109,7 @@ class FlickrController extends BaseController
         }
 
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos of %s <strong>%s</strong>';
-        //$this->notify(new FlickrRequestDownload($result));
+        //$this->notify(new FlickrNotification($result));
 
         try {
             switch ($result->getType()) {
@@ -135,9 +134,9 @@ class FlickrController extends BaseController
                         ]);
                     }
 
-                    event(new UserActivity('download', $album));
+                    event(new \App\Events\FlickrDownloadRequest('download', $album));
 
-                    //$album->download();
+                    $album->download();
 
                     $flashMessage = sprintf(
                         $flashMessage,

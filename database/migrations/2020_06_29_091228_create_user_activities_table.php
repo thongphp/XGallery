@@ -15,12 +15,13 @@ class CreateUserActivitiesTable extends Migration
     {
         Schema::create('user_activities', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('actor_id');
-            $table->integer('actor_table');
+            $table->string('actor_id');
+            $table->string('actor_table');
             $table->string('action', 125);
-            $table->integer('object_id');
-            $table->string('object_table');
-            $table->text('extra');
+            $table->string('object_id')->nullable();
+            $table->string('object_table')->nullable();
+            $table->text('text');
+            $table->text('extra')->nullable();
             $table->timestamps();
         });
     }

@@ -24,6 +24,16 @@ class FlickrAlbum
         $this->id = $id;
     }
 
+    public function __toString(): string
+    {
+        return sprintf(
+            'album `%s` ( id `%s` ) with `%d` photos',
+            $this->getTitle(),
+            $this->getId(),
+            $this->getPhotosCount()
+        );
+    }
+
     /**
      * @return string
      */

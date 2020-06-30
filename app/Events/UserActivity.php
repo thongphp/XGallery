@@ -2,28 +2,34 @@
 
 namespace App\Events;
 
+use App\Events\Traits\ActivityEvent;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserActivity
+abstract class UserActivity implements ActivityEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private ?\Illuminate\Contracts\Auth\Authenticatable $currentUser;
-    private string $action;
-    private $extra;
+    protected ?Authenticatable $currentUser;
+
+    protected string $actorTable = 'oauths';
+    protected string $action = '';
+    protected ?string $objectId = null;
+    protected ?string $objectTable = null;
+    protected $object;
 
     /**
      * Create a new event instance.
-     *extra
+     * @param  string  $action
      */
-    public function __construct(string $action, $extra)
+    public function __construct(string $action, $object)
     {
         $this->currentUser = \Auth::user();
         $this->action = $action;
-        $this->extra = $extra;
+        $this->object = $object;
     }
 
     /**
@@ -41,13 +47,43 @@ class UserActivity
         return $this->currentUser;
     }
 
-    public function getAction()
+    public function getActorTable(): ?string
+    {
+        return $this->actorTable;
+    }
+
+    public function getAction(): string
     {
         return $this->action;
     }
 
-    public function getExtra()
+    public function getObjectId(): ?string
     {
-        return $this->extra;
+        return $this->objectId;
+    }
+
+    public function getObjectTable(): ?string
+    {
+        return $this->objectTable;
+    }
+
+    public function getExtra(): array
+    {
+        return [];
+    }
+
+    public function getText(): string
+    {
+        return '%s have just %s %s';
+    }
+
+    public function translate(): string
+    {
+        return sprintf(
+            $this->getText(),
+            $this->currentUser->user['name'],
+            $this->getAction(),
+            (string) $this->object
+        );
     }
 }
