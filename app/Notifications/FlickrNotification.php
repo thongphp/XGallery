@@ -22,7 +22,7 @@ class FlickrNotification extends Notification
      */
     public function __construct(string $message)
     {
-       $this->message = $message;
+        $this->message = $message;
     }
 
     /**
@@ -34,19 +34,6 @@ class FlickrNotification extends Notification
     public function via($notifiable)
     {
         return ['slack'];
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
     }
 
     public function toSlack($notifiable)

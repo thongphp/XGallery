@@ -3,24 +3,23 @@
 namespace App\Listeners;
 
 use App\Events\Traits\ActivityEvent;
-use App\Models\UserActivity;
 use App\Notifications\FlickrNotification;
 use App\Traits\Notifications\HasSlackNotification;
 use Illuminate\Notifications\Notifiable;
 
-class SaveUserActivity
+class UserActivity
 {
     use Notifiable, HasSlackNotification;
 
     /**
      * Handle the event.
      *
-     * @param  UserActivity  $event
+     * @param  ActivityEvent  $event
      * @return void
      */
     public function handle(ActivityEvent $event)
     {
-        UserActivity::create([
+        \App\Models\UserActivity::create([
             'actor_id' => $event->getActor()->getAuthIdentifier(),
             'actor_table' => 'oauths',
             'action' => $event->getAction(),

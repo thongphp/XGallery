@@ -3,23 +3,19 @@
 namespace App\Services\Flickr\Objects;
 
 use App\Events\FlickrDownloadRequest;
-use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
+use App\Exceptions\Flickr\FlickrApiGalleryGetInfoException;
 use App\Facades\FlickrClient;
-use App\Jobs\Flickr\FlickrDownloadAlbum;
-use App\Traits\Notifications\HasSlackNotification;
-use Illuminate\Notifications\Notifiable;
+use App\Jobs\Flickr\FlickrDownloadGallery;
 use Illuminate\Support\Collection;
 
 /**
- * Class FlickrAlbum
+ * Class FlickrGallery
  * @package App\Services\Flickr\Objects
  */
-class FlickrAlbum
+class FlickrGallery
 {
-    use Notifiable, HasSlackNotification;
-
     private string $id;
-    private ?object $album;
+    private ?object $gallery;
     private Collection $photos;
 
     /**
@@ -35,7 +31,7 @@ class FlickrAlbum
     public function __toString(): string
     {
         return sprintf(
-            'album `%s` ( id `%s` ) with `%d` photos',
+            'gallery `%s` ( id `%s` ) with `%d` photos',
             $this->getTitle(),
             $this->getId(),
             $this->getPhotosCount()
@@ -56,9 +52,9 @@ class FlickrAlbum
     public function load(): bool
     {
         try {
-            $this->album = FlickrClient::getPhotoSetInfo($this->id);
-        } catch (FlickrApiPhotoSetsGetInfoException $exception) {
-            $this->album = null;
+            $this->gallery = FlickrClient::getGalleryInformation($this->id);
+        } catch (FlickrApiGalleryGetInfoException $exception) {
+            $this->gallery = null;
         }
 
         return $this->isValid();
@@ -69,7 +65,7 @@ class FlickrAlbum
      */
     public function getPhotosCount(): int
     {
-        return (int) $this->album->photoset->count_photos;
+        return (int) $this->gallery->gallery->count_photos;
     }
 
     /**
@@ -84,11 +80,10 @@ class FlickrAlbum
         $page = 1;
 
         do {
-            $photos = FlickrClient::getPhotoSetPhotos($this->getId(), $page);
-
-            $this->photos = $this->photos->merge($photos->photoset->photo);
+            $photos = FlickrClient::getGalleryPhotos($this->getId(), $page);
+            $this->photos = $this->photos->merge($photos->photos->photo);
             $page++;
-        } while ($page <= $photos->photoset->pages);
+        } while ($page <= $photos->photos->pages);
 
         return $this->photos;
     }
@@ -98,7 +93,7 @@ class FlickrAlbum
      */
     public function getTitle(): string
     {
-        return $this->album->photoset->title;
+        return $this->gallery->gallery->title;
     }
 
     /**
@@ -106,7 +101,7 @@ class FlickrAlbum
      */
     public function getOwner(): string
     {
-        return $this->album->photoset->owner;
+        return $this->gallery->gallery->owner;
     }
 
     /**
@@ -114,12 +109,12 @@ class FlickrAlbum
      */
     public function isValid(): bool
     {
-        return $this->album !== null;
+        return $this->gallery !== null;
     }
 
     public function download()
     {
-        FlickrDownloadAlbum::dispatch($this);
+        FlickrDownloadGallery::dispatch($this);
         event(new FlickrDownloadRequest('download', $this));
     }
 }

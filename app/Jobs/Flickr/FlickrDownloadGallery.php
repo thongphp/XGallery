@@ -2,11 +2,11 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Facades\FlickrClient;
 use App\Facades\GooglePhotoClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
+use App\Services\Flickr\Objects\FlickrGallery;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,12 +18,12 @@ class FlickrDownloadGallery implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob, SyncPhotos;
 
-    private object $gallery;
+    private FlickrGallery $gallery;
 
     /**
-     * @param object $gallery
+     * @param  FlickrGallery  $gallery
      */
-    public function __construct(object $gallery)
+    public function __construct(FlickrGallery $gallery)
     {
         $this->gallery = $gallery;
         $this->onQueue(Queues::QUEUE_FLICKR);
@@ -31,25 +31,12 @@ class FlickrDownloadGallery implements ShouldQueue
 
     public function handle(): void
     {
-        $photos = FlickrClient::getGalleryPhotos($this->gallery->id);
-        $googleAlbum = GooglePhotoClient::createAlbum($this->gallery->title);
+        $googleAlbum = GooglePhotoClient::createAlbum($this->gallery->getTitle());
         $googleAlbumId = $googleAlbum->id;
-        $owner = $this->gallery->owner;
+        $owner = $this->gallery->getOwner();
 
         FlickrContact::dispatch($owner);
 
-        $this->syncPhotos($photos->photos->photo, $owner, $googleAlbumId);
-
-        if ($photos->photos->page === 1) {
-            return;
-        }
-
-        for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = FlickrClient::getGalleryPhotos($this->gallery->id, $page)) {
-                continue;
-            }
-
-            $this->syncPhotos($nextPhotos->photos->photo, $owner, $googleAlbumId);
-        }
+        $this->syncPhotos($this->gallery->getPhotos()->toArray(), $owner, $googleAlbumId);
     }
 }

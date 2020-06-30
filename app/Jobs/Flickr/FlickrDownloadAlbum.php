@@ -2,7 +2,6 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Facades\FlickrClient;
 use App\Facades\GooglePhotoClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
@@ -24,7 +23,7 @@ class FlickrDownloadAlbum implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob, SyncPhotos;
 
-    private object $album;
+    private FlickrAlbum $album;
 
     /**
      * @param  FlickrAlbum  $album
@@ -41,8 +40,8 @@ class FlickrDownloadAlbum implements ShouldQueue
      */
     public function handle(): void
     {
-        $photos = $this->album->getPhotos();
         $owner = $this->album->getOwner();
+
         $googleAlbum = GooglePhotoClient::createAlbum($this->album->getTitle());
         $googleAlbumId = $googleAlbum->id;
 
@@ -51,18 +50,6 @@ class FlickrDownloadAlbum implements ShouldQueue
             FlickrContact::dispatch($owner);
         }
 
-        $this->syncPhotos($photos->photoset->photo, $owner, $googleAlbumId);
-
-        if ($photos->photoset->page === 1) {
-            return;
-        }
-
-        for ($page = 2; $page <= $photos->photoset->pages; $page++) {
-            if (!$nextPhotos = FlickrClient::getPhotoSetPhotos($this->album->getId(), $page)) {
-                continue;
-            }
-
-            $this->syncPhotos($nextPhotos->photoset->photo, $owner, $googleAlbumId);
-        }
+        $this->syncPhotos($this->album->getPhotos()->toArray(), $owner, $googleAlbumId);
     }
 }

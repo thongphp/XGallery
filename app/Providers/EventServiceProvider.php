@@ -27,7 +27,7 @@ class EventServiceProvider extends ServiceProvider
 
         ],
         'App\Events\UserActivity' => [
-            'App\Listeners\SaveUserActivity',
+            'App\Listeners\UserActivity',
         ],
     ];
 

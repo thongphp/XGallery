@@ -17,9 +17,10 @@ use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadContact;
-use App\Jobs\Flickr\FlickrDownloadGallery;
+use App\Notifications\FlickrRequestException;
 use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Objects\FlickrAlbum;
+use App\Services\Flickr\Objects\FlickrGallery;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use App\Traits\Notifications\HasSlackNotification;
 use Exception;
@@ -109,13 +110,13 @@ class FlickrController extends BaseController
         }
 
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos of %s <strong>%s</strong>';
-        //$this->notify(new FlickrNotification($result));
 
         try {
             switch ($result->getType()) {
                 case FlickrUrlInterface::TYPE_ALBUM:
                     // @todo Actually it should be model instead
                     $album = new FlickrAlbum($result->getId());
+
                     if (!$album->load()) {
                         return response()->json([
                             'html' => Toast::warning(
@@ -134,8 +135,6 @@ class FlickrController extends BaseController
                         ]);
                     }
 
-                    event(new \App\Events\FlickrDownloadRequest('download', $album));
-
                     $album->download();
 
                     $flashMessage = sprintf(
@@ -148,24 +147,33 @@ class FlickrController extends BaseController
                     break;
 
                 case FlickrUrlInterface::TYPE_GALLERY:
-                    $galleryInfo = FlickrClient::getGalleryInformation($result->getId());
+                    $gallery = new FlickrGallery($result->getId());
 
-                    if (!$galleryInfo || $galleryInfo->gallery->count_photos === 0) {
+                    if (!$gallery->load()) {
                         return response()->json([
                             'html' => Toast::warning(
                                 'Download',
-                                'Can not get Gallery information or gallery has no photos'
+                                'Can not get Gallery information'
                             )
                         ]);
                     }
 
-                    FlickrDownloadGallery::dispatch($galleryInfo->gallery);
+                    if ($gallery->getPhotosCount() === 0) {
+                        return response()->json([
+                            'html' => Toast::warning(
+                                'Download',
+                                'Album has no photos'
+                            )
+                        ]);
+                    }
+
+                    $gallery->download();
 
                     $flashMessage = sprintf(
                         $flashMessage,
-                        $galleryInfo->gallery->count_photos,
+                        $gallery->getPhotosCount(),
                         'gallery',
-                        $galleryInfo->gallery->title
+                        $gallery->getTitle()
                     );
 
                     break;
@@ -180,7 +188,7 @@ class FlickrController extends BaseController
                     throw new Exception();
             }
         } catch (Exception $exception) {
-            //$this->notify(new FlickrRequestException($exception->getMessage(), $request->get('url')));
+            $this->notify(new FlickrRequestException($exception->getMessage(), $request->get('url')));
 
             return response()->json([
                 'html' => Toast::warning('Download', $exception->getMessage())
