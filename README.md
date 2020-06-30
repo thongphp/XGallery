@@ -32,11 +32,8 @@ Run the following command
 ```
 php artisan key:generate
 ```
-```
-php artisan migrate:fresh --seed
-```
 
-Your Laravel starter project is now up and running! 
+You will need provide extra data like Google / Flickr keys
 
 ## Licence
 
