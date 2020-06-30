@@ -17,7 +17,7 @@ class OAuthRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return \Illuminate\Database\Eloquent\Model|null|Oauth
+     * @return Model|null|Oauth
      */
     public function findBy(array $data): ?Model
     {
@@ -27,7 +27,7 @@ class OAuthRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return \Illuminate\Database\Eloquent\Model|Oauth
+     * @return Model|Oauth
      */
     public function save(array $data)
     {

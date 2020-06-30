@@ -56,6 +56,8 @@ final class XCityProfile extends BaseCrawlerCommand
     }
 
     /**
+     * @SuppressWarnings("unused")
+     *
      * @return bool
      * @throws Exception
      */

@@ -22,6 +22,8 @@ use stdClass;
 final class R18 extends AbstractCrawler
 {
     /**
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+     *
      * @param  string  $itemUri
      * @return object|null
      */

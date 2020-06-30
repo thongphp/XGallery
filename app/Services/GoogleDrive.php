@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Storage;
  */
 class GoogleDrive
 {
-    private $root = null;
-
     public function dirExists(string $dir, string $dirname)
     {
         return collect(Storage::cloud()->listContents($dir))

@@ -50,7 +50,9 @@ trait HasCurl
             return false;
         }
 
-        if ($status['download_content_length'] < 0 || $status['download_content_length'] == Storage::size($saveToFile)) {
+        if ((int) $status['download_content_length'] < 0
+            || (int) $status['download_content_length'] === Storage::size($saveToFile)
+        ) {
             return $saveToFile;
         }
 

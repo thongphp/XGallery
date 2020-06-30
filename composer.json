@@ -82,7 +82,8 @@
     "prefer-stable": true,
     "scripts": {
         "pre-commit": [
-            "composer test-phpstan"
+            "composer test-phpstan",
+            "composer test-phpmd"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -104,6 +105,7 @@
             "@php vendor/bin/phpunit --testsuite=Commands"
         ],
         "security-check": "vendor/bin/security-checker --no-interaction security:check",
-        "test-phpstan": "vendor/bin/phpstan analyze --memory-limit=1G"
+        "test-phpstan": "vendor/bin/phpstan analyze --memory-limit=-1",
+        "test-phpmd": "vendor/bin/phpmd ./app text phpmd.xml"
     }
 }

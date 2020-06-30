@@ -28,7 +28,8 @@ class TruyenchonController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected TruyenchonRepository $repository;
+    /** @var TruyenchonRepository */
+    protected $repository;
 
     public function __construct(TruyenchonRepository $repository)
     {

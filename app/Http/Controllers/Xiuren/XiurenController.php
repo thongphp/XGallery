@@ -24,7 +24,8 @@ class XiurenController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected Xiuren $repository;
+    /** @var Xiuren */
+    protected $repository;
 
     public function __construct(Xiuren $repository)
     {

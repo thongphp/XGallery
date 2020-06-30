@@ -15,6 +15,8 @@ use Illuminate\Contracts\Auth\Authenticatable;
 /**
  * Class Oauth
  * @package App\Models
+ *
+ * @property string $id;
  */
 class Oauth extends Mongodb implements Authenticatable
 {
@@ -28,7 +30,7 @@ class Oauth extends Mongodb implements Authenticatable
 
     public function getAuthIdentifier()
     {
-       return $this->id;
+        return $this->id;
     }
 
     public function getAuthPassword()
@@ -41,6 +43,11 @@ class Oauth extends Mongodb implements Authenticatable
         // TODO: Implement getRememberToken() method.
     }
 
+    /**
+     * @SuppressWarnings("unused")
+     *
+     * @param string $value
+     */
     public function setRememberToken($value)
     {
         // TODO: Implement setRememberToken() method.

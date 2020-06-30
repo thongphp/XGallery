@@ -28,6 +28,9 @@ class BaseController extends Controller
     use HasMenu;
     use HasObject;
 
+    /** @var RepositoryInterface */
+    protected $repository;
+
     public function dashboard(Request $request)
     {
         $items = $this->repository->getItems($request->request->all());

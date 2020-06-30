@@ -33,6 +33,8 @@ final class XCityVideo extends BaseCrawlerCommand
     protected $description = 'Fetching video data from XCity';
 
     /**
+     * @SuppressWarnings("unused")
+     *
      * @return bool
      * @throws Exception
      */
