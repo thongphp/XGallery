@@ -49,10 +49,7 @@ class FlickrContactPhotos implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = FlickrClient::getPeoplePhotos($this->nsid, $page)) {
-                continue;
-            }
-
+            $nextPhotos = FlickrClient::getPeoplePhotos($this->nsid, $page);
             $this->storePhotos($nextPhotos->photos->photo);
         }
     }

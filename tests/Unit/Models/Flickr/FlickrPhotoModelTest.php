@@ -6,10 +6,11 @@ use App\Models\Flickr\FlickrContactModel;
 use App\Models\Flickr\FlickrPhotoModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\FlickrMongoDatabase;
 
 class FlickrPhotoModelTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, FlickrMongoDatabase;
 
     /**
      * @dataProvider flickrContactProvider
@@ -172,8 +173,7 @@ class FlickrPhotoModelTest extends TestCase
 
     protected function tearDown(): void
     {
-        app(FlickrContactModel::class)->newModelQuery()->forceDelete();
-        app(FlickrPhotoModel::class)->newModelQuery()->forceDelete();
+        $this->cleanUpFlickrMongoDb();
 
         parent::tearDown();
     }

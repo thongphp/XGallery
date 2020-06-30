@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Tests\Feature\Command\Traits;
+namespace Tests\Feature\Console\Command\Traits;
 
 /**
  * Trait CommandSucceed

@@ -3,14 +3,14 @@
 namespace Tests\Unit\Repositories\Flickr;
 
 use App\Models\Flickr\FlickrContactModel;
-use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\FlickrMongoDatabase;
 
 class ContactRepositoryTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, FlickrMongoDatabase;
 
     private ContactRepository $repository;
     private FlickrContactModel $model;
@@ -167,23 +167,9 @@ class ContactRepositoryTest extends TestCase
         return $model;
     }
 
-    /**
-     * @param array $photo
-     *
-     * @return FlickrPhotoModel
-     */
-    private function createPhoto(array $photo): FlickrPhotoModel
-    {
-        $model = app(FlickrPhotoModel::class);
-        $model->fill($photo)->save();
-
-        return $model;
-    }
-
     protected function tearDown(): void
     {
-        app(FlickrContactModel::class)->newModelQuery()->forceDelete();
-        app(FlickrPhotoModel::class)->newModelQuery()->forceDelete();
+        $this->cleanUpFlickrMongoDb();
 
         parent::tearDown();
     }

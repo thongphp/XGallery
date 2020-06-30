@@ -16,6 +16,7 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
 
     public const KEY_OWNER = 'owner';
     public const KEY_SIZES = 'sizes';
+    public const KEY_ID = 'id';
 
     protected $collection = 'flickr_photos';
     protected $fillable = [

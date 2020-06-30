@@ -1,0 +1,24 @@
+{
+    "photoset": {
+        "id": "72157625634880796",
+        "owner": "54643882@N04",
+        "username": "viltonius",
+        "primary": "5275512409",
+        "secret": "7e816d64f6",
+        "server": "5041",
+        "farm": 6,
+        "count_views": 20,
+        "count_comments": 0,
+        "count_photos": 43,
+        "count_videos": 0,
+        "title": "Desktop Backgrounds",
+        "description": "",
+        "can_comment": 1,
+        "date_create": "1292811802",
+        "date_update": "1351901637",
+        "photos": 43,
+        "visibility_can_see_set": 1,
+        "needs_interstitial": 0
+    },
+    "stat": "ok"
+}

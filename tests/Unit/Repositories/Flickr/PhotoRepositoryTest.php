@@ -2,26 +2,18 @@
 
 namespace Tests\Unit\Repositories\Flickr;
 
-use App\Models\Flickr\FlickrContactModel;
 use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\FlickrMongoDatabase;
 
 class PhotoRepositoryTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, FlickrMongoDatabase;
 
     private PhotoRepository $repository;
     private FlickrPhotoModel $model;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->repository = app(PhotoRepository::class);
-        $this->model = app(FlickrPhotoModel::class);
-    }
 
     public function testGetPhotosWithNoSizes(): void
     {
@@ -36,6 +28,19 @@ class PhotoRepositoryTest extends TestCase
         $this->assertSame(1, $this->repository->getPhotosWithNoSizes()->count());
         $thirdPhoto->setAttribute('sizes', false)->save();
         $this->assertSame(0, $this->repository->getPhotosWithNoSizes()->count());
+    }
+
+    /**
+     * @param array $photo
+     *
+     * @return FlickrPhotoModel
+     */
+    private function createPhoto(array $photo): FlickrPhotoModel
+    {
+        $model = app(FlickrPhotoModel::class);
+        $model->fill($photo)->save();
+
+        return $model;
     }
 
     public function testFindOrCreateById(): void
@@ -82,23 +87,17 @@ class PhotoRepositoryTest extends TestCase
         $this->assertSame('bar', $photo->foo);
     }
 
-    /**
-     * @param array $photo
-     *
-     * @return FlickrPhotoModel
-     */
-    private function createPhoto(array $photo): FlickrPhotoModel
+    protected function setUp(): void
     {
-        $model = app(FlickrPhotoModel::class);
-        $model->fill($photo)->save();
+        parent::setUp();
 
-        return $model;
+        $this->repository = app(PhotoRepository::class);
+        $this->model = app(FlickrPhotoModel::class);
     }
 
     protected function tearDown(): void
     {
-        app(FlickrContactModel::class)->newModelQuery()->forceDelete();
-        app(FlickrPhotoModel::class)->newModelQuery()->forceDelete();
+        $this->cleanUpFlickrMongoDb();
 
         parent::tearDown();
     }

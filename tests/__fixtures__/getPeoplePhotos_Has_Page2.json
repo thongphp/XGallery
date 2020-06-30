@@ -1,0 +1,8 @@
+{ "photos": { "page": 1, "pages": 16, "perpage": 100, "total": "1577",
+    "photo": [
+        { "id": "32740490058", "owner": "26440281@N02", "secret": "099ca22fe9", "server": "4853", "farm": 5, "title": "Candy DaLat 2018", "ispublic": 1, "isfriend": 0, "isfamily": 0 },
+        { "id": "32740491138", "owner": "26440281@N02", "secret": "f3d89df260", "server": "7868", "farm": 8, "title": "Candy DaLat 2018", "ispublic": 1, "isfriend": 0, "isfamily": 0 },
+        { "id": "32740492818", "owner": "26440281@N02", "secret": "4a110aa832", "server": "7840", "farm": 8, "title": "Candy DaLat 2018", "ispublic": 1, "isfriend": 0, "isfamily": 0 },
+        { "id": "32740493218", "owner": "26440281@N02", "secret": "ae551b35c2", "server": "7806", "farm": 8, "title": "Candy DaLat 2018", "ispublic": 1, "isfriend": 0, "isfamily": 0 },
+        { "id": "39649622463", "owner": "26440281@N02", "secret": "72ab5bdae5", "server": "4867", "farm": 5, "title": "Candy DaLat 2018", "ispublic": 1, "isfriend": 0, "isfamily": 0 }
+    ] }, "stat": "ok" }

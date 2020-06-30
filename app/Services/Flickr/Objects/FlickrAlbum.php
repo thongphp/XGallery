@@ -117,7 +117,7 @@ class FlickrAlbum
         return $this->album !== null;
     }
 
-    public function download()
+    public function download(): void
     {
         FlickrDownloadAlbum::dispatch($this);
         event(new FlickrDownloadRequest('download', $this));
