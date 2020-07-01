@@ -34,6 +34,8 @@ class TruyenchonRequestDownloadException extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  mixed  $notifiable
      * @return array
      */
@@ -44,6 +46,8 @@ class TruyenchonRequestDownloadException extends Notification
 
     /**
      * Get the mail representation of the notification.
+     *
+     * @SuppressWarnings("unused")
      *
      * @param  mixed  $notifiable
      * @return MailMessage
@@ -59,6 +63,8 @@ class TruyenchonRequestDownloadException extends Notification
     /**
      * Get the array representation of the notification.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  mixed  $notifiable
      * @return array
      */
@@ -69,6 +75,13 @@ class TruyenchonRequestDownloadException extends Notification
         ];
     }
 
+    /**
+     * @SuppressWarnings("unused")
+     *
+     * @param $notifiable
+     *
+     * @return SlackMessage
+     */
     public function toSlack($notifiable)
     {
         $content = 'Requested download URL `%s` failed: %s';

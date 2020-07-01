@@ -28,6 +28,8 @@ class BaseCrawlerCommand extends BaseCommand
     protected Model            $model;
 
     /**
+     * @SuppressWarnings("unused")
+     *
      * Process WHOLE site by specific Index URL
      * @return bool
      * @throws Exception

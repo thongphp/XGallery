@@ -46,7 +46,7 @@ class GoogleOauthClient extends OauthClient
     }
 
     /**
-     * @param  Oauth  $oauth
+     * @param Oauth $oauth
      *
      * @return string|null
      */
@@ -54,10 +54,12 @@ class GoogleOauthClient extends OauthClient
     {
         try {
             $expiredDate = new DateTime($oauth->getAttributeValue($oauth->getUpdatedAtColumn()));
-            $expiredDate->add(new DateInterval('PT' . $oauth->getAttributeValue('expiresIn') . 'S'));
+            $expiredDate->add(new DateInterval('PT'.$oauth->getAttributeValue('expiresIn').'S'));
             $current = new DateTime('now');
         } catch (Exception $exception) {
-            Log::stack(['oauth'])->warning('Google Oauth can not populate the expires date at ' . $oauth->getAttributeValue('_id'));
+            Log::stack(['oauth'])->warning(
+                'Google Oauth can not populate the expires date at '.$oauth->getAttributeValue('_id')
+            );
 
             return null;
         }
@@ -79,7 +81,9 @@ class GoogleOauthClient extends OauthClient
         try {
             $response = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
-            Log::stack(['oauth'])->warning('Google Oauth can not decode JSON from RefreshToken API ' . $oauth->getAttributeValue('_id'));
+            Log::stack(['oauth'])->warning(
+                'Google Oauth can not decode JSON from RefreshToken API '.$oauth->getAttributeValue('_id')
+            );
 
             return null;
         }

@@ -23,6 +23,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
+use Imagick;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -94,7 +95,7 @@ class TruyenchonChapterDownload implements ShouldQueue
             return;
         }
 
-        $pdf = new \Imagick($images);
+        $pdf = new Imagick($images);
         $pdf->setImageFormat('pdf');
 
         if (!$pdf->writeImages($savePath.'/'.$parts[4].'.pdf', true)) {

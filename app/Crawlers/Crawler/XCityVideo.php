@@ -22,6 +22,9 @@ final class XCityVideo extends AbstractCrawler
 {
 
     /**
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+     * @SuppressWarnings("PHPMD.NPathComplexity")
+     *
      * @param  string  $itemUri
      * @return object|null
      */

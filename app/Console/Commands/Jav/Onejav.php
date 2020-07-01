@@ -67,6 +67,9 @@ final class Onejav extends BaseCrawlerCommand
 
     /**
      * Process a collection of items
+     *
+     * @SuppressWarnings("unused")
+     *
      * @param  Collection  $items
      */
     private function itemsProcess(Collection $items)

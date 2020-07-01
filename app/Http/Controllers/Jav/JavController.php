@@ -33,7 +33,8 @@ class JavController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected \App\Repositories\JavMovies $repository;
+    /** @var \App\Repositories\JavMovies */
+    protected $repository;
 
     /**
      * JavController constructor.

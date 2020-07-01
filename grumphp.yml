@@ -1,0 +1,33 @@
+grumphp:
+  ignore_unstaged_changes: true
+  process_timeout: 60
+  stop_on_failure: false
+  ascii:
+    failed: ./.grumphp/fail.txt
+    succeeded: ./.grumphp/success.txt
+  tasks:
+    composer:
+      file: ./composer.json
+    composer_script:
+      script: "pre-commit"
+    git_blacklist:
+      keywords:
+        - "die;"
+        - "die("
+        - "var_dump("
+        - "exit;"
+        - "[ \t]exit("
+        - "<<<<"
+        - ">>>>"
+        - "[ \t]dd("
+        - "[ \t]dump("
+      triggered_by: [php]
+      regexp_type: G
+    phplint:
+    phpcs:
+      standard: PSR2
+      ignore_patterns: [./tests/*, ./resources/*, ./database/*, ./bootstrap/*, ./public/*, ./config/*]
+    securitychecker:
+      lockfile: ./composer.lock
+    xmllint:
+    yamllint:

@@ -34,11 +34,13 @@ class FlickrPhotoSizes implements ShouldQueue
 
     public function handle(): void
     {
+        $photo = FlickrPhotoModel::where(['id' => $this->id])->first();
+
+        if (!$photo) {
+            return;
+        }
+
         try {
-            $photo = FlickrPhotoModel::where(['id' => $this->id])->first();
-            if (!$photo) {
-                return;
-            }
             $photo->sizes = FlickrClient::getPhotoSizes($this->id)->sizes->size;
             $photo->save();
         } catch (\Exception $exception) {
