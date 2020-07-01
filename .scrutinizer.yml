@@ -1,4 +1,10 @@
 build:
   environment:
     php: 7.4.7
-    mongodb: 4.2.7
+  nodes:
+    analysis:
+      environment:
+        variables:
+          MONGO_DB_DSN: 'mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false'
+      services:
+        mongodb: 4.2.7
