@@ -15,14 +15,6 @@ class ContactRepositoryTest extends TestCase
     private ContactRepository $repository;
     private FlickrContactModel $model;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->repository = app(ContactRepository::class);
-        $this->model = app(FlickrContactModel::class);
-    }
-
     public function testIsExist(): void
     {
         $this->assertFalse($this->repository->isExist('123456789@N01'));
@@ -32,9 +24,47 @@ class ContactRepositoryTest extends TestCase
         $this->assertTrue($this->repository->isExist('123456789@N01'));
     }
 
-    public function testGetItemByConditions(): void
+    /**
+     * @return array
+     */
+    public function getItemByConditionsProvider(): array
     {
+        return [
+            [
+                'contact' => [],
+                'conditions' => [],
+                'expectedHasResult' => false,
+            ],
+            [
+                'contact' => [FlickrContactModel::KEY_NSID => '123456789@N01', FlickrContactModel::KEY_STATE => 'Foo'],
+                'conditions' => [FlickrContactModel::KEY_NSID => 'Foo'],
+                'expectedHasResult' => false,
+            ],
+            [
+                'contact' => [FlickrContactModel::KEY_NSID => '123456789@N01', FlickrContactModel::KEY_STATE => 'Foo'],
+                'conditions' => [FlickrContactModel::KEY_NSID => '123456789@N01'],
+                'expectedHasResult' => true,
+            ],
+            [
+                'contact' => [FlickrContactModel::KEY_NSID => '333456789@N02', FlickrContactModel::KEY_STATE => 'Bar'],
+                'conditions' => [FlickrContactModel::KEY_STATE => 'Bar'],
+                'expectedHasResult' => true,
+            ],
+        ];
+    }
 
+    /**
+     * @dataProvider getItemByConditionsProvider
+     *
+     * @param array $contact
+     * @param array $conditions
+     * @param bool $expectedHasResult
+     */
+    public function testGetItemByConditions(array $contact, array $conditions, bool $expectedHasResult): void
+    {
+        $this->createContact($contact);
+        $result = $this->repository->getItemByConditions($conditions);
+        $this->assertSame($expectedHasResult, null !== $result);
     }
 
     public function testResetStates(): void
@@ -50,33 +80,102 @@ class ContactRepositoryTest extends TestCase
 
     public function testGetContactWithoutPhotos(): void
     {
+        $foo = $this->createContact([FlickrContactModel::KEY_NSID => 'Foo@N01']);
+        $bar = $this->createContact([FlickrContactModel::KEY_NSID => 'Bar@N02']);
 
+        $this->assertNotNull($this->repository->getContactWithoutPhotos());
+
+        $foo->{FlickrContactModel::KEY_PHOTO_STATE} = 1;
+        $foo->save();
+
+        $this->assertNotNull($this->repository->getContactWithoutPhotos());
+
+        $bar->{FlickrContactModel::KEY_PHOTO_STATE} = 1;
+        $bar->save();
+
+        $this->assertNull($this->repository->getContactWithoutPhotos());
     }
 
     public function testFindOrCreateByNsId(): void
     {
+        $contactModel = $this->repository->findOrCreateByNsId('nsid@N01');
+        $this->assertNotNull($contactModel);
+        $this->assertEquals('nsid@N01', $contactModel->nsid);
+        $this->assertEquals(1, $this->model->newModelQuery()->where([FlickrContactModel::KEY_NSID => 'nsid@N01'])->count());
 
+        $contactModelSecond = $this->repository->findOrCreateByNsId('nsid@N01');
+        $this->assertNotNull($contactModelSecond);
+        $this->assertEquals('nsid@N01', $contactModelSecond->nsid);
+        $this->assertEquals(1, $this->model->newModelQuery()->where([FlickrContactModel::KEY_NSID => 'nsid@N01'])->count());
     }
 
     public function testResetPhotoStates(): void
     {
+        $this->createContact([FlickrContactModel::KEY_NSID => '123456789@N01', FlickrContactModel::KEY_PHOTO_STATE => 1]);
+        $this->createContact([FlickrContactModel::KEY_NSID => '333456789@N02', FlickrContactModel::KEY_PHOTO_STATE => 1]);
 
+        $this->repository->resetPhotoStates();
+
+        $this->assertNull(
+            $this->model->newModelQuery()
+                ->where([FlickrContactModel::KEY_NSID => '123456789@N01'])
+                ->first()
+                ->{FlickrContactModel::KEY_PHOTO_STATE}
+        );
+        $this->assertNull(
+            $this->model->newModelQuery()
+                ->where([FlickrContactModel::KEY_NSID => '333456789@N02'])
+                ->first()
+                ->{FlickrContactModel::KEY_PHOTO_STATE}
+        );
     }
 
     public function testSave(): void
     {
+        $contactModel = $this->repository->save([FlickrContactModel::KEY_NSID => 999999]);
+        $this->assertNotNull($contactModel);
+        $this->assertSame(999999, $contactModel->nsid);
 
+        $contactModel = $this->repository->save([FlickrContactModel::KEY_NSID => 999999, 'foo' => 'bar']);
+        $this->assertNotNull($contactModel);
+        $this->assertSame(999999, $contactModel->nsid);
+        $this->assertSame('bar', $contactModel->foo);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->repository = app(ContactRepository::class);
+        $this->model = app(FlickrContactModel::class);
     }
 
     /**
      * @param array $contact
      *
-     * @return FlickrContactModel
+     * @return FlickrContactModel|null
      */
-    private function createContact(array $contact): FlickrContactModel
+    private function createContact(array $contact): ?FlickrContactModel
     {
+        if (!isset($contact[FlickrContactModel::KEY_NSID])) {
+            return null;
+        }
+
         $model = app(FlickrContactModel::class);
         $model->fill($contact)->save();
+
+        return $model;
+    }
+
+    /**
+     * @param array $photo
+     *
+     * @return FlickrPhotoModel
+     */
+    private function createPhoto(array $photo): FlickrPhotoModel
+    {
+        $model = app(FlickrPhotoModel::class);
+        $model->fill($photo)->save();
 
         return $model;
     }

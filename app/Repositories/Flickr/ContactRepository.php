@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ContactRepository extends BaseRepository
 {
+    protected string $primaryKey = 'nsid';
+
     /**
      * @param FlickrContactModel $model
      */
