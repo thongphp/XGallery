@@ -4,7 +4,6 @@ namespace Tests\Unit\Models\Flickr;
 
 use App\Models\Flickr\FlickrContactModel;
 use App\Models\Flickr\FlickrPhotoModel;
-use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
