@@ -16,6 +16,11 @@ class BaseRepository implements RepositoryInterface
     protected Model                  $model;
     protected Builder                $builder;
 
+    protected string $primaryKey = 'id';
+
+    /**
+     * @param Model $model
+     */
     public function __construct(Model $model)
     {
         $this->model = $model;
@@ -29,7 +34,7 @@ class BaseRepository implements RepositoryInterface
             Cache::forget($id);
         }
 
-        $orderBy = $filter['sort-by'] ?? 'id';
+        $orderBy = $filter['sort-by'] ?? $this->primaryKey;
         $orderDir = $filter['sort-dir'] ?? 'asc';
         $perPage = isset($filter['per-page']) ? (int) $filter['per-page'] : 15;
         $page = request()->except('page');
@@ -50,6 +55,7 @@ class BaseRepository implements RepositoryInterface
 
     /**
      * @param $id
+     *
      * @return Model
      */
     public function find($id): Model
