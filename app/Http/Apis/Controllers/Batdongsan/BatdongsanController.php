@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Apis\Controllers\Batdaongsan;
+namespace App\Http\Apis\Controllers\Batdongsan;
 
 use App\Http\Apis\ApiController;
 use App\Repositories\BatdongsanRepository;

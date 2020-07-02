@@ -29,7 +29,7 @@ class BaseController extends Controller
     use HasObject;
 
     /** @var RepositoryInterface */
-    protected $repository;
+    protected \App\Repositories\Flickr\ContactRepository $repository;
 
     public function dashboard(Request $request)
     {

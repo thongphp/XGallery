@@ -44,8 +44,7 @@ class FlickrController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     use Notifiable, HasSlackNotification;
 
-    /** @var ContactRepository */
-    protected $repository;
+    protected ContactRepository $repository;
 
     /**
      * FlickrController constructor.
