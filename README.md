@@ -2,7 +2,9 @@
 XGallery
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jooservices/XGallery/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/jooservices/XGallery/?branch=develop)
+![.github/workflows/ci.yml](https://github.com/jooservices/XGallery/workflows/.github/workflows/ci.yml/badge.svg?branch=develop)
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/jooservices/XGallery/badges/code-intelligence.svg?b=develop)](https://scrutinizer-ci.com/code-intelligence)
+
 
 Official website [XCrawler](https://xcrawler.net)
 
