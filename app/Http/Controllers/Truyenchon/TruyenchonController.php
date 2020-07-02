@@ -28,12 +28,12 @@ class TruyenchonController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    /** @var TruyenchonRepository */
-    protected $repository;
-
-    public function __construct(TruyenchonRepository $repository)
+    public function dashboard(TruyenchonRepository $repository)
     {
-        $this->repository = $repository;
+        return view('truyenchon.index', $this->getViewDefaultOptions([
+            'items' => $repository->getItems(),
+            'title' => 'Flickr'
+        ]));
     }
 
     /**

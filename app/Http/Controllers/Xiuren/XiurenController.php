@@ -24,20 +24,20 @@ class XiurenController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    /** @var Xiuren */
-    protected $repository;
-
-    public function __construct(Xiuren $repository)
+    public function dashboard(Xiuren $repository)
     {
-        $this->repository = $repository;
+        return view('xiuren.index', $this->getViewDefaultOptions([
+            'items' => $repository->getItems(),
+            'title' => 'Flickr'
+        ]));
     }
 
-    public function item(string $id)
+    public function item(string $id, Xiuren $repository)
     {
         return view(
             'xiuren.item',
             [
-                'item' => $this->repository->find($id),
+                'item' => $repository->find($id),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'Xiuren',
             ]
