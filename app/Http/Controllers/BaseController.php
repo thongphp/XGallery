@@ -11,13 +11,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
 use App\Repositories\OAuthRepository;
-use App\Repositories\RepositoryInterface;
 use App\Traits\HasObject;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class BaseController
@@ -27,21 +25,6 @@ class BaseController extends Controller
 {
     use HasMenu;
     use HasObject;
-
-    /** @var RepositoryInterface */
-    protected \App\Repositories\Flickr\ContactRepository $repository;
-
-    public function dashboard(Request $request)
-    {
-        $items = $this->repository->getItems($request->request->all());
-        return view(
-            $this->getName().'.index',
-            $this->getViewDefaultOptions([
-                'items' => $items,
-                'title' => ucfirst($this->getName()),
-            ])
-        );
-    }
 
     /**
      * @return string
