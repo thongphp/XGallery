@@ -4,12 +4,7 @@
          bootstrap="vendor/autoload.php"
          colors="true">
     <testsuites>
-        <testsuite name="Crawlers">
-            <directory suffix="Test.php">./app/Crawlers/Tests</directory>
-            <exclude>./app/Crawlers/Tests/External</exclude>
-            <exclude>./app/Crawlers/Tests/Traits</exclude>
-        </testsuite>
-        <testsuite name="Commands">
+        <testsuite name="Tests">
             <directory suffix="Test.php">./tests</directory>
             <exclude>./tests/External</exclude>
             <exclude>./tests/Traits</exclude>
