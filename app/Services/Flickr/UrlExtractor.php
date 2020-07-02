@@ -16,28 +16,28 @@ class UrlExtractor
 
     public const DETECTOR = [
         FlickrUrlInterface::TYPE_ALBUM => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/albums\/(?:albumId\/)?(\d+)/i',
+            self::REGEX => '/'.self::REGEX_DOMAIN.'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/albums\/(?:albumId\/)?(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PHOTO => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/(\d+)/i',
+            self::REGEX => '/'.self::REGEX_DOMAIN.'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_GALLERY => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . 'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/galleries\/(\d+)/i',
+            self::REGEX => '/'.self::REGEX_DOMAIN.'photos\/(\d+@[\w-]{3}|\w+[.-]?\w+)\/galleries\/(\d+)/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_OWNER => 1,
                 FlickrUrlInterface::KEY_ID => 2,
             ],
         ],
         FlickrUrlInterface::TYPE_PROFILE => [
-            self::REGEX => '/' . self::REGEX_DOMAIN . '\w+[.-]?\w+\/(\d+@[\w-]{3}|\w+([.-]?\w+))/i',
+            self::REGEX => '/'.self::REGEX_DOMAIN.'\w+[.-]?\w+\/(\d+@[\w-]{3}|\w+([.-]?\w+))/i',
             self::MAPPER => [
                 FlickrUrlInterface::KEY_ID => 1,
                 FlickrUrlInterface::KEY_OWNER => 1,
@@ -56,8 +56,8 @@ class UrlExtractor
     }
 
     /**
-     * @param  string  $url
-     * @param  array  $detectors
+     * @param string $url
+     * @param array $detectors
      *
      * @return FlickrUrlInterface|null
      */
@@ -79,14 +79,16 @@ class UrlExtractor
     }
 
     /**
-     * @param  string  $url
-     * @param  string  $type
-     * @param  array  $detector
+     * @param string $url
+     * @param string $type
+     * @param array $detector
      *
      * @return FlickrUrlInterface|null
      */
     private function check(string $url, string $type, array $detector): ?FlickrUrlInterface
     {
+        $matches = [];
+
         if (!preg_match($detector[self::REGEX], $url, $matches)) {
             return null;
         }

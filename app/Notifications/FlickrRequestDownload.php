@@ -2,32 +2,32 @@
 
 namespace App\Notifications;
 
+use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Class TruyenchonRequestDownloadException
+ * Class FlickrRequestDownload
  * @package App\Notifications
  */
-class TruyenchonRequestDownloadException extends Notification
+class FlickrRequestDownload extends Notification
 {
     use Queueable;
 
-    private \Exception $exception;
-    private string $url;
-
+    /**
+     * @var FlickrUrlInterface
+     */
+    private FlickrUrlInterface $url;
 
     /**
      * Create a new notification instance.
      *
-     * @param  \Exception  $exception
-     * @param  string  $url
+     * @param  FlickrUrlInterface  $url
      */
-    public function __construct(\Exception $exception, string $url)
+    public function __construct(FlickrUrlInterface $url)
     {
-        $this->exception = $exception;
         $this->url = $url;
     }
 
@@ -84,11 +84,12 @@ class TruyenchonRequestDownloadException extends Notification
      */
     public function toSlack($notifiable)
     {
-        $content = 'Requested download URL `%s` failed: %s';
+        $content = 'Requested `%s` URL `%s` with type `%s` and owner `%s`';
         return (new SlackMessage())
-            ->from('Truyenchon')
+            ->from('Flickr')
+            ->info()
             ->content(
-                sprintf($content, $this->url, $this->exception->getMessage())
+                sprintf($content, 'download', $this->url->getUrl(), $this->url->getType(), $this->url->getOwner())
             );
     }
 }

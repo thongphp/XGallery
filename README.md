@@ -1,6 +1,11 @@
 
 XGallery
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jooservices/XGallery/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/jooservices/XGallery/?branch=develop)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/jooservices/XGallery/badges/code-intelligence.svg?b=develop)](https://scrutinizer-ci.com/code-intelligence)
+
 Official website [XCrawler](https://xcrawler.net)
+
 
 ## Getting started
 
@@ -27,11 +32,8 @@ Run the following command
 ```
 php artisan key:generate
 ```
-```
-php artisan migrate:fresh --seed
-```
 
-Your Laravel starter project is now up and running! 
+You will need provide extra data like Google / Flickr keys
 
 ## Licence
 

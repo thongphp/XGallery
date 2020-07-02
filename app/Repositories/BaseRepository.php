@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
  * Class BaseRepository
  * @package App\Repositories
  */
-class BaseRepository
+class BaseRepository implements RepositoryInterface
 {
     const CACHE_INTERVAL = 3600;
     protected Model                  $model;

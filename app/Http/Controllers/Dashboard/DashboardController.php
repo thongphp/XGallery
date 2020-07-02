@@ -42,7 +42,7 @@ class DashboardController extends BaseController
         );
     }
 
-    public function login(Request $request)
+    public function login()
     {
         return view(
             'login',

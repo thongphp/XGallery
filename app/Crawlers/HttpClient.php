@@ -32,7 +32,6 @@ class HttpClient extends Client
 
     protected ResponseInterface $response;
 
-    private ?int  $interval;
     private array $errors = [];
 
     /**

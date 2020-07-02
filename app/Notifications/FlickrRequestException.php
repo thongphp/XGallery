@@ -33,6 +33,8 @@ class FlickrRequestException extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  mixed  $notifiable
      * @return array
      */
@@ -43,6 +45,8 @@ class FlickrRequestException extends Notification
 
     /**
      * Get the mail representation of the notification.
+     *
+     * @SuppressWarnings("unused")
      *
      * @param  mixed  $notifiable
      * @return MailMessage
@@ -58,6 +62,8 @@ class FlickrRequestException extends Notification
     /**
      * Get the array representation of the notification.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  mixed  $notifiable
      * @return array
      */
@@ -68,6 +74,13 @@ class FlickrRequestException extends Notification
         ];
     }
 
+    /**
+     * @SuppressWarnings("unused")
+     *
+     * @param $notifiable
+     *
+     * @return SlackMessage
+     */
     public function toSlack($notifiable)
     {
         return (new SlackMessage())

@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
 use App\Repositories\OAuthRepository;
+use App\Repositories\RepositoryInterface;
 use App\Traits\HasObject;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -26,6 +27,9 @@ class BaseController extends Controller
 {
     use HasMenu;
     use HasObject;
+
+    /** @var RepositoryInterface */
+    protected $repository;
 
     public function dashboard(Request $request)
     {

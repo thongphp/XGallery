@@ -23,6 +23,9 @@ final class Batdongsan extends AbstractCrawler
     const CRAWLER_ENDPOINT = 'https://batdongsan.com.vn';
 
     /**
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+     * @SuppressWarnings("PHPMD.NPathComplexity")
+     *
      * @param  string  $itemUri
      * @return object|null
      */
