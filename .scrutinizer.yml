@@ -1,15 +1,14 @@
 build:
   environment:
     php: 7.4.7
+    variables:
+      MONGO_DB_HOST: 127.0.0.1
+      MONGO_DB_PORT: 27017
+      MONGO_DB_DATABASE: xgallery_test
+      MONGO_DB_USERNAME:
+      MONGO_DB_PASSWORD:
+      MONGO_DB_DSN: 'mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false'
   nodes:
     analysis:
-      environment:
-        variables:
-          MONGO_DB_HOST: 127.0.0.1
-          MONGO_DB_PORT: 27017
-          MONGO_DB_DATABASE: xgallery_test
-          MONGO_DB_USERNAME:
-          MONGO_DB_PASSWORD:
-          MONGO_DB_DSN: 'mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false'
       services:
-        mongo: 4.2.7
+        mongo: 4
