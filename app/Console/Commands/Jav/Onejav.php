@@ -10,10 +10,11 @@
 namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCrawlerCommand;
+use App\Jobs\Jav\UpdateGenres;
+use App\Jobs\Jav\UpdateIdols;
+use App\Models\JavMovies;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class Onejav
@@ -40,58 +41,8 @@ final class Onejav extends BaseCrawlerCommand
      */
     protected function daily(): bool
     {
-        return $this->indexProcess('https://onejav.com/'.date('Y/m/d'));
-    }
-
-    /**
-     * Get links in a index page and process these
-     * @param  string  $url
-     * @return bool
-     */
-    private function indexProcess(string $url)
-    {
-        if (!$pages = $this->getCrawler()->getIndexLinks($url)) {
-            return false;
-        }
-
-        $this->progressBarInit($pages->count());
-
-        $pages->each(function ($items) {
-            // Pages process
-            $this->progressBarSetSteps($items->count());
-            $this->itemsProcess($items);
-            $this->progressBar->advance();
-        });
-        return true;
-    }
-
-    /**
-     * Process a collection of items
-     *
-     * @SuppressWarnings("unused")
-     *
-     * @param  Collection  $items
-     */
-    private function itemsProcess(Collection $items)
-    {
-        if ($items->isEmpty()) {
-            $this->progressBar->setMessage('There are no items', 'info');
-            return;
-        }
-
-        $items->each(function ($item, $index) {
-            $this->progressBarSetInfo($item['title']);
-            // Convert to Mongo DateTime
-            $originalItem = $item;
-            if (isset($item['date']) && null !== $item['date']) {
-                $item['date'] = new UTCDateTime($item['date']->getTimestamp() * 1000);
-            }
-            $this->insertItem($item);
-            // Process to OneJAV to JavMovies with: Idols & Genres
-            \App\Jobs\Jav\OneJav::dispatch($originalItem);
-            $this->progressBarAdvanceStep();
-            $this->progressBarSetStatus('QUEUED');
-        });
+        $crawler = app(\App\Crawlers\Crawler\Onejav::class);
+        return $this->itemsProcess($crawler->getDaily());
     }
 
     /**
@@ -106,37 +57,47 @@ final class Onejav extends BaseCrawlerCommand
         }
 
         // For moment we can't use getIndexLinks because we are using recursive to get last page of this site
-        $items = $this->getCrawler()->getItemLinks($endpoint->url.$endpoint->page);
+        $items = app(\App\Crawlers\Crawler\Onejav::class)->getItems($endpoint->url.$endpoint->page);
 
         if (!$items || $items->isEmpty()) {
-            $endpoint->failed = (int) $endpoint->failed + 1;
-            if ($endpoint->failed === 10) {
-                $endpoint->page = 1;
-                $endpoint->failed = 0;
-                $endpoint->save();
-                return false;
-            }
-
-            $endpoint->page = (int) $endpoint->page + 1;
-            $endpoint->save();
+            $endpoint->fail()->save();
             return false;
         }
 
-        $endpoint->page = (int) $endpoint->page + 1;
-        $endpoint->save();
-
-        $this->progressBarInit(1);
-        $this->progressBar->setMessage($items->count(), 'steps');
         $this->itemsProcess($items);
+        $endpoint->succeed()->save();
 
         return true;
     }
 
     /**
-     * @return Model
+     * @param  Collection  $items
+     * @return bool
      */
-    protected function getModel(): Model
+    private function itemsProcess(Collection $items)
     {
-        return app(\App\Models\Onejav::class);
+        if ($items->isEmpty()) {
+            return true;
+        }
+
+        $this->progressBarInit($items->count());
+        $items->each(function ($item) {
+            $attributes = $item->getAttributes();
+            $item = \App\Models\Onejav::updateOrCreate(['url' => $attributes['url']], $attributes);
+            $movie = JavMovies::updateOrCreate(
+                ['item_number' => $item->title],
+                [
+                    'item_number' => $item->title,
+                    'release_date' => $item->date,
+                    'is_downloadable' => true,
+                    'description' => $item->description
+                ]
+            );
+
+            UpdateGenres::dispatch($movie, $item->tags);
+            UpdateIdols::dispatch($movie, $item->actresses);
+        });
+
+        return true;
     }
 }

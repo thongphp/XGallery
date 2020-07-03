@@ -14,8 +14,6 @@ class CrawlerEndpoints extends BaseRepository
     public function getWorkingItem(string $name): \App\Models\CrawlerEndpoints
     {
         /** @var Collection $items */
-        $items = $this->builder->where(['crawler'=>$name])->orderBy('updated_at', 'asc')->get();
-
-        return $items->first();
+        return $this->builder->where(['crawler'=>$name])->orderBy('updated_at', 'asc')->first();
     }
 }

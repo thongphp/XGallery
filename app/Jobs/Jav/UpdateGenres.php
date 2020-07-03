@@ -9,7 +9,6 @@
 
 namespace App\Jobs\Jav;
 
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\JavGenres;
@@ -46,44 +45,17 @@ class UpdateGenres implements ShouldQueue
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware()
-    {
-        return [new RateLimited('xcity')];
-    }
-
-    /**
      * Execute the job.
      *
      * @return void
      */
     public function handle()
     {
-        $genres = [];
-
         foreach ($this->genres as $tag) {
-            $model = app(JavGenres::class);
-            // Genre already exists then get data for xref
-            if ($item = $model->where(['name' => $tag])->first()) {
-                $genres[] = ['xref_id' => $item->id, 'xref_type' => 'genre', 'movie_id' => $this->movie->id];
-                continue;
-            }
-
-            $model->name = $tag;
-            $model->save();
-
-            $genres[] = ['xref_id' => $model->id, 'xref_type' => 'genre', 'movie_id' => $this->movie->id];
-            unset($model);
-        }
-
-        // Update Xref
-        foreach ($genres as $genre) {
-            $model = app(JavMoviesXref::class);
-            if ($model->where($genre)->first()) {
-                continue;
-            }
-            $model->insert($genre);
+            $model = JavGenres::firstOrCreate(['name' => $tag], ['name' => $tag]);
+            JavMoviesXref::firstOrCreate([
+                'xref_id' => $model->id, 'xref_type' => JavMoviesXref::XREF_TYPE_GENRE, 'movie_id' => $this->movie->id
+            ]);
         }
     }
 }

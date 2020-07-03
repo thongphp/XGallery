@@ -110,10 +110,10 @@ class BaseCrawlerCommand extends BaseCommand
     }
 
     /**
-     * @return Model|null
+     * @return \App\Models\CrawlerEndpoints
      * @throws Exception
      */
-    protected function getCrawlerEndpoint()
+    protected function getCrawlerEndpoint(): \App\Models\CrawlerEndpoints
     {
         /**
          * @var Model $endpoint

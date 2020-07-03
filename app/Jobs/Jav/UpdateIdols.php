@@ -10,7 +10,6 @@
 namespace App\Jobs\Jav;
 
 use App\Crawlers\Crawler\XCityProfile;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\JavIdols;
@@ -48,14 +47,6 @@ class UpdateIdols implements ShouldQueue
         $this->movie = $movie;
         $this->idols = $idols;
         $this->onQueue(Queues::QUEUE_JAV);
-    }
-
-    /**
-     * @return RateLimited[]
-     */
-    public function middleware()
-    {
-        return [new RateLimited('xcity')];
     }
 
     /**

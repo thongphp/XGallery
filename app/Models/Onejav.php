@@ -10,15 +10,21 @@
 namespace App\Models;
 
 use App\Database\Mongodb;
-use App\Models\Traits\HasUrl;
 
 /**
  * Class Onejav
+ * @property string $title
  * @package App\Models
  */
 class Onejav extends Mongodb
 {
-    use HasUrl;
-
     public $collection = 'onejav';
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'date'
+    ];
+
+    protected $fillable = ['url', 'cover', 'title', 'size', 'date', 'tags', 'description', 'torrent'];
 }

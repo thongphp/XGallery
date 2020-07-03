@@ -17,4 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class JavMoviesXref extends Model
 {
+    public const XREF_TYPE_GENRE = 'genre';
+    public const XREF_TYPE_IDOL = 'idol';
+
+    protected $fillable = ['xref_id', 'xref_type', 'movie_id'];
 }

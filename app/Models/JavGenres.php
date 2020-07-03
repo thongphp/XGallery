@@ -17,4 +17,5 @@ use Illuminate\Database\Eloquent\Model;
  */
 class JavGenres extends Model
 {
+    protected $fillable = ['name'];
 }

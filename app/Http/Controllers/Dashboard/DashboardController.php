@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Crawlers\Crawler\Onejav;
 use App\Http\Controllers\BaseController;
 use App\Repositories\CrawlerEndpoints;
 use Illuminate\Contracts\Foundation\Application;
@@ -44,6 +45,11 @@ class DashboardController extends BaseController
 
     public function login()
     {
+        $crawler  = app(Onejav::class);
+
+        dd($crawler->getItems('https://onejav.com/'.date('Y/m/d'))->first()->date);
+
+
         return view(
             'login',
             $this->getViewDefaultOptions(['sidebar' => []])

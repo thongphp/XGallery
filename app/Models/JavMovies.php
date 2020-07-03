@@ -9,6 +9,7 @@
 
 namespace App\Models;
 
+use App\Events\JavMovieCreated;
 use App\Models\Traits\HasCover;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,8 @@ use Illuminate\Support\Facades\DB;
 class JavMovies extends Model
 {
     use HasCover;
+
+    protected $fillable = ['item_number', 'cover', 'sales_date', 'release_date', 'is_downloadable', 'description'];
 
     public function search(array $fields, string $keyword)
     {
