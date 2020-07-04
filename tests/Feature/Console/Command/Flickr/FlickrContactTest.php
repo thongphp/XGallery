@@ -32,7 +32,7 @@ class FlickrContactTest extends TestCase
     {
         $this->artisan('flickr:contacts')->assertExitCode(0);
 
-        FlickrContactModel::where([])->update([FlickrContactModel::KEY_STATE => 1]);
+        FlickrContactModel::query()->update([FlickrContactModel::KEY_STATE => 1]);
         $this->assertEquals(0, FlickrContactModel::where([FlickrContactModel::KEY_STATE => null])->get()->count());
 
         $this->expectsJobs(FlickrContact::class);
