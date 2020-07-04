@@ -30,15 +30,14 @@ final class FlickrPhotoSizes extends BaseCommand
      */
     public function fully(): bool
     {
-        if (!$photos = app(PhotoRepository::class)->getPhotosWithNoSizes()) {
+        $photos = app(PhotoRepository::class)->getPhotosWithNoSizes();
+
+        if ($photos->isEmpty()) {
+            $this->output->note('There are no photos without sizes');
             return true;
         }
 
         $this->output->note(sprintf('Working on %d photos', $photos->count()));
-
-        if ($photos->isEmpty()) {
-            return true;
-        }
 
         $this->progressBarInit($photos->count());
         $this->progressBarSetMessage('Photos', 'message');

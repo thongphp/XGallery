@@ -40,9 +40,11 @@ final class FlickrContact extends BaseCommand
     {
         $contactRepository = app(ContactRepository::class);
 
-        if (!$contact = $contactRepository->getItemByConditions([
+        $contact = $contactRepository->getItemByConditions([
             'sort-by' => 'updated_at', FlickrContactModel::KEY_STATE => null, 'cache' => 0
-        ])) {
+        ]);
+
+        if (!$contact) {
             $contactRepository->resetStates();
             $this->output->note('Reset state of all contacts');
 
@@ -53,9 +55,9 @@ final class FlickrContact extends BaseCommand
 
         $contact->touch();
         $this->output->note(sprintf('Working on %s contact', $contact->nsid));
-
-        // @todo Message "QUEUED"
+        $this->progressBarInit(1);
         \App\Jobs\Flickr\FlickrContact::dispatch($contact->nsid);
+        $this->progressBarSetStatus('QUEUED');
 
         return true;
     }

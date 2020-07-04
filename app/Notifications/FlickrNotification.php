@@ -28,6 +28,8 @@ class FlickrNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  mixed  $notifiable
      * @return array
      */
@@ -36,6 +38,13 @@ class FlickrNotification extends Notification
         return ['slack'];
     }
 
+    /**
+     * @SuppressWarnings("unused")
+     *
+     * @param $notifiable
+     *
+     * @return SlackMessage
+     */
     public function toSlack($notifiable)
     {
         return (new SlackMessage())

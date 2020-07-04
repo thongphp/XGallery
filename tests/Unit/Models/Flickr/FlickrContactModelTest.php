@@ -6,10 +6,11 @@ use App\Models\Flickr\FlickrContactModel;
 use App\Models\Flickr\FlickrPhotoModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\FlickrMongoDatabase;
 
 class FlickrContactModelTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, FlickrMongoDatabase;
 
     /**
      * @dataProvider flickrPhotosProvider
@@ -28,6 +29,29 @@ class FlickrContactModelTest extends TestCase
         }
 
         $this->assertCount($expected, $contact->flickrphotos);
+    }
+
+    /**
+     * @param string $nsid
+     *
+     * @return FlickrContactModel
+     */
+    private function createContact(string $nsid): FlickrContactModel
+    {
+        $model = app(FlickrContactModel::class);
+        $model->fill(['nsid' => $nsid])->save();
+
+        return $model;
+    }
+
+    /**
+     * @param string $id
+     * @param string $owner
+     */
+    private function createPhoto(string $id, string $owner): void
+    {
+        $model = app(FlickrPhotoModel::class);
+        $model->fill(['id' => $id, 'owner' => $owner])->save();
     }
 
     /**
@@ -54,37 +78,13 @@ class FlickrContactModelTest extends TestCase
                     ],
                 ],
                 'expected' => 2,
-            ]
+            ],
         ];
-    }
-
-    /**
-     * @param string $nsid
-     *
-     * @return FlickrContactModel
-     */
-    private function createContact(string $nsid): FlickrContactModel
-    {
-        $model = app(FlickrContactModel::class);
-        $model->fill(['nsid' => $nsid])->save();
-
-        return $model;
-    }
-
-    /**
-     * @param string $id
-     * @param string $owner
-     */
-    private function createPhoto(string $id, string $owner): void
-    {
-        $model = app(FlickrPhotoModel::class);
-        $model->fill(['id' => $id, 'owner' => $owner])->save();
     }
 
     protected function tearDown(): void
     {
-        app(FlickrContactModel::class)->newModelQuery()->forceDelete();
-        app(FlickrPhotoModel::class)->newModelQuery()->forceDelete();
+        $this->cleanUpFlickrMongoDb();
 
         parent::tearDown();
     }

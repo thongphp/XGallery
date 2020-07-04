@@ -64,12 +64,12 @@ class ContactRepository extends BaseRepository
 
     public function resetStates(): void
     {
-        $this->model::where([])->update([FlickrContactModel::KEY_STATE => null]);
+        $this->model::query()->update([FlickrContactModel::KEY_STATE => null]);
     }
 
     public function resetPhotoStates(): void
     {
-        $this->model::where([])->update([FlickrContactModel::KEY_PHOTO_STATE => null]);
+        $this->model::query()->update([FlickrContactModel::KEY_PHOTO_STATE => null]);
     }
 
     /**

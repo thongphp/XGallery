@@ -48,10 +48,7 @@ class FlickrContactFavouritePhotos implements ShouldQueue
         }
 
         for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            if (!$nextPhotos = FlickrClient::getFavouritePhotosOfUser($this->nsid, $page)) {
-                continue;
-            }
-
+            $nextPhotos = FlickrClient::getFavouritePhotosOfUser($this->nsid, $page);
             $this->storePhotos($nextPhotos->photos->photo);
         }
     }

@@ -56,6 +56,9 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
         $photo->touch();
 
         // If we can't get size then do not trigger download
+        if (!$photo->hasSizes()) {
+            return;
+        }
 
         if (!$filePath = $this->downloadPhoto($photo)) {
             throw new CurlDownloadFileException('Can not download photo: '.$this->id);
@@ -78,9 +81,8 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
 
         Log::debug(__FUNCTION__, [$sourceSize, $photo]);
 
-        return $httpClient->download(
-            $sourceSize['source'],
-            'flickr/'.$photo->owner
-        );
+        $source = is_array($sourceSize) ? $sourceSize['source'] : $sourceSize->source;
+
+        return $httpClient->download($source, 'flickr/'.$photo->owner);
     }
 }

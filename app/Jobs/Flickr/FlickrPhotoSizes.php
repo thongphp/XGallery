@@ -41,7 +41,7 @@ class FlickrPhotoSizes implements ShouldQueue
         }
 
         try {
-            $photo->sizes = FlickrClient::getPhotoSizes($this->id)->sizes->size;
+            $photo->{FlickrPhotoModel::KEY_SIZES} = FlickrClient::getPhotoSizes($this->id)->sizes->size;
             $photo->save();
         } catch (\Exception $exception) {
             $photo->delete();

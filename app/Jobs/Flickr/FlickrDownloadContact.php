@@ -7,6 +7,7 @@ use App\Facades\GooglePhotoClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
+use App\Models\Flickr\FlickrContactModel;
 use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,9 +38,11 @@ class FlickrDownloadContact implements ShouldQueue
 
     public function handle(): void
     {
+        $userInfo = FlickrClient::getPeopleInfo($this->nsid);
         $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
-        $userInfo = FlickrClient::getPeopleInfo($contactModel->nsid);
-        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))->save();
+        $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))
+            ->setAttribute(FlickrContactModel::KEY_STATE, FlickrContactModel::STATE_CONTACT_DETAIL)
+            ->save();
 
         $photos = FlickrClient::getPeoplePhotos($contactModel->nsid);
         $googleAlbum = GooglePhotoClient::createAlbum($contactModel->nsid);
