@@ -18,4 +18,6 @@ use Illuminate\Database\Eloquent\Model;
 class JavGenreModel extends Model
 {
     protected $fillable = ['name'];
+
+    protected $table = 'jav_genres';
 }

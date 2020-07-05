@@ -54,7 +54,9 @@ class UpdateGenres implements ShouldQueue
         foreach ($this->genres as $tag) {
             $model = JavGenreModel::firstOrCreate(['name' => $tag], ['name' => $tag]);
             JavMovieXrefModel::firstOrCreate([
-                'xref_id' => $model->id, 'xref_type' => JavMovieXrefModel::XREF_TYPE_GENRE, 'movie_id' => $this->movie->id
+                'xref_id' => $model->id,
+                'xref_type' => JavMovieXrefModel::XREF_TYPE_GENRE,
+                'movie_id' => $this->movie->id
             ]);
         }
     }

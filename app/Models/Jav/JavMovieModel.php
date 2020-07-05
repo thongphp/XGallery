@@ -22,7 +22,27 @@ class JavMovieModel extends Model
 {
     use HasCover;
 
-    protected $fillable = ['item_number', 'cover', 'sales_date', 'release_date', 'is_downloadable', 'description'];
+    protected $table = 'jav_movies';
+
+    protected $fillable = [
+        'name',
+        'cover',
+        'sales_date',
+        'release_date',
+        'content_id',
+        'dvd_id',
+        'description',
+        'time',
+        'director',
+        'studio',
+        'label',
+        'channel',
+        'series',
+        'gallery',
+        'sample',
+        'is_downloadable',
+        'reference_url',
+    ];
 
     public function search(array $fields, string $keyword)
     {

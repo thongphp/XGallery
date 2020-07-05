@@ -22,7 +22,7 @@ use App\Database\Mongodb;
  * @property string $languages
  * @property array $actresses
  * @property string $sample
- * @property array $galleries
+ * @property array $gallery
  * @package App\Models\Jav
  */
 class R18Model extends Mongodb

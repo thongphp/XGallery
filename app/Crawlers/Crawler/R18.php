@@ -74,7 +74,7 @@ final class R18
             $fields = collect($crawler->filter('.product-onload .product-details dt')->each(
                 function ($dt) {
                     $text = trim($dt->text(null, false));
-                    $value = str_replace(['-'], [''], $dt->nextAll()->text(null, false));
+                    $value = $dt->nextAll()->text(null, false);
 
                     return [strtolower(str_replace(' ', '_', str_replace([':'], [''], $text))) => trim($value)];
                 }
@@ -115,7 +115,7 @@ final class R18
                 $item->sample = $crawler->filter('a.js-view-sample')->attr('data-video-high');
             }
 
-            $item->galleries = collect($crawler->filter('.product-gallery a img.lazy')->each(function ($img) {
+            $item->gallery = collect($crawler->filter('.product-gallery a img.lazy')->each(function ($img) {
                 return $img->attr('data-original');
             }))->toArray();
 
@@ -145,20 +145,12 @@ final class R18
                     return false;
                 }
 
-                $data = [];
-
                 $url = explode('?', $el->attr('href'));
-                $data['url'] = $url[0];
-
-                if ($el->filter('img.lazy')->count()) {
-                    $data['cover'] = $el->filter('img.lazy')->attr('data-original');
-                }
-
-                return $data;
+                return $url[0];
             }
         ))->reject(function ($value) {
             return false === $value;
-        });
+        })->unique();
     }
 
     /**

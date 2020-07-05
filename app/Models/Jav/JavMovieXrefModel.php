@@ -21,4 +21,6 @@ class JavMovieXrefModel extends Model
     public const XREF_TYPE_IDOL = 'idol';
 
     protected $fillable = ['xref_id', 'xref_type', 'movie_id'];
+
+    protected $table = 'jav_movies_xrefs';
 }

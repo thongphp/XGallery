@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
 
 /**
  * Class Onejav
+ * @description This command only use for basic movie information WITH download link and genre. Idol with name only
  * @package App\Console\Commands\Jav
  */
 final class Onejav extends BaseCrawlerCommand
@@ -85,9 +86,8 @@ final class Onejav extends BaseCrawlerCommand
             $attributes = $item->getAttributes();
             $item = OnejavModel::updateOrCreate(['url' => $attributes['url']], $attributes);
             $movie = JavMovieModel::updateOrCreate(
-                ['item_number' => $item->title],
+                ['dvd_id' => $item->title],
                 [
-                    'item_number' => $item->title,
                     'release_date' => $item->date,
                     'is_downloadable' => true,
                     'description' => $item->description

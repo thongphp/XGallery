@@ -19,9 +19,8 @@ class CreateJavMoviesTable extends Migration
             $table->string('cover')->nullable();
             $table->dateTime('sales_date')->nullable();
             $table->dateTime('release_date')->nullable();
-            $table->string('item_number')->nullable(false)->unique();
             $table->string('content_id')->nullable();
-            $table->string('dvd_id')->nullable();
+            $table->string('dvd_id');
             $table->text('description')->nullable();
             $table->integer('time')->nullable();
             $table->string('director')->nullable();

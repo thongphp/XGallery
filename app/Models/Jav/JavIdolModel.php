@@ -20,5 +20,10 @@ class JavIdolModel extends Model
 {
     use HasCover;
 
-    protected $fillable = ['name','reference_url'];
+    protected $fillable = [
+        'name', 'alias', 'birthday', 'blood_type', 'city', 'height', 'breast', 'waist', 'hips', 'cover',
+        'reference_url', 'favorite'
+    ];
+
+    protected $table = 'jav_idols';
 }

@@ -13,7 +13,7 @@ use App\Console\BaseCrawlerCommand;
 use Exception;
 
 /**
- * R18 only used to get videos. There are no idol information
+ * @description R18 only used to get videos detail. Idol with name only
  * @package App\Console\Commands
  */
 final class R18 extends BaseCrawlerCommand
@@ -44,50 +44,18 @@ final class R18 extends BaseCrawlerCommand
 
         $items = app(\App\Crawlers\Crawler\R18::class)->getItemLinks($endpoint->url . '/page=' . $endpoint->page);
 
-
-        if ($pages->isEmpty()) {
-            return false;
-        }
-
-        $this->progressBarInit($pages->count());
-
-        // Process all pages. Actually one page
-        $pages->each(function ($page) {
-            $this->progressBarSetSteps($page->count());
-            // Process items on page
-            $page->each(function ($item) {
-                $this->progressBarSetInfo($item['url']);
-                $this->progressBarSetStatus('FETCHING');
-                \App\Jobs\Jav\R18::dispatch($item);
-                $this->progressBarAdvanceStep();
-                $this->progressBarSetStatus('QUEUED');
-            });
-            $this->progressBar->advance();
-        });
-
-        return true;
-    }
-
-    /**
-     * Keep update R18 daily beside fully
-     * @return bool
-     */
-    public function daily(): bool
-    {
-        $uri = 'https://www.r18.com/videos/vod/movies/list/pagesize=60/price=all/sort=new/type=all/page=1';
-        if (!$items = $this->getCrawler()->getItemLinks($uri)) {
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
             return false;
         }
 
         $this->progressBarInit($items->count());
-
         $items->each(function ($item) {
-            $this->progressBarSetInfo($item['url']);
-            $this->progressBarSetStatus('FETCHING');
             \App\Jobs\Jav\R18::dispatch($item);
-            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
+
+        $endpoint->succeed()->save();
 
         return true;
     }
