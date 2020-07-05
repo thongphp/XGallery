@@ -33,30 +33,19 @@ class JavController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    /** @var \App\Repositories\JavMovies */
-    protected $repository;
-
-    /**
-     * JavController constructor.
-     * @param  \App\Repositories\JavMovies  $repository
-     */
-    public function __construct(\App\Repositories\JavMovies $repository)
-    {
-        $this->repository = $repository;
-    }
-
     /**
      * @param  Request  $request
+     * @param  \App\Repositories\JavMovies  $repository
      * @return Application|Factory|View
      */
-    public function dashboard(Request $request)
+    public function dashboard(Request $request, \App\Repositories\JavMovies $repository)
     {
-        $items = $this->repository->getItems($request->request->all());
+        $items = $repository->getItems($request->request->all());
 
         return view(
             'jav.index',
             [
-                'items' => $this->repository->getItems($request->request->all()),
+                'items' => $repository->getItems($request->request->all()),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$items->total().' Movies - '.$items->currentPage().' / '.$items->lastPage(),
             ]

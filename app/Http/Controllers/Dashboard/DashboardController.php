@@ -18,7 +18,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Controller
@@ -29,10 +28,9 @@ class DashboardController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * @param  Request  $request
      * @return Application|Factory|View
      */
-    public function dashboard(Request $request)
+    public function dashboard()
     {
         return view(
             'dashboard.index',

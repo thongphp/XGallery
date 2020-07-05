@@ -40,10 +40,14 @@ class PhotoRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return FlickrPhotoModel
+     * @return FlickrPhotoModel|null
      */
-    public function findOrCreateByIdWithData(array $data): FlickrPhotoModel
+    public function findOrCreateByIdWithData(array $data): ?FlickrPhotoModel
     {
+        if (empty($data) || empty($data['id'])) {
+            return null;
+        }
+
         return $this->model::firstOrCreate(['id' => $data['id']], $data);
     }
 

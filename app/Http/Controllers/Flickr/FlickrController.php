@@ -18,7 +18,6 @@ use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Notifications\FlickrRequestException;
-use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Objects\FlickrAlbum;
 use App\Services\Flickr\Objects\FlickrGallery;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -44,18 +43,6 @@ class FlickrController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     use Notifiable, HasSlackNotification;
 
-    protected ContactRepository $repository;
-
-    /**
-     * FlickrController constructor.
-     *
-     * @param  ContactRepository  $repository
-     */
-    public function __construct(ContactRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
     /**
      * @param  Request  $request
      *
@@ -68,7 +55,9 @@ class FlickrController extends BaseController
         }
 
         if (!$url = $request->get('url')) {
-            return parent::dashboard($request);
+            return view('flickr.index', $this->getViewDefaultOptions([
+                'title' => 'Flickr'
+            ]));
         }
 
         $result = UrlExtractor::extract($url);

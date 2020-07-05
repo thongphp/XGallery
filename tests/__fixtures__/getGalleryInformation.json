@@ -1,0 +1,52 @@
+{
+    "gallery": {
+        "id": "66911286-72157714109067522",
+        "gallery_id": "72157714109067522",
+        "url": "https:\/\/www.flickr.com\/photos\/flickr\/galleries\/72157714109067522",
+        "owner": "66956608@N06",
+        "username": "Flickr",
+        "iconserver": "3741",
+        "iconfarm": 4,
+        "primary_photo_id": "49825324152",
+        "date_create": "1588282165",
+        "date_update": "1591903191",
+        "count_photos": 13,
+        "count_videos": 0,
+        "count_total": 13,
+        "count_views": "2079",
+        "count_comments": 6,
+        "title": "Flickr Friday- Homemade",
+        "description": "",
+        "sort_group": "",
+        "cover_photos": {
+            "photo": [
+                {
+                    "url": "https:\/\/live.staticflickr.com\/65535\/49825324152_578a6d412b_q.jpg",
+                    "width": "150",
+                    "height": "150",
+                    "is_primary": 1,
+                    "is_video": 0
+                },
+                {
+                    "url": "https:\/\/live.staticflickr.com\/65535\/49836679152_a0242c7232_q.jpg",
+                    "width": "150",
+                    "height": "150",
+                    "is_primary": 0,
+                    "is_video": 0
+                },
+                {
+                    "url": "https:\/\/live.staticflickr.com\/65535\/49836932112_7cd8321fc9_q.jpg",
+                    "width": "150",
+                    "height": "150",
+                    "is_primary": 0,
+                    "is_video": 0
+                }
+            ]
+        },
+        "current_state": "6517726793d84958a888de43f08777c3",
+        "primary_photo_server": "65535",
+        "primary_photo_farm": 66,
+        "primary_photo_secret": "578a6d412b"
+    },
+    "stat": "ok"
+}

@@ -16,6 +16,7 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
 
     public const KEY_OWNER = 'owner';
     public const KEY_SIZES = 'sizes';
+    public const KEY_ID = 'id';
 
     protected $collection = 'flickr_photos';
     protected $fillable = [
@@ -45,9 +46,9 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getCover(): ?string
+    public function getCover(): string
     {
         if (empty($this->{self::KEY_SIZES})) {
             return 'https://via.placeholder.com/150';
