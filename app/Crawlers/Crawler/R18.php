@@ -76,7 +76,6 @@ final class R18
                 $text = trim($dt->text(null, false));
                 $value = $dt->nextAll()->text(null, false);
 
-
                 return [strtolower(str_replace(' ', '_', str_replace([':'], [''], $text))) => trim($value)];
             }
         ))->reject(function ($value) {
