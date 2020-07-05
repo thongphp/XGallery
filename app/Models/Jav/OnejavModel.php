@@ -7,16 +7,18 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Models;
+namespace App\Models\Jav;
 
 use App\Database\Mongodb;
 
 /**
- * Class Onejav
+ * Class OnejavModel
+ * @property string $url
+ * @property string cover
  * @property string $title
- * @package App\Models
+ * @package App\Models\Jav
  */
-class Onejav extends Mongodb
+class OnejavModel extends Mongodb
 {
     public $collection = 'onejav';
 
@@ -26,5 +28,5 @@ class Onejav extends Mongodb
         'date'
     ];
 
-    protected $fillable = ['url', 'cover', 'title', 'size', 'date', 'tags', 'description', 'torrent'];
+    protected $fillable = ['url', 'cover', 'title', 'size', 'date', 'tags', 'description', 'torrent', 'actresses'];
 }

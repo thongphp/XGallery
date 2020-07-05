@@ -7,15 +7,18 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Models;
+namespace App\Models\Jav;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class JavGenres
- * @package App\Models
+ * Class JavMovieXrefModel
+ * @package App
  */
-class JavGenres extends Model
+class JavMovieXrefModel extends Model
 {
-    protected $fillable = ['name'];
+    public const XREF_TYPE_GENRE = 'genre';
+    public const XREF_TYPE_IDOL = 'idol';
+
+    protected $fillable = ['xref_id', 'xref_type', 'movie_id'];
 }

@@ -9,35 +9,60 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Models\Jav\R18Model;
 use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
-use Spatie\Url\Url;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class R18
  * @package App\Services\Crawler
  */
-final class R18 extends AbstractCrawler
+final class R18
 {
+    /**
+     * @param  array  $options
+     * @return HttpClient
+     */
+    public function getClient(array $options = []): HttpClient
+    {
+        return new HttpClient(array_merge($options, config('httpclient')));
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+            return null;
+        }
+
+        return new Crawler($response, $uri);
+    }
+
     /**
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      *
      * @param  string  $itemUri
-     * @return object|null
+     * @return R18Model|null
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getItem(string $itemUri): ?R18Model
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
         try {
-            $item = new stdClass;
+            $item = new R18Model;
             $item->url = $itemUri;
             $item->cover = trim($crawler->filter('.detail-single-picture img')->attr('src'));
-            $item->name = trim($crawler->filter('.product-details-page h1')->text(null, false));
+            $item->title = trim($crawler->filter('.product-details-page h1')->text(null, false));
             $item->categories = collect($crawler->filter('.product-categories-list a')->each(
                 function ($el) {
                     return trim($el->text(null, false));
@@ -78,7 +103,7 @@ final class R18 extends AbstractCrawler
                 }
             }
 
-            $item->actress = collect($crawler->filter('.product-actress-list a span')->each(
+            $item->actresses = collect($crawler->filter('.product-actress-list a span')->each(
                 function ($span) {
                     return trim($span->text(null, false));
                 }
@@ -90,9 +115,13 @@ final class R18 extends AbstractCrawler
                 $item->sample = $crawler->filter('a.js-view-sample')->attr('data-video-high');
             }
 
-            $item->gallery = collect($crawler->filter('.product-gallery a img.lazy')->each(function ($img) {
+            $item->galleries = collect($crawler->filter('.product-gallery a img.lazy')->each(function ($img) {
                 return $img->attr('data-original');
             }))->toArray();
+
+            if (isset($item->runtime) && !is_int($item->runtime)) {
+                $item->runtime = (int) $item->runtime;
+            }
 
             return $item;
         } catch (Exception $exception) {
@@ -101,10 +130,10 @@ final class R18 extends AbstractCrawler
     }
 
     /**
-     * @param  string|null  $indexUri
+     * @param  string  $indexUri
      * @return Collection
      */
-    public function getItemLinks(string $indexUri = null): ?Collection
+    public function getItemLinks(string $indexUri): ?Collection
     {
         if (!$crawler = $this->crawl($indexUri)) {
             return null;
@@ -136,7 +165,7 @@ final class R18 extends AbstractCrawler
      * @param  string  $indexUri
      * @return int|null
      */
-    public function getIndexPagesCount(string $indexUri = null): int
+    public function getIndexPagesCount(string $indexUri): int
     {
         if (!$crawler = $this->crawl($indexUri)) {
             return 1;
@@ -147,28 +176,5 @@ final class R18 extends AbstractCrawler
         } catch (Exception $exception) {
             return 1;
         }
-    }
-
-    /**
-     * @param  array  $conditions
-     * @return Collection|null
-     */
-    public function search(array $conditions = []): ?Collection
-    {
-        return $this->getIndexLinks($this->buildUrl('common/search/', $conditions));
-    }
-
-    /**
-     * @param  Url  $url
-     * @param  int  $page
-     * @return string
-     */
-    protected function buildUrlWithPage(Url $url, int $page): string
-    {
-        return $this->buildUrl(
-            $url->getPath().'/page='.$page,
-            $url->getAllQueryParameters(),
-            false
-        );
     }
 }

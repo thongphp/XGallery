@@ -12,9 +12,9 @@ namespace App\Http\Controllers\Jav;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Models\JavDownload;
-use App\Models\JavGenres;
+use App\Models\JavGenreModel;
 use App\Models\JavIdols;
-use App\Models\JavMovies;
+use App\Models\JavMovieModel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -69,7 +69,7 @@ class JavController extends BaseController
      */
     public function movie(int $id)
     {
-        $movie = JavMovies::find($id);
+        $movie = JavMovieModel::find($id);
 
         return view(
             'jav.movie',
@@ -96,7 +96,7 @@ class JavController extends BaseController
             [
                 'items' => app(\App\Repositories\JavMovies::class)->getItems($filter),
                 'sidebar' => $this->getMenuItems(),
-                'title' => 'JAV genre - '.JavGenres::find($id)->name,
+                'title' => 'JAV genre - '.JavGenreModel::find($id)->name,
             ]
         );
     }

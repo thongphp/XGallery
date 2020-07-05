@@ -7,16 +7,15 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Models;
+namespace App\Models\Jav;
 
-use App\Models\Traits\HasCover;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class JavIdols
- * @package App\Models
+ * Class JavGenreModel
+ * @package App\Models\Jav
  */
-class JavIdols extends Model
+class JavGenreModel extends Model
 {
-    use HasCover;
+    protected $fillable = ['name'];
 }

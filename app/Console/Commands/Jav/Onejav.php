@@ -12,7 +12,8 @@ namespace App\Console\Commands\Jav;
 use App\Console\BaseCrawlerCommand;
 use App\Jobs\Jav\UpdateGenres;
 use App\Jobs\Jav\UpdateIdols;
-use App\Models\JavMovies;
+use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\OnejavModel;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -34,7 +35,7 @@ final class Onejav extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $description = 'Fetching data from Onejav';
+    protected $description = 'Fetching data from OnejavModel';
 
     /**
      * @return bool
@@ -56,10 +57,9 @@ final class Onejav extends BaseCrawlerCommand
             return false;
         }
 
-        // For moment we can't use getIndexLinks because we are using recursive to get last page of this site
         $items = app(\App\Crawlers\Crawler\Onejav::class)->getItems($endpoint->url.$endpoint->page);
 
-        if (!$items || $items->isEmpty()) {
+        if ($items->isEmpty()) {
             $endpoint->fail()->save();
             return false;
         }
@@ -83,8 +83,8 @@ final class Onejav extends BaseCrawlerCommand
         $this->progressBarInit($items->count());
         $items->each(function ($item) {
             $attributes = $item->getAttributes();
-            $item = \App\Models\Onejav::updateOrCreate(['url' => $attributes['url']], $attributes);
-            $movie = JavMovies::updateOrCreate(
+            $item = OnejavModel::updateOrCreate(['url' => $attributes['url']], $attributes);
+            $movie = JavMovieModel::updateOrCreate(
                 ['item_number' => $item->title],
                 [
                     'item_number' => $item->title,

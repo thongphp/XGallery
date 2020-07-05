@@ -23,7 +23,7 @@ final class R18 extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $signature = 'jav:r18 {task=fully} {--url=}';
+    protected $signature = 'jav:r18 {task=fully}';
 
     /**
      * The console command description.
@@ -38,9 +38,12 @@ final class R18 extends BaseCrawlerCommand
      */
     public function fully(): bool
     {
-        if (!$pages = $this->getIndexLinks()) {
+        if (!$endpoint = $this->getCrawlerEndpoint()) {
             return false;
         }
+
+        $items = app(\App\Crawlers\Crawler\R18::class)->getItemLinks($endpoint->url . '/page=' . $endpoint->page);
+
 
         if ($pages->isEmpty()) {
             return false;

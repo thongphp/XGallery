@@ -7,18 +7,18 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Models;
+namespace App\Models\Jav;
 
+use App\Models\Traits\HasCover;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class JavMoviesXref
- * @package App
+ * Class JavIdolModel
+ * @package App\Models\Jav
  */
-class JavMoviesXref extends Model
+class JavIdolModel extends Model
 {
-    public const XREF_TYPE_GENRE = 'genre';
-    public const XREF_TYPE_IDOL = 'idol';
+    use HasCover;
 
-    protected $fillable = ['xref_id', 'xref_type', 'movie_id'];
+    protected $fillable = ['name','reference_url'];
 }

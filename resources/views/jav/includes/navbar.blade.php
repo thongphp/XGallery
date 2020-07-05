@@ -43,7 +43,7 @@
                 @endif
                 @if (request()->request->get('genre'))
                     <li class="breadcrumb-item active"
-                        aria-current="page">{{\App\Models\JavGenres::find(request()->request->get('genre'))->name}}</li>
+                        aria-current="page">{{\App\Models\JavGenreModel::find(request()->request->get('genre'))->name}}</li>
                 @endif
             </ol>
         </nav>

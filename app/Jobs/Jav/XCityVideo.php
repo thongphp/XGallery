@@ -7,7 +7,7 @@ use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\JavIdols;
-use App\Models\JavMovies;
+use App\Models\JavMovieModel;
 use App\Models\JavMoviesXref;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -58,11 +58,11 @@ class XCityVideo implements ShouldQueue
             return;
         }
 
-        $model = app(JavMovies::class);
-        // To store in JavMovies we use item_number as unique
+        $model = app(JavMovieModel::class);
+        // To store in JavMovieModel we use item_number as unique
         if (!$movie = $model->where(['item_number' => $itemDetail->item_number])->first()) {
             // Not found than create new model
-            $movie = app(JavMovies::class);
+            $movie = app(JavMovieModel::class);
             Log::stack(['jav'])->info('Saving new video '.$itemDetail->item_number);
         }
 
@@ -137,9 +137,9 @@ class XCityVideo implements ShouldQueue
 
     /**
      * @param  JavIdols  $idolModel
-     * @param  JavMovies  $movie
+     * @param  JavMovieModel  $movie
      */
-    private function insertXRef(JavIdols $idolModel, JavMovies $movie)
+    private function insertXRef(JavIdols $idolModel, JavMovieModel $movie)
     {
         $model = app(JavMoviesXref::class);
         $xref = ['xref_id' => $idolModel->id, 'xref_type' => 'idol', 'movie_id' => $movie->id];

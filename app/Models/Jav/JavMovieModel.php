@@ -7,18 +7,18 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Models;
+namespace App\Models\Jav;
 
-use App\Events\JavMovieCreated;
+
 use App\Models\Traits\HasCover;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class JavMovies
- * @package App
+ * Class JavMovieModel
+ * @package App\Models\Jav
  */
-class JavMovies extends Model
+class JavMovieModel extends Model
 {
     use HasCover;
 

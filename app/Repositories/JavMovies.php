@@ -9,12 +9,12 @@
 
 namespace App\Repositories;
 
-use App\Models\JavGenres;
+use App\Models\JavGenreModel;
 use App\Models\JavMoviesXref;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
- * Class JavMovies
+ * Class JavMovieModel
  * @package App\Repositories
  */
 class JavMovies extends BaseRepository
@@ -23,7 +23,7 @@ class JavMovies extends BaseRepository
         'name', 'item_number', 'content_id', 'dvd_id', 'director', 'studio', 'label', 'channel', 'series', 'description'
     ];
 
-    public function __construct(\App\Models\JavMovies $model)
+    public function __construct(\App\Models\JavMovieModel $model)
     {
         parent::__construct($model);
     }
@@ -54,7 +54,7 @@ class JavMovies extends BaseRepository
             $id = $filter['genre'];
 
             if (!is_numeric($filter['genre'])) {
-                $id = JavGenres::where(['name' => $filter['genre']])->select('id')->first();
+                $id = JavGenreModel::where(['name' => $filter['genre']])->select('id')->first();
                 $id = $id->id;
             }
 

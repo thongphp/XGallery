@@ -10,6 +10,7 @@
 namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
+use App\Models\Jav\OnejavModel;
 use App\Traits\Notifications\HasSlackNotification;
 use DateTime;
 use Exception;
@@ -52,6 +53,9 @@ final class Onejav
         return new Crawler($response, $uri);
     }
 
+    /**
+     * @return Collection
+     */
     public function getDaily(): Collection
     {
         $indexUrl = 'https://onejav.com/'.date('Y/m/d');
@@ -70,10 +74,10 @@ final class Onejav
      * @param  string  $indexUri
      * @return Collection
      */
-    public function getItems(string $indexUri): ?Collection
+    public function getItems(string $indexUri): Collection
     {
         if (!$crawler = $this->crawl($indexUri)) {
-            return null;
+            return collect([]);
         }
 
         return collect($crawler->filter('.container .columns')->each(function ($el) {
@@ -127,9 +131,9 @@ final class Onejav
         }
     }
 
-    private function parse(Crawler $crawler): \App\Models\Onejav
+    private function parse(Crawler $crawler): OnejavModel
     {
-        $item = app(\App\Models\Onejav::class);
+        $item = app(OnejavModel::class);
         $item->url = self::ENDPOINT.trim($crawler->filter('h5.title a')->attr('href'));
 
         if ($crawler->filter('.columns img.image')->count()) {

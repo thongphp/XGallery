@@ -12,7 +12,7 @@ namespace App\Jobs\Jav;
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\JavMovies;
+use App\Models\JavMovieModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -65,10 +65,10 @@ class R18 implements ShouldQueue
             return;
         }
 
-        $model = app(JavMovies::class);
+        $model = app(JavMovieModel::class);
         if (!$movie = $model->where(['item_number' => $itemDetail->dvd_id])->first()) {
             Log::stack(['jav'])->info('Saving new video', get_object_vars($itemDetail));
-            $movie = app(JavMovies::class);
+            $movie = app(JavMovieModel::class);
         }
 
         $movie->reference_url = $itemDetail->url;

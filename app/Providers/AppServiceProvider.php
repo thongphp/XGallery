@@ -9,8 +9,6 @@
 
 namespace App\Providers;
 
-use App\Models\JavMovies;
-use App\Observers\JavMovie;
 use App\Services\Flickr\UrlExtractor;
 use App\Services\FlickrClient;
 use App\Services\FlickrValidate;
@@ -60,6 +58,5 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        JavMovies::observe(JavMovie::class);
     }
 }

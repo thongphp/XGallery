@@ -22,7 +22,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">Genres</span>
-                    <span class="info-box-number">{{\App\Models\JavGenres::count()}}</span>
+                    <span class="info-box-number">{{\App\Models\JavGenreModel::count()}}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -39,7 +39,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">JAV</span>
-                    <span class="info-box-number">{{\App\Models\JavMovies::count()}}</span>
+                    <span class="info-box-number">{{\App\Models\JavMovieModel::count()}}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -52,7 +52,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">Downloadable</span>
-                    <span class="info-box-number">{{\App\Models\JavMovies::where(['is_downloadable'=>1])->count()}}</span>
+                    <span class="info-box-number">{{\App\Models\JavMovieModel::where(['is_downloadable'=>1])->count()}}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>

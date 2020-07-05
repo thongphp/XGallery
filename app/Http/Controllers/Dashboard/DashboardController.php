@@ -9,7 +9,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Crawlers\Crawler\Onejav;
+use App\Crawlers\Crawler\R18;
 use App\Http\Controllers\BaseController;
 use App\Repositories\CrawlerEndpoints;
 use Illuminate\Contracts\Foundation\Application;
@@ -45,9 +45,9 @@ class DashboardController extends BaseController
 
     public function login()
     {
-        $crawler  = app(Onejav::class);
+        $crawler  = app(R18::class);
 
-        dd($crawler->getItems('https://onejav.com/'.date('Y/m/d'))->first()->date);
+        dd($crawler->getIndexPagesCount('https://www.r18.com/videos/vod/movies/list/pagesize=30/price=all/sort=new/type=all/page=1/?dmmref=pc_header'));
 
 
         return view(
