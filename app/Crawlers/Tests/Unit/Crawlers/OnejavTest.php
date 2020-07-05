@@ -2,6 +2,7 @@
 
 namespace App\Crawlers\Tests\Unit\Crawlers;
 
+use App\Crawlers\Crawler\Onejav;
 use App\Crawlers\Tests\TestCase;
 use App\Models\Jav\OnejavModel;
 use Illuminate\Contracts\Foundation\Application;
@@ -14,14 +15,14 @@ use Illuminate\Support\Collection;
 class OnejavTest extends TestCase
 {
     /**
-     * @var \App\Crawlers\Crawler\Onejav|Application|mixed
+     * @var Onejav|Application|mixed
      */
-    private \App\Crawlers\Crawler\Onejav $crawler;
+    private Onejav $crawler;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->crawler = app(\App\Crawlers\Crawler\Onejav::class);
+        $this->crawler = app(Onejav::class);
     }
 
     public function testGetDaily()

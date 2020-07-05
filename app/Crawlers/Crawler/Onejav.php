@@ -131,6 +131,10 @@ final class Onejav
         }
     }
 
+    /**
+     * @param  Crawler  $crawler
+     * @return OnejavModel
+     */
     private function parse(Crawler $crawler): OnejavModel
     {
         $item = app(OnejavModel::class);

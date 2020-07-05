@@ -47,5 +47,7 @@ class XCityVideo implements ShouldQueue
         }
 
         \App\Models\Jav\XCityVideo::updateOrCreate(['item_number' => $itemDetail->item_number], $itemDetail->getAttributes());
+
+        // Update to JavMovieModel
     }
 }

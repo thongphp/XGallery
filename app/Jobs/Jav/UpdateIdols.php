@@ -57,6 +57,8 @@ class UpdateIdols implements ShouldQueue
     {
         // Process all actresses in this movie
         foreach ($this->idols as $actress) {
+            // @todo Duplicate actress name for different movie
+            // @todo Or remove ref_url
             $model = JavIdolModel::firstOrCreate(
                 ['name' => $actress],
                 ['name' => $actress, 'reference_url' => $this->movie->id]

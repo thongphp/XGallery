@@ -14,7 +14,7 @@ use App\Database\Mongodb;
 /**
  * Class OnejavModel
  * @property string $url
- * @property string cover
+ * @property string $cover
  * @property string $title
  * @package App\Models\Jav
  */
