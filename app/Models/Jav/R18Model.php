@@ -29,4 +29,14 @@ class R18Model extends Mongodb
 {
     public $collection = 'r18';
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'release_date'
+    ];
+
+    protected $fillable = [
+        'url', 'cover', 'title', 'categories', 'release_date', 'runtime', 'director', 'studio', 'label', 'channel',
+        'content_id', 'dvd_id', 'series', 'languages', 'actresses', ' sample', 'gallery'
+    ];
 }

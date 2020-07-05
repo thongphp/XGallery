@@ -11,6 +11,7 @@ namespace App\Jobs\Jav;
 
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Jav\R18Model;
 use App\Models\JavMovieModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -49,6 +50,9 @@ class R18 implements ShouldQueue
         if (!$itemDetail = app(\App\Crawlers\Crawler\R18::class)->getItem($this->url)) {
             return;
         }
+
+        $attributes = $itemDetail->getAttributes();
+        R18Model::updateOrCreate(['content_id' => $attributes['content_id']], $attributes);
 
         $movie = \App\Models\Jav\JavMovieModel::updateOrCreate(
             ['dvd_id' => $itemDetail->dvd_id],
