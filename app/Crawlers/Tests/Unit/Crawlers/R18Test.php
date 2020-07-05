@@ -7,10 +7,10 @@ use App\Models\Jav\R18Model;
 use Illuminate\Contracts\Foundation\Application;
 
 /**
- * Class R18
+ * Class R18Test
  * @package App\Crawlers\Tests\Unit\Crawlers
  */
-class R18 extends TestCase
+class R18Test extends TestCase
 {
     /**
      * @var \App\Crawlers\Crawler\R18|Application|mixed

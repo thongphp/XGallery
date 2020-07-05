@@ -33,29 +33,6 @@ final class XCityProfile extends BaseCrawlerCommand
     protected $description = 'Fetching profile data from XCity';
 
     /**
-     * @return bool
-     */
-    public function daily(): bool
-    {
-        if (!$items = $this->getCrawler()->getItemLinks('https://xxx.xcity.jp/idol/')) {
-            return false;
-        }
-
-        $this->progressBarInit($items->count());
-
-        $items->each(function ($item) {
-            $this->progressBarSetInfo($item['url']);
-            $this->progressBarSetStatus('FETCHING');
-            // Because this is daily request. We don't need use limit channel
-            \App\Jobs\Jav\XCityProfile::dispatch($item);
-            $this->progressBarSetStatus('QUEUED');
-            $this->progressBar->advance();
-        });
-
-        return true;
-    }
-
-    /**
      * @SuppressWarnings("unused")
      *
      * @return bool
@@ -63,26 +40,25 @@ final class XCityProfile extends BaseCrawlerCommand
      */
     protected function fully(): bool
     {
-        if (!$pages = $this->getIndexLinks()) {
+        if (!$endpoint = $this->getCrawlerEndpoint()) {
             return false;
         }
 
-        $this->progressBarInit($pages->count());
+        $items = app(\App\Crawlers\Crawler\XCityProfile::class)
+            ->getItemLinks($endpoint->url . '&page=' . $endpoint->page);
 
-        // Process all pages. Actually one page
-        $pages->each(function ($page) {
-            $this->progressBar->setMessage($page->count(), 'steps');
-            $this->progressBar->setMessage(0, 'step');
-            // Process items on page
-            $page->each(function ($item, $index) {
-                $this->progressBarSetInfo($item['url']);
-                $this->progressBarSetStatus('FETCHING');
-                \App\Jobs\Jav\XCityProfile::dispatch($item);
-                $this->progressBarAdvanceStep();
-                $this->progressBarSetStatus('QUEUED');
-            });
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
+            return false;
+        }
+
+        $this->progressBarInit($items->count());
+        $items->each(function ($item) {
+            \App\Jobs\Jav\XCityProfile::dispatch($item);
             $this->progressBar->advance();
         });
+
+        $endpoint->succeed()->save();
 
         return true;
     }

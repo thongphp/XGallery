@@ -184,11 +184,6 @@ return [
         ServiceProvider::class,
 
         /**
-         * Crawler
-         */
-        App\Crawlers\Providers\CrawlerProvider::class,
-
-        /**
          * Oauth
          */
         App\Oauth\Providers\FlickrServiceProvider::class,

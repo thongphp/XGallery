@@ -2,9 +2,9 @@
 
 namespace App\Jobs\Jav;
 
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Jav\JavIdolModel;
 use App\Models\JavIdols;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,25 +21,16 @@ class XCityProfile implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    protected array $item;
+    private string $url;
 
     /**
-     * Create a new job instance.
-     *
-     * @param  array  $item
+     * XCityProfile constructor.
+     * @param  string  $url
      */
-    public function __construct(array $item)
+    public function __construct(string $url)
     {
-        $this->item = $item;
+        $this->url = $url;
         $this->onQueue(Queues::QUEUE_JAV);
-    }
-
-    /**
-     * @return RateLimited[]
-     */
-    public function middleware()
-    {
-        return [new RateLimited('xcity')];
     }
 
     /**
@@ -49,28 +40,25 @@ class XCityProfile implements ShouldQueue
      */
     public function handle()
     {
-        if (!$itemDetail = app(\App\Crawlers\Crawler\XCityProfile::class)->getItemDetail($this->item['url'])) {
-            $this->release(900); // 15 minutes
+        if (!$itemDetail = app(\App\Crawlers\Crawler\XCityProfile::class)->getItem($this->url)) {
             return;
         }
 
-        $model = app(JavIdols::class);
-        if (!$item = $model->where(['reference_url' => $itemDetail->url])->first()) {
-            $item = app(JavIdols::class);
-        }
-
-        $item->name = $itemDetail->name;
-        $item->reference_url = $itemDetail->url;
-        $item->cover = $itemDetail->cover;
-        $item->favorite = $itemDetail->favorite ?? null;
-        $item->birthday = $itemDetail->birthday ?? null;
-        $item->blood_type = $itemDetail->blood_type ?? null;
-        $item->city = $itemDetail->city ?? null;
-        $item->height = $itemDetail->height ?? null;
-        $item->breast = $itemDetail->breast ?? null;
-        $item->waist = $itemDetail->waist ?? null;
-        $item->hips = $itemDetail->hips ?? null;
-
-        $item->save();
+        \App\Models\Jav\XCityProfile::updateOrCreate(['url' => $itemDetail->url], $itemDetail->getAttributes());
+        JavIdolModel::updateOrCreate(
+            ['name' => $itemDetail->name],
+            [
+                'name' => $itemDetail->name,
+                'cover' => $itemDetail->cover,
+                'blood_type' => $itemDetail->blood_type,
+                'city' => $itemDetail->city,
+                'height' => $itemDetail->height,
+                'breast' => $itemDetail->breast,
+                'waist' => $itemDetail->waist,
+                'hips' => $itemDetail->hips,
+                'favorite' => $itemDetail->favorite,
+                'reference_url' => -1
+            ]
+        );
     }
 }

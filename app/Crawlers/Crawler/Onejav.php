@@ -142,7 +142,7 @@ final class Onejav
 
         if ($crawler->filter('h5 a')->count()) {
             $item->title = (trim($crawler->filter('h5 a')->text(null, false)));
-            $item->title = implode('-',preg_split("/(,?\s+)|((?<=[a-z])(?=\d))|((?<=\d)(?=[a-z]))/i", $item->title));
+            $item->title = implode('-', preg_split("/(,?\s+)|((?<=[a-z])(?=\d))|((?<=\d)(?=[a-z]))/i", $item->title));
         }
 
         if ($crawler->filter('h5 span')->count()) {

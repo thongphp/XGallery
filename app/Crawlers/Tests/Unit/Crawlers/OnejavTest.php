@@ -8,10 +8,10 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 
 /**
- * Class Onejav
+ * Class OnejavTest
  * @package App\Crawlers\Tests\Unit\Crawlers
  */
-class Onejav extends TestCase
+class OnejavTest extends TestCase
 {
     /**
      * @var \App\Crawlers\Crawler\Onejav|Application|mixed

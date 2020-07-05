@@ -58,7 +58,6 @@ final class R18
             return null;
         }
 
-
         $item = new R18Model;
         $item->url = $itemUri;
         $item->cover = trim($crawler->filter('.detail-single-picture img')->attr('src'));

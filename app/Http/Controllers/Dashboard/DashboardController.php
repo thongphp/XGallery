@@ -9,7 +9,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Crawlers\Crawler\Onejav;
+use App\Crawlers\Crawler\XCityVideo;
 use App\Http\Controllers\BaseController;
 use App\Repositories\CrawlerEndpoints;
 use Illuminate\Contracts\Foundation\Application;
@@ -43,9 +43,8 @@ class DashboardController extends BaseController
 
     public function login()
     {
-        $crawler  = app(Onejav::class);
-
-        dd($crawler->getDaily());
+        $crawler  = app(XCityVideo::class);
+        dd($crawler->getItem('https://xxx.xcity.jp/avod/detail/?maker=naturalhigh&id=146290'));
 
 
         return view(
