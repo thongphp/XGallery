@@ -2,6 +2,7 @@
 
 namespace App\Crawlers\Tests\Unit\Crawlers;
 
+use App\Crawlers\Crawler\R18;
 use App\Crawlers\Tests\TestCase;
 use App\Models\Jav\R18Model;
 use Illuminate\Contracts\Foundation\Application;
@@ -13,14 +14,14 @@ use Illuminate\Contracts\Foundation\Application;
 class R18Test extends TestCase
 {
     /**
-     * @var \App\Crawlers\Crawler\R18|Application|mixed
+     * @var R18|Application|mixed
      */
-    private \App\Crawlers\Crawler\R18 $crawler;
+    private R18 $crawler;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->crawler = app(\App\Crawlers\Crawler\R18::class);
+        $this->crawler = app(R18::class);
     }
 
     public function testGetItem()
@@ -28,6 +29,16 @@ class R18Test extends TestCase
         $item = $this->crawler->getItem('https://www.r18.com/videos/vod/movies/detail/-/id=dnjr00032');
         $this->assertInstanceOf(R18Model::class, $item);
         // @todo check all properties
+
+        $properties = $item->getAttributes();
+        $requiredKeys = [
+            'url', 'cover', 'title', 'categories', 'release_date', 'runtime', 'director', 'studio', 'label', 'channel',
+            'content_id', 'dvd_id', 'series', 'languages', 'actresses', 'sample', 'gallery'
+        ];
+
+        foreach ($requiredKeys as $key) {
+            $this->assertArrayHasKey($key, $properties);
+        }
     }
 
     public function testGetItemLinks()
