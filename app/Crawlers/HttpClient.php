@@ -32,8 +32,6 @@ class HttpClient extends Client
 
     protected ResponseInterface $response;
 
-    private array $errors = [];
-
     /**
      * @param  string  $method
      * @param  string  $uri
@@ -43,7 +41,7 @@ class HttpClient extends Client
      */
     public function request($method, $uri = '', array $options = []): ?string
     {
-        $key = $this->getKey([$method, $uri]);
+        $key = md5(serialize([$method, $uri]));
         $isCached = Cache::has($key);
 
         if ($isCached) {
@@ -67,15 +65,6 @@ class HttpClient extends Client
         }
 
         return Cache::get($key);
-    }
-
-    /**
-     * @param  array  $args
-     * @return string
-     */
-    protected function getKey(array $args): string
-    {
-        return md5(serialize($args));
     }
 
     /**
@@ -122,7 +111,7 @@ class HttpClient extends Client
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
         if (!$data = curl_exec($ch)) {
-            Log::error('Can not get download data', func_get_args());
+            $this->notify(new NotificationToSlack('Can not get download data'));
             return false;
         }
 
@@ -132,12 +121,12 @@ class HttpClient extends Client
         if ($status['http_code'] != Response::HTTP_OK
             && $status['http_code'] < Response::HTTP_MULTIPLE_CHOICES
             && $status['http_code'] > Response::HTTP_PERMANENTLY_REDIRECT) {
-            Log::error('Invalid response', [func_get_args(), $status]);
+            Log::stack(['http'])->warning('Invalid response', [func_get_args(), $status]);
             return false;
         }
 
         if (!Storage::put($saveToFile, $data)) {
-            Log::error('Can not save to file', func_get_args());
+            Log::stack(['http'])->warning('Can not save to file', func_get_args());
             return false;
         }
 
