@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Traits\HasJob;
+use App\Models\BatdongsanModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -33,41 +33,16 @@ class Batdongsan implements ShouldQueue
     }
 
     /**
-     * @return RateLimited[]
-     */
-    public function middleware()
-    {
-        return [new RateLimited('batdongsan')];
-    }
-
-    /**
      * Execute the job.
      *
      * @return void
      */
     public function handle()
     {
-        $model = app(\App\Models\Batdongsan::class);
-        /**
-         * Validate if item already in database
-         * @var \App\Models\Batdongsan $item
-         */
-        if ($item = $model->getItemByUrl($this->url)) {
-            $item->touch();
+        if (!$itemDetail = app(\App\Crawlers\Crawler\Batdongsan::class)->getItem($this->url)) {
             return;
         }
 
-        if (!$itemDetail = app(\App\Crawlers\Crawler\Batdongsan::class)->getItemDetail($this->url)) {
-            return;
-        }
-
-        $data = get_object_vars($itemDetail);
-
-        // Can not use fill() because it will be required fillable properties
-        foreach ($data as $key => $value) {
-            $model->{$key} = $value;
-        }
-
-        $model->save();
+        BatdongsanModel::updateOrCreate(['url' => $this->url], $itemDetail->getAttributes());
     }
 }

@@ -38,28 +38,24 @@ final class Batdongsan extends BaseCrawlerCommand
      */
     protected function fully(): bool
     {
-        if (!$pages = $this->getIndexLinks()) {
+        if (!$endpoint = $this->getCrawlerEndpoint()) {
             return false;
         }
 
-        $this->progressBarInit($pages->count());
+        $items = app(\App\Crawlers\Crawler\Batdongsan::class)->getItemLinks($endpoint->url.'/p' . $endpoint->page);
 
-        // Process all pages
-        $pages->each(function ($page) {
-            if (!$page) {
-                return;
-            }
-            $this->progressBarSetSteps($page->count());
-            // Process items on page
-            $page->each(function ($item) {
-                $this->progressBarSetInfo($item['url']);
-                $this->progressBarSetStatus('FETCHING');
-                \App\Jobs\Batdongsan::dispatch($item['url']);
-                $this->progressBarAdvanceStep();
-                $this->progressBarSetStatus('QUEUED');
-            });
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
+            return false;
+        }
+
+        $this->progressBarInit($items->count());
+        $items->each(function ($url) {
+            \App\Jobs\Batdongsan::dispatch($url);
             $this->progressBar->advance();
         });
+
+        $endpoint->succeed()->save();
 
         return true;
     }
