@@ -4,9 +4,7 @@ namespace App\Jobs\Jav;
 
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\JavIdols;
-use App\Models\JavMovieModel;
-use App\Models\JavMoviesXref;
+use App\Models\Jav\XCityVideoModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -46,7 +44,7 @@ class XCityVideo implements ShouldQueue
             return;
         }
 
-        \App\Models\Jav\XCityVideo::updateOrCreate(['item_number' => $itemDetail->item_number], $itemDetail->getAttributes());
+        XCityVideoModel::updateOrCreate(['item_number' => $itemDetail->item_number], $itemDetail->getAttributes());
 
         // Update to JavMovieModel
     }

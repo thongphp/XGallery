@@ -8,7 +8,6 @@
         Inspired by https://github.com/phpmd/phpmd/issues/137
         using http://phpmd.org/documentation/creating-a-ruleset.html
     </description>
-    <!-- se importan los rulesets, en este caso todos. -->
     <rule ref="rulesets/cleancode.xml">
         <exclude name="StaticAccess"/>
         <exclude name="IfStatementAssignment"/>
@@ -34,11 +33,17 @@
     <rule ref="rulesets/controversial.xml"/>
     <rule ref="rulesets/design.xml">
         <exclude name="CouplingBetweenObjects"/>
+        <exclude name="NumberOfChildren"/>
     </rule>
     <!-- beware the façades yo. -->
     <rule ref="rulesets/design.xml/CouplingBetweenObjects">
         <properties>
             <property name="maximum" value="20"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/design.xml/NumberOfChildren">
+        <properties>
+            <property name="minimum" value="20"/>
         </properties>
     </rule>
     <!-- se importa naming y se excluye ShortVariable para ser ajustada despues. -->

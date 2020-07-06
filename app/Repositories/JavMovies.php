@@ -9,8 +9,9 @@
 
 namespace App\Repositories;
 
-use App\Models\JavGenreModel;
-use App\Models\JavMoviesXref;
+use App\Models\Jav\JavGenreModel;
+use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\JavMovieXrefModel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
@@ -23,7 +24,7 @@ class JavMovies extends BaseRepository
         'name', 'item_number', 'content_id', 'dvd_id', 'director', 'studio', 'label', 'channel', 'series', 'description'
     ];
 
-    public function __construct(\App\Models\JavMovieModel $model)
+    public function __construct(JavMovieModel $model)
     {
         parent::__construct($model);
     }
@@ -58,7 +59,7 @@ class JavMovies extends BaseRepository
                 $id = $id->id;
             }
 
-            $ids = JavMoviesXref::where(['xref_id' => $id, 'xref_type' => 'genre'])
+            $ids = JavMovieXrefModel::where(['xref_id' => $id, 'xref_type' => 'genre'])
                 ->select('movie_id')
                 ->get()->toArray();
 
@@ -66,7 +67,7 @@ class JavMovies extends BaseRepository
         }
 
         if (isset($filter['idol']) && !empty($filter['idol'])) {
-            $ids = JavMoviesXref::where(['xref_id' => $filter['idol'], 'xref_type' => 'idol'])
+            $ids = JavMovieXrefModel::where(['xref_id' => $filter['idol'], 'xref_type' => 'idol'])
                 ->select('movie_id')
                 ->get()->toArray();
             $this->builder->whereIn('id', $ids);

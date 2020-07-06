@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait HasModelTests
 {
-    protected function testModelProperties(array $expectedFields, Model $model)
+    protected function testModelProperties(array $expectedFields, Model $model): void
     {
         $properties = $model->getAttributes();
 

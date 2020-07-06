@@ -16,6 +16,12 @@ use App\Database\Mongodb;
  * @property string $url
  * @property string $cover
  * @property string $title
+ * @property int $size
+ * @property string $date
+ * @property array $tags
+ * @property string $descriptions
+ * @property array $actresses
+ * @property string $torrent
  * @package App\Models\Jav
  */
 class OnejavModel extends Mongodb

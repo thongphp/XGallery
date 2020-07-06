@@ -28,30 +28,28 @@ class OnejavTest extends TestCase
         $this->crawler = app(Onejav::class);
     }
 
-    public function testGetDaily()
+    public function testGetDaily(): void
     {
         $items = $this->crawler->getDaily();
         $this->assertInstanceOf(Collection::class, $items);
         $item = $items->first();
         $this->assertInstanceOf(OnejavModel::class, $item);
-        $this->testModelProperties([
-            'url', 'cover', 'title', 'size', 'date', 'tags', 'description', 'torrent', 'actresses'
-        ], $item);
+        $this->testModelProperties($item->getFillable(), $item);
         $this->assertIsFloat($item->size);
     }
 
-    public function testGetItems()
+    public function testGetItems(): void
     {
         $items = $this->crawler->getItems('https://onejav.com/2020/07/05');
         $this->assertInstanceOf(Collection::class, $items);
         $this->assertEquals(10, $items->count());
         $item = $items->first();
         $this->assertInstanceOf(OnejavModel::class, $item);
-        // @todo Check all properties are exists
+        $this->testModelProperties($item->getFillable(), $item);
         $this->assertIsFloat($item->size);
     }
 
-    public function testGetPagesCount()
+    public function testGetPagesCount(): void
     {
         $this->assertEquals(3, $this->crawler->getIndexPagesCount('https://onejav.com/2020/07/05'));
     }

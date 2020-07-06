@@ -5,7 +5,7 @@ namespace App\Jobs\Jav;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Jav\JavIdolModel;
-use App\Models\JavIdols;
+use App\Models\Jav\XCityProfileModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Class XCityProfile
+ * Class XCityProfileModel
  * @package App\Jobs
  */
 class XCityProfile implements ShouldQueue
@@ -24,7 +24,7 @@ class XCityProfile implements ShouldQueue
     private string $url;
 
     /**
-     * XCityProfile constructor.
+     * XCityProfileModel constructor.
      * @param  string  $url
      */
     public function __construct(string $url)
@@ -38,13 +38,13 @@ class XCityProfile implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         if (!$itemDetail = app(\App\Crawlers\Crawler\XCityProfile::class)->getItem($this->url)) {
             return;
         }
 
-        \App\Models\Jav\XCityProfile::updateOrCreate(['url' => $itemDetail->url], $itemDetail->getAttributes());
+        XCityProfileModel::updateOrCreate(['url' => $itemDetail->url], $itemDetail->getAttributes());
 
         JavIdolModel::updateOrCreate(
             ['name' => $itemDetail->name],

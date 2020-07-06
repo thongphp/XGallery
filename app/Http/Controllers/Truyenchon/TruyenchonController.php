@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Truyenchon;
 
 use App\Http\Controllers\BaseController;
 use App\Jobs\Truyenchon\TruyenchonDownload;
-use App\Models\TruyenchonModel;
+use App\Models\Truyentranh\TruyenchonModel;
 use App\Repositories\TruyenchonRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;

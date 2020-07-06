@@ -13,7 +13,7 @@ use App\Console\BaseCrawlerCommand;
 use Exception;
 
 /**
- * Class XCityVideo
+ * Class XCityVideoModel
  * @package App\Console\Commands
  */
 final class XCityVideo extends BaseCrawlerCommand

@@ -27,26 +27,23 @@ class R18Test extends TestCase
         $this->crawler = app(R18::class);
     }
 
-    public function testGetItem()
+    public function testGetItem(): void
     {
         $item = $this->crawler->getItem('https://www.r18.com/videos/vod/movies/detail/-/id=dnjr00032');
         $this->assertInstanceOf(R18Model::class, $item);
-        $this->testModelProperties([
-            'url', 'cover', 'title', 'categories', 'release_date', 'runtime', 'director', 'studio', 'label', 'channel',
-            'content_id', 'dvd_id', 'series', 'languages', 'actresses', 'sample', 'gallery'
-        ], $item);
+        $this->testModelProperties($item->getFillable(), $item);
     }
 
-    public function testGetItemLinks()
+    public function testGetItemLinks(): void
     {
         $items = $this->crawler->getItemLinks('https://www.r18.com/videos/vod/anime/list/pagesize=30/price=all/sort=new/type=all/page=1/');
         $this->assertEquals(30, $items->count());
         $item = $items->first();
         $this->assertIsString($item);
-        $this->assertTrue(filter_var($item, FILTER_VALIDATE_URL) !== false);
+        $this->assertNotFalse(filter_var($item, FILTER_VALIDATE_URL));
     }
 
-    public function testGetPagesCount()
+    public function testGetPagesCount(): void
     {
         $this->assertEquals(
             20,

@@ -20,7 +20,7 @@ class BatdongsanTest extends TestCase
         $this->crawler = app(Batdongsan::class);
     }
 
-    public function testGetItem()
+    public function testGetItem(): void
     {
         $items = $this->crawler->getItem('https://batdongsan.com.vn/ban-can-ho-chung-cu-duong-ven-bien-xa-phuoc-thuan-prj-ho-tram-complex/chi-1-4-ty-quy-khach-hang-so-huu-ngay-comlex-so-ng-so-huu-vinh-vien-pr26133982');
         $this->assertInstanceOf(BatdongsanModel::class, $items);

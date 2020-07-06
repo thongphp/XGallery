@@ -31,6 +31,8 @@ class NotificationToSlack extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  mixed  $notifiable
      * @return array
      */
@@ -39,6 +41,13 @@ class NotificationToSlack extends Notification
         return ['slack'];
     }
 
+    /**
+     * @SuppressWarnings("unused")
+     *
+     * @param mixed $notifiable
+     *
+     * @return mixed
+     */
     public function toSlack($notifiable)
     {
         return (new SlackMessage())

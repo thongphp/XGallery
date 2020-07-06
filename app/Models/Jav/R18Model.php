@@ -39,6 +39,6 @@ class R18Model extends Mongodb
 
     protected $fillable = [
         'url', 'cover', 'title', 'categories', 'release_date', 'runtime', 'director', 'studio', 'label', 'channel',
-        'content_id', 'dvd_id', 'series', 'languages', 'actresses', ' sample', 'gallery'
+        'content_id', 'dvd_id', 'series', 'languages', 'actresses', 'sample', 'gallery'
     ];
 }

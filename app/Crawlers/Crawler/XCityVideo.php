@@ -10,13 +10,14 @@
 namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
+use App\Models\Jav\XCityVideoModel;
 use DateTime;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class XCityVideo
+ * Class XCityVideoModel
  * @package App\Services\Crawler
  */
 final class XCityVideo
@@ -48,29 +49,30 @@ final class XCityVideo
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      * @SuppressWarnings("PHPMD.NPathComplexity")
      *
-     * @param  string  $itemUri
-     * @return \App\Models\Jav\XCityVideo|null
+     * @param string $itemUri
+     *
+     * @return XCityVideoModel|null
      */
-    public function getItem(string $itemUri): ?\App\Models\Jav\XCityVideo
+    public function getItem(string $itemUri): ?XCityVideoModel
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        $item = new \App\Models\Jav\XCityVideo();
+        $item = app(XCityVideoModel::class);
         $item->title = $crawler->filter('#program_detail_title')->text(null, false);
         $item->url = $itemUri;
-        $item->gallery = collect($crawler->filter('img.launch_thumbnail')->each(function ($el) {
+        $item->gallery = collect($crawler->filter('img.launch_thumbnail')->each(static function ($el) {
             return $el->attr('src');
         }))->unique()->toArray();
 
-        $item->actresses = collect($crawler->filter('.bodyCol ul li.credit-links a')->each(function ($el) {
+        $item->actresses = collect($crawler->filter('.bodyCol ul li.credit-links a')->each(static function ($el) {
             return ['https://xxx.xcity.jp'.$el->attr('href'), trim($el->text())];
         }))->unique()->toArray();
 
         // Get all fields
         $fields = collect($crawler->filter('.bodyCol ul li')->each(
-            function ($li) {
+            static function ($li) {
                 if (strpos($li->text(null, false), '★Favorite') !== false) {
                     return ['favorite' => (int) str_replace('★Favorite', '', $li->text(null, false))];
                 }
@@ -90,7 +92,7 @@ final class XCityVideo
                 }
                 if (strpos($li->text(null, false), 'Genres') !== false) {
                     $genres = $li->filter('a.genre')->each(
-                        function ($a) {
+                        static function ($a) {
                             return trim($a->text(null, false));
                         }
                     );
@@ -124,8 +126,10 @@ final class XCityVideo
                 if (strpos($li->text(null, false), 'Description') !== false) {
                     return ['description' => trim(str_replace('Description', '', $li->text(null, false)))];
                 }
+
+                return null;
             }
-        ))->reject(function ($value) {
+        ))->reject(static function ($value) {
             return null === $value;
         })->toArray();
 
@@ -151,7 +155,7 @@ final class XCityVideo
             return null;
         }
 
-        $links = $crawler->filter('.x-itemBox')->each(function ($el) {
+        $links = $crawler->filter('.x-itemBox')->each(static function ($el) {
             return 'https://xxx.xcity.jp'.$el->filter('.x-itemBox-package a')->attr('href');
         });
 
@@ -178,11 +182,16 @@ final class XCityVideo
     }
 
     /**
-     * @param  array  $conditions
+     * @param string $searchTerm
+     *
      * @return Collection|null
      */
-    public function search(array $conditions = []): ?Collection
+    public function search(string $searchTerm): ?Collection
     {
-        return null;
+        return $this->getItemLinks(
+            'https://xxx.xcity.jp/avod/result/?'.http_build_query([
+                'genre' => 'avod', 'q' => $searchTerm, 'sg' => 'avod',
+            ])
+        );
     }
 }

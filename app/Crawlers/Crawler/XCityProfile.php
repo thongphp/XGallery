@@ -10,6 +10,7 @@
 namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
+use App\Models\Jav\XCityProfileModel;
 use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
@@ -17,7 +18,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class XCityProfile
+ * Class XCityProfileModel
  * @package App\Crawlers\Crawler
  */
 final class XCityProfile
@@ -65,16 +66,17 @@ final class XCityProfile
      * @SuppressWarnings("PHPMD.NPathComplexity")
      *
      * @param  string  $itemUri
-     * @return \App\Models\Jav\XCityProfile|null
+     *
+     * @return XCityProfileModel|null
      */
-    public function getItem(string $itemUri): ?\App\Models\Jav\XCityProfile
+    public function getItem(string $itemUri): ?XCityProfileModel
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
         try {
-            $item = new \App\Models\Jav\XCityProfile();
+            $item = app(XCityProfileModel::class);
             $item->name = $crawler->filter('.itemBox h1')->text(null, false);
             $item->url = $itemUri;
             $item->cover = $crawler->filter('.photo p.tn img')->attr('src');
@@ -141,9 +143,11 @@ final class XCityProfile
                             'hips' => $hips ?? null,
                         ];
                     }
+
+                    return null;
                 }
-            ))->reject(function ($value) {
-                return null == $value;
+            ))->reject(static function ($value) {
+                return null === $value;
             })->toArray();
 
             foreach ($fields as $field) {
@@ -169,14 +173,14 @@ final class XCityProfile
         }
 
         if ($crawler->filter('.itemBox p.tn')->count() !== 0) {
-            $links = $crawler->filter('.itemBox p.tn')->each(function ($el) {
+            $links = $crawler->filter('.itemBox p.tn')->each(static function ($el) {
                 return 'https://xxx.xcity.jp/idol/'.$el->filter('a')->attr('href');
             });
 
             return collect($links);
         }
 
-        return collect($crawler->filter('.itemBox p.name a')->each(function ($el) {
+        return collect($crawler->filter('.itemBox p.name a')->each(static function ($el) {
             return 'https://xxx.xcity.jp/idol/'.$el->filter('a')->attr('href');
         }));
     }

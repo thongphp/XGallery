@@ -5,24 +5,25 @@ namespace App\Models\Jav;
 use App\Database\Mongodb;
 
 /**
- * Class XCityVideo
+ * Class XCityVideoModel
  * @property string $title
  * @property string $url
- * @property string $gallery
- * @property string $actresses
+ * @property array $gallery
+ * @property array $actresses
+ * @property int $favorite
  * @property string $sales_date
  * @property string $label
  * @property string $marker
  * @property string $series
- * @property string $genres
+ * @property array $genres
  * @property string $director
  * @property string $item_number
- * @property string $time
+ * @property int $time
  * @property string $release_date
  * @property string $description
  * @package App\Models\Jav
  */
-class XCityVideo extends Mongodb
+class XCityVideoModel extends Mongodb
 {
     protected $collection = 'xcity_videos';
 
@@ -34,7 +35,7 @@ class XCityVideo extends Mongodb
     ];
 
     protected $fillable = [
-        'title', 'url', 'gallery', 'actresses', 'sales_date', 'label', 'marker', 'series', 'genres', 'director',
-        'item_number', 'time', 'release_date', 'description'
+        'title', 'url', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker', 'series', 'genres',
+        'director', 'item_number', 'time', 'release_date', 'description'
     ];
 }

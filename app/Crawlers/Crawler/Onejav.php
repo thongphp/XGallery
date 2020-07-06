@@ -28,7 +28,7 @@ final class Onejav
 {
     use Notifiable, HasSlackNotification;
 
-    const ENDPOINT = 'https://onejav.com';
+    public const ENDPOINT = 'https://onejav.com';
 
     /**
      * @param  array  $options

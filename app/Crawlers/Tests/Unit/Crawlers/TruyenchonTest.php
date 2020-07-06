@@ -23,7 +23,7 @@ class TruyenchonTest extends TestCase
         $this->crawler = app(Truyenchon::class);
     }
 
-    public function testGetItem()
+    public function testGetItem(): void
     {
         $item = $this->crawler->getItem('http://truyenchon.com/truyen/kinh-di-khong-loi/chap-211/599759');
         $this->assertInstanceOf(TruyenchonModel::class, $item);
