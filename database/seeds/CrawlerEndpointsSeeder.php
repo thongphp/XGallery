@@ -25,7 +25,7 @@ class CrawlerEndpointsSeeder extends Seeder
                     'updated_at' => Carbon::now()
                 ],
                 [
-                    'crawler' => 'OnejavModel',
+                    'crawler' => 'Onejav',
                     'url' => 'https://onejav.com/new?page=',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
