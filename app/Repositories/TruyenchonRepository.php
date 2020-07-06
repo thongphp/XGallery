@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\TruyenchonChapterModel;
-use App\Models\TruyenchonModel;
+use App\Models\Truyentranh\TruyenchonChapterModel;
+use App\Models\Truyentranh\TruyenchonModel;
 
 /**
  * Class TruyenchonRepository

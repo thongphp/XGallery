@@ -27,6 +27,8 @@ use App\Database\Mongodb;
  */
 class R18Model extends Mongodb
 {
+    public const R18_URL = 'https://www.r18.com/';
+
     public $collection = 'r18';
 
     protected $dates = [

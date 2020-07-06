@@ -7,24 +7,22 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-namespace App\Models;
+namespace App\Models\Truyentranh;
 
 use App\Database\Mongodb;
 use App\Models\Traits\HasCover;
 use App\Models\Traits\HasUrl;
 
 /**
- * Class TruyenchonRepository
+ * Class TruyenchonChapterModel
  * @package App\Models
  */
-class TruyenchonModel extends Mongodb
+class TruyenchonChapterModel extends Mongodb
 {
     use HasUrl;
     use HasCover;
 
-    const STATE_PROCESSED = 1;
+    public $collection = 'truyenchon_chapters';
 
-    public $collection = 'truyenchon';
-
-    protected $fillable = ['url', 'cover', 'title'];
+    protected $fillable = ['storyUrl', 'chapterUrl', 'chapter', 'images'];
 }
