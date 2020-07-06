@@ -4,6 +4,7 @@ namespace App\Crawlers\Tests\Unit\Crawlers;
 
 use App\Crawlers\Crawler\Onejav;
 use App\Crawlers\Tests\TestCase;
+use App\Crawlers\Tests\Traits\HasModelTests;
 use App\Models\Jav\OnejavModel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
@@ -14,6 +15,8 @@ use Illuminate\Support\Collection;
  */
 class OnejavTest extends TestCase
 {
+    use HasModelTests;
+
     /**
      * @var Onejav|Application|mixed
      */
@@ -31,7 +34,9 @@ class OnejavTest extends TestCase
         $this->assertInstanceOf(Collection::class, $items);
         $item = $items->first();
         $this->assertInstanceOf(OnejavModel::class, $item);
-        // @todo Check all properties are exists
+        $this->testModelProperties([
+            'url', 'cover', 'title', 'size', 'date', 'tags', 'description', 'torrent', 'actresses'
+        ], $item);
         $this->assertIsFloat($item->size);
     }
 

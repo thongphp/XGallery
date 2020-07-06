@@ -7,7 +7,6 @@ use Illuminate\Contracts\Foundation\Application;
 
 trait HasSlackNotification
 {
-
     /**
      * @return Repository|Application|mixed
      */
