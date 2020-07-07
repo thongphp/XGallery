@@ -15,6 +15,8 @@ use App\Models\Traits\HasCover;
 /**
  * Class Kissgoddess
  * @property string $url
+ * @property string $title
+ * @property string $cover
  * @property array $images
  * @package App\Models
  */
@@ -24,5 +26,5 @@ class KissgoddessModel extends Mongodb
 
     public $collection = 'kissgoddess';
 
-    protected $fillable = ['url', 'images'];
+    protected $fillable = ['url', 'title', 'cover', 'images'];
 }

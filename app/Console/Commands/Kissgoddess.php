@@ -53,7 +53,7 @@ final class Kissgoddess extends BaseCrawlerCommand
         $this->progressBarInit($items->count());
         $items->each(function ($item) use ($crawler) {
             $itemDetail = $crawler->getItem($item['url']);
-            KissgoddessModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images]);
+            KissgoddessModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
             $this->progressBar->advance();
         });
 

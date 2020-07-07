@@ -139,7 +139,7 @@ class CreateScheduleTable extends Migration
                 ],
                 [
                     'command' => 'kissgoddess',
-                    'every' => 'everyFiveMinutes',
+                    'every' => 'everyThirtyMinutes',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
