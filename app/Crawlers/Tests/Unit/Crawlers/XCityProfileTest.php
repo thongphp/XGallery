@@ -17,7 +17,7 @@ class XCityProfileTest extends TestCase
     {
         $item = $this->crawler->getItem('https://xxx.xcity.jp/idol/detail/12144/');
         $this->assertInstanceOf(XCityProfileModel::class, $item);
-        $this->testModelProperties($item->getFillable(), $item);
+        $this->assertModelProperties($item->getFillable(), $item);
     }
 
     public function testGetIndexPagesCount(): void

@@ -27,8 +27,6 @@ class TruyenchonTest extends TestCase
     {
         $item = $this->crawler->getItem('http://truyenchon.com/truyen/kinh-di-khong-loi/chap-211/599759');
         $this->assertInstanceOf(TruyenchonModel::class, $item);
-        $this->testModelProperties([
-            'url', 'images'
-        ], $item);
+        $this->assertModelProperties(['url', 'images'], $item);
     }
 }

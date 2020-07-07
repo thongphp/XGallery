@@ -47,9 +47,9 @@ final class Xiuren
 
     /**
      * @param  string  $itemUri
-     * @return object|null
+     * @return XiurenModel|null
      */
-    public function getItem(string $itemUri): ?object
+    public function getItem(string $itemUri): ?XiurenModel
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;

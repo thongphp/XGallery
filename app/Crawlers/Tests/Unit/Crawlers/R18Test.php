@@ -31,7 +31,7 @@ class R18Test extends TestCase
     {
         $item = $this->crawler->getItem('https://www.r18.com/videos/vod/movies/detail/-/id=dnjr00032');
         $this->assertInstanceOf(R18Model::class, $item);
-        $this->testModelProperties($item->getFillable(), $item);
+        $this->assertModelProperties($item->getFillable(), $item);
     }
 
     public function testGetItemLinks(): void

@@ -34,7 +34,7 @@ class OnejavTest extends TestCase
         $this->assertInstanceOf(Collection::class, $items);
         $item = $items->first();
         $this->assertInstanceOf(OnejavModel::class, $item);
-        $this->testModelProperties($item->getFillable(), $item);
+        $this->assertModelProperties($item->getFillable(), $item);
         $this->assertIsFloat($item->size);
     }
 
@@ -45,7 +45,7 @@ class OnejavTest extends TestCase
         $this->assertEquals(10, $items->count());
         $item = $items->first();
         $this->assertInstanceOf(OnejavModel::class, $item);
-        $this->testModelProperties($item->getFillable(), $item);
+        $this->assertModelProperties($item->getFillable(), $item);
         $this->assertIsFloat($item->size);
     }
 

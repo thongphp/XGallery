@@ -17,7 +17,7 @@ class XCityVideoTest extends TestCase
     {
         $item = $this->crawler->getItem('https://xxx.xcity.jp/avod/detail/?id=145340');
         $this->assertInstanceOf(XCityVideoModel::class, $item);
-        $this->testModelProperties($item->getFillable(), $item);
+        $this->assertModelProperties($item->getFillable(), $item);
     }
 
     public function testGetIndexPagesCount(): void

@@ -28,7 +28,7 @@ class KissgoddessTest extends TestCase
     {
         $item = $this->crawler->getItem('https://kissgoddess.com/album/32774.html');
         $this->assertInstanceOf(KissgoddessModel::class, $item);
-        $this->testModelProperties($item->getFillable(), $item);
+        $this->assertModelProperties(['url','images'], $item);
     }
 
     public function testGetItems(): void
