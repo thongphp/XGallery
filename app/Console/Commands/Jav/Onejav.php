@@ -9,7 +9,9 @@
 
 namespace App\Console\Commands\Jav;
 
+use App\Console\BaseCommand;
 use App\Console\BaseCrawlerCommand;
+use App\Console\Traits\HasCrawler;
 use App\Jobs\Jav\UpdateGenres;
 use App\Jobs\Jav\UpdateIdols;
 use App\Models\Jav\JavMovieModel;
@@ -22,8 +24,10 @@ use Illuminate\Support\Collection;
  * @description This command only use for basic movie information WITH download link and genre. Idol with name only
  * @package App\Console\Commands\Jav
  */
-final class Onejav extends BaseCrawlerCommand
+final class Onejav extends BaseCommand
 {
+    use HasCrawler;
+
     /**
      * The name and signature of the console command.
      *

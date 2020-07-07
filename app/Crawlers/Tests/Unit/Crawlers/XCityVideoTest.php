@@ -13,6 +13,13 @@ class XCityVideoTest extends TestCase
 
     private XCityVideo $crawler;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->crawler = app(XCityVideo::class);
+    }
+
     public function testGetItem(): void
     {
         $item = $this->crawler->getItem('https://xxx.xcity.jp/avod/detail/?id=145340');
@@ -35,9 +42,9 @@ class XCityVideoTest extends TestCase
 
     public function testSearch(): void
     {
-        $results = $this->crawler->search('Maria');
-        $this->assertEquals(30, $results->count());
-        $item = $results->first();
+        $items = $this->crawler->search('Maria');
+        $this->assertEquals(30, $items->count());
+        $item = $items->first();
         $this->assertIsString($item);
         $this->assertNotFalse(filter_var($item, FILTER_VALIDATE_URL));
     }
@@ -49,12 +56,5 @@ class XCityVideoTest extends TestCase
         $item = $itemLinks->first();
         $this->assertIsString($item);
         $this->assertNotFalse(filter_var($item, FILTER_VALIDATE_URL));
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->crawler = app(XCityVideo::class);
     }
 }

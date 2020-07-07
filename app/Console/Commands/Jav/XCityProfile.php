@@ -9,15 +9,18 @@
 
 namespace App\Console\Commands\Jav;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
+use App\Console\Traits\HasCrawler;
 use Exception;
 
 /**
  * Class XCity
  * @package App\Console\Commands
  */
-final class XCityProfile extends BaseCrawlerCommand
+final class XCityProfile extends BaseCommand
 {
+    use HasCrawler;
+
     /**
      * The name and signature of the console command.
      *
@@ -45,7 +48,7 @@ final class XCityProfile extends BaseCrawlerCommand
         }
 
         $items = app(\App\Crawlers\Crawler\XCityProfile::class)
-            ->getItemLinks($endpoint->url . '&page=' . $endpoint->page);
+            ->getItemLinks($endpoint->url.'&page='.$endpoint->page);
 
         if ($items->isEmpty()) {
             $endpoint->fail()->save();

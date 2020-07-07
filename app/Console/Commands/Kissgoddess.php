@@ -9,15 +9,18 @@
 
 namespace App\Console\Commands;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
+use App\Console\Traits\HasCrawler;
 use App\Models\KissgoddessModel;
 
 /**
  * Class Kissgoddess
  * @package App\Console\Commands
  */
-final class Kissgoddess extends BaseCrawlerCommand
+final class Kissgoddess extends BaseCommand
 {
+    use HasCrawler;
+
     /**
      * The name and signature of the console command.
      *

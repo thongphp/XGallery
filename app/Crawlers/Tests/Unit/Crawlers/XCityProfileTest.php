@@ -13,6 +13,13 @@ class XCityProfileTest extends TestCase
 
     private XCityProfile $crawler;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->crawler = app(XCityProfile::class);
+    }
+
     public function testGetItem(): void
     {
         $item = $this->crawler->getItem('https://xxx.xcity.jp/idol/detail/12144/');
@@ -49,12 +56,5 @@ class XCityProfileTest extends TestCase
         $item = $itemLinks->first();
         $this->assertIsString($item);
         $this->assertNotFalse(filter_var($item, FILTER_VALIDATE_URL));
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->crawler = app(XCityProfile::class);
     }
 }

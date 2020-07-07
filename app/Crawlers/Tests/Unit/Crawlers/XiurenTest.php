@@ -18,7 +18,7 @@ class XiurenTest extends TestCase
      */
     private Xiuren $crawler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->crawler = app(Xiuren::class);

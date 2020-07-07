@@ -15,6 +15,12 @@ use App\Models\Traits\HasUrl;
 
 /**
  * Class TruyenchonChapterModel
+ * @property string $storyUrl
+ * @property string $chapterUrl
+ * @property string $chapter
+ * @property string $title
+ * @property string $description
+ * @property array $images
  * @package App\Models
  */
 class TruyenchonChapterModel extends Mongodb
@@ -24,5 +30,5 @@ class TruyenchonChapterModel extends Mongodb
 
     public $collection = 'truyenchon_chapters';
 
-    protected $fillable = ['storyUrl', 'chapterUrl', 'chapter', 'images'];
+    protected $fillable = ['storyUrl', 'chapterUrl', 'chapter', 'title', 'description', 'images'];
 }

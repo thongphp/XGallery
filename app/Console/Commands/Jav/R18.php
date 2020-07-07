@@ -9,15 +9,18 @@
 
 namespace App\Console\Commands\Jav;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
+use App\Console\Traits\HasCrawler;
 use Exception;
 
 /**
  * @description R18 only used to get videos detail. Idol with name only
  * @package App\Console\Commands
  */
-final class R18 extends BaseCrawlerCommand
+final class R18 extends BaseCommand
 {
+    use HasCrawler;
+
     /**
      * The name and signature of the console command.
      *

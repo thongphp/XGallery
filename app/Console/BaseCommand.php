@@ -10,6 +10,7 @@
 namespace App\Console;
 
 use App\Console\Traits\HasProgressBar;
+use App\Traits\HasObject;
 use Illuminate\Console\Command;
 use Illuminate\Notifications\Notifiable;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,6 +24,7 @@ class BaseCommand extends Command
 {
     use Notifiable;
     use HasProgressBar;
+    use HasObject;
 
     /**
      * Entry point

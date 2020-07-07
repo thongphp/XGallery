@@ -9,15 +9,18 @@
 
 namespace App\Console\Commands;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
+use App\Console\Traits\HasCrawler;
 use Exception;
 
 /**
  * Class Batdongsan
  * @package App\Console\Commands
  */
-final class Batdongsan extends BaseCrawlerCommand
+final class Batdongsan extends BaseCommand
 {
+    use HasCrawler;
+
     /**
      * The name and signature of the console command.
      *

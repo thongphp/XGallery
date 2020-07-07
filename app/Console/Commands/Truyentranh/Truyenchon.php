@@ -9,7 +9,8 @@
 
 namespace App\Console\Commands\Truyentranh;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
+use App\Console\Traits\HasCrawler;
 use App\Models\Truyentranh\TruyenchonModel;
 use Exception;
 
@@ -17,8 +18,10 @@ use Exception;
  * Class Truyenchon
  * @package App\Console\Commands\Truyentranh
  */
-final class Truyenchon extends BaseCrawlerCommand
+final class Truyenchon extends BaseCommand
 {
+    use HasCrawler;
+
     /**
      * The name and signature of the console command.
      *
@@ -32,7 +35,6 @@ final class Truyenchon extends BaseCrawlerCommand
      * @var string
      */
     protected $description = 'Fetching stories from http://truyenchon.com/';
-
 
     /**
      * @return bool

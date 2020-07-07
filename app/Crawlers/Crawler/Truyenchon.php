@@ -11,7 +11,6 @@ namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
 use App\Crawlers\Middleware\TruyenchonRateLimitStore;
-use App\Integrations\Shopee\Services\RateLimiterStore;
 use App\Models\Truyentranh\TruyenchonChapterModel;
 use Exception;
 use GuzzleHttp\HandlerStack;
@@ -66,7 +65,7 @@ final class Truyenchon
         }
 
         $item = new TruyenchonChapterModel;
-        $item->url = $chapterUrl;
+        $item->chapterUrl = $chapterUrl;
         $item->images = collect($crawler->filter('.page-chapter img')->each(function ($img) {
             return $img->attr('data-original');
         }))->toArray();
@@ -119,15 +118,13 @@ final class Truyenchon
             return null;
         }
 
-        $links = $crawler->filter('.ModuleContent .items .item')->each(function ($el) {
+        return collect($crawler->filter('.ModuleContent .items .item')->each(function ($el) {
             return [
                 'url' => $el->filter('.image a')->attr('href'),
                 'cover' => $el->filter('img')->attr('data-original'),
                 'title' => $el->filter('h3 a')->text(),
             ];
-        });
-
-        return collect($links);
+        }));
     }
 
     /**

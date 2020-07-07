@@ -9,15 +9,18 @@
 
 namespace App\Console\Commands\Jav;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
+use App\Console\Traits\HasCrawler;
 use Exception;
 
 /**
  * Class XCityVideoModel
  * @package App\Console\Commands
  */
-final class XCityVideo extends BaseCrawlerCommand
+final class XCityVideo extends BaseCommand
 {
+    use HasCrawler;
+
     /**
      * The name and signature of the console command.
      *
