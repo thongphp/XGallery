@@ -9,7 +9,7 @@ use App\Database\Mongodb;
  * @property string $url
  * @property string $cover
  * @property string $title
- * @property string $categories
+ * @property array $categories
  * @property $release_date
  * @property int $runtime
  * @property string $director

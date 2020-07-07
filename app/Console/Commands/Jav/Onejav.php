@@ -10,23 +10,23 @@
 namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCommand;
-use App\Console\BaseCrawlerCommand;
 use App\Console\Traits\HasCrawler;
-use App\Jobs\Jav\UpdateGenres;
-use App\Jobs\Jav\UpdateIdols;
 use App\Models\Jav\JavMovieModel;
 use App\Models\Jav\OnejavModel;
+use App\Traits\Jav\HasXref;
 use Exception;
 use Illuminate\Support\Collection;
 
 /**
  * Class Onejav
  * @description This command only use for basic movie information WITH download link and genre. Idol with name only
+ * This command will not trigger any queues
  * @package App\Console\Commands\Jav
  */
 final class Onejav extends BaseCommand
 {
     use HasCrawler;
+    use HasXref;
 
     /**
      * The name and signature of the console command.
@@ -62,7 +62,7 @@ final class Onejav extends BaseCommand
             return false;
         }
 
-        $items = app(\App\Crawlers\Crawler\Onejav::class)->getItems($endpoint->url.$endpoint->page);
+        $items = app(\App\Crawlers\Crawler\Onejav::class)->getItems($endpoint->url.'?page='.$endpoint->page);
 
         if ($items->isEmpty()) {
             $endpoint->fail()->save();
@@ -101,10 +101,8 @@ final class Onejav extends BaseCommand
                 ]
             );
 
-            // @todo Trigger job to fetch data from R18
-
-            UpdateGenres::dispatch($movie, $item->tags);
-            UpdateIdols::dispatch($movie, $item->actresses);
+            $this->updateGenres($item->tags, $movie);
+            $this->updateIdols($item->actresses, $movie);
         });
 
         return true;

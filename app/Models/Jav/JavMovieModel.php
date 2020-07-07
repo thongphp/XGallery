@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Class JavMovieModel
+ * @property int $id
  * @property string $name
  * @property string $cover
  * @property $sales_date
@@ -29,7 +30,6 @@ use Illuminate\Support\Facades\DB;
  * @property string $channel
  * @property string $sample
  * @property int $is_downloadable
- * @property string $reference_url
  * @package App\Models\Jav
  */
 class JavMovieModel extends Model
@@ -55,7 +55,6 @@ class JavMovieModel extends Model
         'gallery',
         'sample',
         'is_downloadable',
-        'reference_url',
     ];
 
     public function search(array $fields, string $keyword)

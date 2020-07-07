@@ -40,7 +40,7 @@ class CreateCrawlerEndpointsTable extends Migration
                 ],
                 [
                     'crawler' => 'Onejav',
-                    'url' => 'https://onejav.com/new?page=',
+                    'url' => 'https://onejav.com/new',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],

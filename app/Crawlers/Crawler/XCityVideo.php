@@ -49,7 +49,7 @@ final class XCityVideo
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      * @SuppressWarnings("PHPMD.NPathComplexity")
      *
-     * @param string $itemUri
+     * @param  string  $itemUri
      *
      * @return XCityVideoModel|null
      */
@@ -62,12 +62,13 @@ final class XCityVideo
         $item = app(XCityVideoModel::class);
         $item->title = $crawler->filter('#program_detail_title')->text(null, false);
         $item->url = $itemUri;
+        $item->cover = $crawler->filter('div.photo a')->attr('href');
         $item->gallery = collect($crawler->filter('img.launch_thumbnail')->each(static function ($el) {
             return $el->attr('src');
         }))->unique()->toArray();
 
         $item->actresses = collect($crawler->filter('.bodyCol ul li.credit-links a')->each(static function ($el) {
-            return ['https://xxx.xcity.jp'.$el->attr('href'), trim($el->text())];
+            return trim($el->text());
         }))->unique()->toArray();
 
         // Get all fields
@@ -182,7 +183,7 @@ final class XCityVideo
     }
 
     /**
-     * @param string $searchTerm
+     * @param  string  $searchTerm
      *
      * @return Collection|null
      */

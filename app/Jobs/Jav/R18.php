@@ -13,6 +13,7 @@ use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Jav\JavMovieModel;
 use App\Models\Jav\R18Model;
+use App\Traits\Jav\HasXref;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -27,6 +28,7 @@ class R18 implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
+    use HasXref;
 
     private string $url;
 
@@ -54,10 +56,10 @@ class R18 implements ShouldQueue
         $attributes = $itemDetail->getAttributes();
         R18Model::updateOrCreate(['content_id' => $attributes['content_id']], $attributes);
 
+        // Because R18 have movie detail. We will use update instead firstOrCreate
         $movie = JavMovieModel::updateOrCreate(
             ['dvd_id' => $itemDetail->dvd_id],
             [
-                'reference_url' => $itemDetail->reference_url,
                 'cover' => $itemDetail->cover,
                 'name' => $itemDetail->name,
                 'release_date' => $itemDetail->release_date,
@@ -72,9 +74,7 @@ class R18 implements ShouldQueue
             ]
         );
 
-        // Trigger job to update genres and xref
-        UpdateGenres::dispatch($movie, $itemDetail->categories);
-        // Trigger job to update idols and xref
-        UpdateIdols::dispatch($movie, $itemDetail->actresses);
+        $this->updateGenres($itemDetail->categories, $movie);
+        $this->updateIdols($itemDetail->actresses, $movie);
     }
 }

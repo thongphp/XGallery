@@ -19,7 +19,7 @@ use App\Database\Mongodb;
  * @property int $size
  * @property string $date
  * @property array $tags
- * @property string $descriptions
+ * @property string $description
  * @property array $actresses
  * @property string $torrent
  * @package App\Models\Jav

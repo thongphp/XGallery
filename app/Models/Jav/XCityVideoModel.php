@@ -8,6 +8,7 @@ use App\Database\Mongodb;
  * Class XCityVideoModel
  * @property string $title
  * @property string $url
+ * @property string $cover
  * @property array $gallery
  * @property array $actresses
  * @property int $favorite
@@ -35,7 +36,7 @@ class XCityVideoModel extends Mongodb
     ];
 
     protected $fillable = [
-        'title', 'url', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker', 'series', 'genres',
+        'title', 'url', 'cover', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker', 'series', 'genres',
         'director', 'item_number', 'time', 'release_date', 'description'
     ];
 }

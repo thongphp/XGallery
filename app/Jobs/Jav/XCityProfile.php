@@ -45,7 +45,6 @@ class XCityProfile implements ShouldQueue
         }
 
         XCityProfileModel::updateOrCreate(['url' => $itemDetail->url], $itemDetail->getAttributes());
-
         JavIdolModel::updateOrCreate(
             ['name' => $itemDetail->name],
             [
@@ -58,7 +57,6 @@ class XCityProfile implements ShouldQueue
                 'waist' => $itemDetail->waist,
                 'hips' => $itemDetail->hips,
                 'favorite' => $itemDetail->favorite,
-                'reference_url' => -1 // @todo Maybe remove
             ]
         );
     }

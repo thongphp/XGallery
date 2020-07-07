@@ -31,7 +31,6 @@ class CreateJavMoviesTable extends Migration
             $table->text('gallery')->nullable();
             $table->string('sample')->nullable();
             $table->boolean('is_downloadable')->nullable();
-            $table->string('reference_url')->nullable();
             $table->timestamps();
         });
     }

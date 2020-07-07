@@ -9,21 +9,15 @@
 
 namespace App\Models\Jav;
 
-use App\Models\Traits\HasCover;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class JavIdolModel
+ * Class JavGenreXref
  * @package App\Models\Jav
  */
-class JavIdolModel extends Model
+class JavGenreXrefModel extends Model
 {
-    use HasCover;
+    protected $fillable = ['genre_id', 'movie_id'];
 
-    protected $fillable = [
-        'name', 'alias', 'birthday', 'blood_type', 'city', 'height', 'breast', 'waist', 'hips', 'cover',
-        'favorite'
-    ];
-
-    protected $table = 'jav_idols';
+    protected $table = 'jav_genres_xref';
 }
