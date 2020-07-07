@@ -84,6 +84,9 @@ final class Onejav extends BaseCrawlerCommand
         $this->progressBarInit($items->count());
         $items->each(function ($item) {
             $attributes = $item->getAttributes();
+            /**
+             * @var OnejavModel $item
+             */
             $item = OnejavModel::updateOrCreate(['url' => $attributes['url']], $attributes);
             $movie = JavMovieModel::updateOrCreate(
                 ['dvd_id' => $item->title],
