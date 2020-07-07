@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Traits\HasJob;
-use App\Models\Xiuren;
+use App\Models\XiurenModel;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -50,7 +50,7 @@ class XiurenDownload implements ShouldQueue
      */
     public function handle()
     {
-        $item = Xiuren::find($this->id);
+        $item = XiurenModel::find($this->id);
         $name = basename($item->url, '.html');
         $crawler = app(\App\Crawlers\Crawler\Xiuren::class);
         try {

@@ -10,7 +10,7 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseCrawlerCommand;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\XiurenModel;
 
 /**
  * Class Xiuren
@@ -23,7 +23,7 @@ final class Xiuren extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $signature = 'xiuren {task=fully} {--url=}';
+    protected $signature = 'xiuren {task=fully}';
 
     /**
      * The console command description.
@@ -34,31 +34,31 @@ final class Xiuren extends BaseCrawlerCommand
 
     /**
      * @return bool
+     * @throws \Exception
      */
-    public function item(): bool
+    public function fully(): bool
     {
-        if (!$url = $this->getOptionUrl()) {
+        if (!$endpoint = $this->getCrawlerEndpoint()) {
             return false;
         }
 
-        if (!$itemDetail = $this->getCrawler()->getItemDetail($url)) {
+        $crawler = app(\App\Crawlers\Crawler\Xiuren::class);
+        $items = app(\App\Crawlers\Crawler\Xiuren::class)->getItemLinks($endpoint->url.'/page-'.$endpoint->page.'.html');
+
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
             return false;
         }
 
-        $name = basename($itemDetail->url, '.html');
+        $this->progressBarInit($items->count());
+        $items->each(function ($item) use ($crawler) {
+            $itemDetail = $crawler->getItem($item['url']);
+            XiurenModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
+            $this->progressBar->advance();
+        });
 
-        foreach ($itemDetail->images as $image) {
-            $this->getCrawler()->download($image, 'xiuren'.DIRECTORY_SEPARATOR.$name);
-        }
+        $endpoint->succeed()->save();
 
         return true;
-    }
-
-    /**
-     * @return Model
-     */
-    protected function getModel(): Model
-    {
-        return app(\App\Models\Xiuren::class);
     }
 }

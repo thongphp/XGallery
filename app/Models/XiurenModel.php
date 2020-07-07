@@ -11,16 +11,19 @@ namespace App\Models;
 
 use App\Database\Mongodb;
 use App\Models\Traits\HasCover;
-use App\Models\Traits\HasUrl;
 
 /**
  * Class Xiuren
+ * @property string $url
+ * @property array $cover
+ * @property array $images
  * @package App\Models
  */
-class Xiuren extends Mongodb
+class XiurenModel extends Mongodb
 {
-    use HasUrl;
     use HasCover;
 
     public $collection = 'xiuren';
+
+    protected $fillable = ['url', 'cover', 'images'];
 }
