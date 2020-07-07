@@ -61,7 +61,7 @@ class R18 implements ShouldQueue
             ['dvd_id' => $itemDetail->dvd_id],
             [
                 'cover' => $itemDetail->cover,
-                'name' => $itemDetail->name,
+                'name' => $itemDetail->title,
                 'release_date' => $itemDetail->release_date,
                 'time' => $itemDetail->runtime,
                 'director' => $itemDetail->director,
