@@ -11,16 +11,18 @@ namespace App\Models;
 
 use App\Database\Mongodb;
 use App\Models\Traits\HasCover;
-use App\Models\Traits\HasUrl;
 
 /**
  * Class Kissgoddess
+ * @property string $url
+ * @property array $images
  * @package App\Models
  */
-class Kissgoddess extends Mongodb
+class KissgoddessModel extends Mongodb
 {
-    use HasUrl;
     use HasCover;
 
     public $collection = 'kissgoddess';
+
+    protected $fillable = ['url', 'images'];
 }

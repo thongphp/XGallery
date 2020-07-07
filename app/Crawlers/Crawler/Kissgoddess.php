@@ -9,28 +9,55 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Models\KissgoddessModel;
 use Exception;
 use Illuminate\Support\Collection;
-use Spatie\Url\Url;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Kissgoddess
  * @package App\Crawlers\Crawler
  */
-final class Kissgoddess extends AbstractCrawler
+final class Kissgoddess
 {
     /**
-     * @param  string  $itemUri
-     * @return object|null
+     * @param  array  $options
+     * @return HttpClient
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getClient(array $options = []): HttpClient
+    {
+        return new HttpClient(array_merge($options, config('httpclient')));
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+            return null;
+        }
+
+        return new Crawler($response, $uri);
+    }
+
+    /**
+     * @param  string  $itemUri
+     * @return KissgoddessModel|null
+     */
+    public function getItem(string $itemUri): ?KissgoddessModel
     {
         $pages = $this->getIndexPagesCount($itemUri);
-        $item = new stdClass;
+        $item = new KissgoddessModel;
         $item->url = $itemUri;
+        $images = collect([]);
 
         $itemUri = str_replace('.html', '', $itemUri);
+
         for ($page = 1; $page <= $pages; $page++) {
             $crawler = $this->crawl($itemUri.'_'.$page.'.html');
 
@@ -38,40 +65,16 @@ final class Kissgoddess extends AbstractCrawler
                 continue;
             }
 
-            $item->images[$page] = collect($crawler->filter('.td-gallery-content img')->each(
+            $images = $images->merge($crawler->filter('.td-gallery-content img')->each(
                 function ($image) {
                     return $image->attr('src');
                 }
-            ))->reject(function ($value) {
-                return null === $value;
-            })->toArray();
+            ));
         }
+
+        $item->images = $images->toArray();
 
         return $item;
-    }
-
-    /**
-     * @param  string  $indexUri
-     * @return int|null
-     */
-    public function getIndexPagesCount(string $indexUri = null): int
-    {
-        if (!$crawler = $this->crawl($indexUri)) {
-            return 1;
-        }
-
-        try {
-            $count = $crawler->filter('#pages a')->count();
-            $pages = $crawler->filter('#pages a');
-            $page = $pages->getNode($count - 2);
-            $page = explode('/', $page->getAttribute('href'));
-            $page = explode('_', end($page));
-            $page = end($page);
-
-            return (int) str_replace('.html', '', $page);
-        } catch (Exception $exception) {
-            return 1;
-        }
     }
 
     /**
@@ -96,21 +99,26 @@ final class Kissgoddess extends AbstractCrawler
     }
 
     /**
-     * @param  array  $conditions
-     * @return Collection|null
+     * @param  string  $indexUri
+     * @return int|null
      */
-    public function search(array $conditions = []): ?Collection
+    public function getIndexPagesCount(string $indexUri): int
     {
-        return null;
-    }
+        if (!$crawler = $this->crawl($indexUri)) {
+            return 1;
+        }
 
-    /**
-     * @param  Url  $url
-     * @param  int  $page
-     * @return string
-     */
-    protected function buildUrlWithPage(Url $url, int $page): string
-    {
-        return $this->buildUrl($url->getPath().$page.'.html');
+        try {
+            $count = $crawler->filter('#pages a')->count();
+            $pages = $crawler->filter('#pages a');
+            $page = $pages->getNode($count - 2);
+            $page = explode('/', $page->getAttribute('href'));
+            $page = explode('_', end($page));
+            $page = end($page);
+
+            return (int) str_replace('.html', '', $page);
+        } catch (Exception $exception) {
+            return 1;
+        }
     }
 }
