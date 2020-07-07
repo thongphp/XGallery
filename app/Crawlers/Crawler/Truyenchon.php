@@ -57,7 +57,7 @@ final class Truyenchon
 
     /**
      * @param  string  $chapterUrl
-     * @return object|null
+     * @return TruyenchonChapterModel|null
      */
     public function getItem(string $chapterUrl): ?TruyenchonChapterModel
     {
