@@ -13,6 +13,10 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class CrawlerEndpoints
+ * @property string $crawler
+ * @property string $url
+ * @property int failed
+ * @property int $page
  * @package App\Models
  */
 class CrawlerEndpoints extends Model
