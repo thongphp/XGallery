@@ -10,6 +10,7 @@
 namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCommand;
+use App\Crawlers\Crawler\Onejav;
 
 /**
  * Process download pending JAV
@@ -22,7 +23,7 @@ final class JavDownload extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'jav:downloads {task} {item_number}';
+    protected $signature = 'jav:downloads {task=download}';
 
     /**
      * The console command description.
@@ -34,29 +35,15 @@ final class JavDownload extends BaseCommand
     protected function download()
     {
         $downloads = \App\Models\JavDownload::where(['is_downloaded' => null])->get();
-        $this->progressBarInit($downloads->count());
-        $downloads->each(function ($download) {
-            \App\Jobs\Jav\JavDownload::dispatch($download);
-            $this->progressBarSetStatus('QUEUED');
-            $this->progressBar->advance();
-        });
-
-        return true;
-    }
-
-    protected function add()
-    {
-        $itemNumber = $this->argument('item_number');
-        if (\App\Models\JavDownload::where(['item_number' => $itemNumber])->first()) {
-            $this->output->warning('Already exists');
-            return false;
+        if ($downloads->isEmpty()) {
+            return true;
         }
 
-        $model = app(\App\Models\JavDownload::class);
-        $model->item_number = $itemNumber;
-        $model->save();
+        $download = $downloads->first()->downloads()->first();
+        $crawler = app(Onejav::class);
+        $item = $crawler->getItems($download->url)->first();
+        $crawler->getClient()->download($item->torrent, 'onejav');
 
-        $this->output->text('Item <fg=white;options=bold>'.$itemNumber.'</> added to queue');
         return true;
     }
 }
