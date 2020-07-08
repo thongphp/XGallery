@@ -34,15 +34,18 @@ final class JavDownload extends BaseCommand
 
     protected function download()
     {
-        $downloads = \App\Models\JavDownload::where(['is_downloaded' => null])->get();
+        $downloads = \App\Models\JavDownload::all();
         if ($downloads->isEmpty()) {
             return true;
         }
 
-        $download = $downloads->first()->downloads()->first();
-        $crawler = app(Onejav::class);
-        $item = $crawler->getItems($download->url)->first();
-        $crawler->getClient()->download($item->torrent, 'onejav');
+        $downloads->each(function ($download) {
+            $item = $download->downloads()->first();
+            $crawler = app(Onejav::class);
+            $item = $crawler->getItems($item->url)->first();
+            $crawler->getClient()->download($item->torrent, 'onejav');
+            $download->forceDelete();
+        });
 
         return true;
     }
