@@ -5,9 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Class CreateScheduleTable
- */
 class CreateScheduleTable extends Migration
 {
     /**

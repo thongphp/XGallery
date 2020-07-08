@@ -13,4 +13,16 @@ class Queues
     const QUEUE_PHOTOS        = 'photos';
     const QUEUE_FLICKR        = 'flickr'; // 4
     const QUEUE_GOOGLE        = 'google'; // 4
+
+    const QUEUES = [
+        self::QUEUE_DEFAULT,
+        self::QUEUE_JAV,
+        self::QUEUE_JAV_DOWNLOADS,
+        self::QUEUE_TRUYENTRANH,
+        self::QUEUE_DOWNLOADS,
+        self::QUEUE_BATDONGSAN,
+        self::QUEUE_PHOTOS,
+        self::QUEUE_FLICKR,
+        self::QUEUE_GOOGLE,
+    ];
 }

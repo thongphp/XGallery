@@ -55,6 +55,8 @@ final class R18 extends BaseCommand
         $this->progressBarInit($items->count());
         $items->each(function ($item) {
             \App\Jobs\Jav\R18::dispatch($item);
+            $this->progressBarSetInfo($item);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 

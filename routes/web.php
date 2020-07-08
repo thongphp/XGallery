@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/login', [DashboardController::class, 'login'])->name('login');
-Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard.view')->middleware(['auth']);
+Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard.view')->middleware([]);
 
 Route::namespace('App\Http\Controllers\Auth')
     ->prefix('oauth')
@@ -31,7 +31,7 @@ Route::namespace('App\Http\Controllers\Auth')
         Route::get('google/callback', [GoogleController::class, 'callback']);
     });
 
-Route::middleware(['auth'])->namespace(JavController::class)->prefix('jav')
+Route::middleware([])->namespace(JavController::class)->prefix('jav')
     ->group(function () {
         Route::match(['GET', 'POST'], '/', [JavController::class, 'dashboard'])->name('jav.dashboard.view');
         Route::get('/movie/{id}', [JavController::class, 'movie'])->name('jav.movie.view');
@@ -40,14 +40,14 @@ Route::middleware(['auth'])->namespace(JavController::class)->prefix('jav')
         Route::post('/download/{itemNumber}', [JavController::class, 'download'])->name('jav.download.request');
     });
 
-Route::middleware(['auth'])->namespace(XiurenController::class)->prefix('xiuren')
+Route::middleware([])->namespace(XiurenController::class)->prefix('xiuren')
     ->group(function () {
         Route::get('/', [XiurenController::class, 'dashboard'])->name('xiuren.dashboard.view');
         Route::get('/{id}', [XiurenController::class, 'item'])->name('xiuren.item.view');
         Route::post('/download/{id}', [XiurenController::class, 'download'])->name('xiuren.download.request');
     });
 
-Route::middleware(['auth'])->namespace(TruyenchonController::class)->prefix('truyenchon')
+Route::middleware([])->namespace(TruyenchonController::class)->prefix('truyenchon')
     ->group(function () {
         Route::get('/', [TruyenchonController::class, 'dashboard'])->name('truyenchon.dashboard.view');
         Route::get('/{id}/{chapter}', [TruyenchonController::class, 'story'])->name('truyenchon.story.view');
@@ -55,7 +55,7 @@ Route::middleware(['auth'])->namespace(TruyenchonController::class)->prefix('tru
         Route::post('/download/{id}', [TruyenchonController::class, 'download'])->name('truyenchon.download.request');
     });
 
-Route::middleware(['auth'])->namespace(FlickrController::class)->prefix('flickr')
+Route::middleware([])->namespace(FlickrController::class)->prefix('flickr')
     ->group(function () {
         Route::get('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
         Route::post('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');

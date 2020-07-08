@@ -17,7 +17,7 @@ class CreateJavIdolsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('alias')->nullable(true);
-            $table->dateTime('birthday')->nullable(true);
+            $table->date('birthday')->nullable(true);
             $table->string('blood_type')->nullable(true);
             $table->string('city')->nullable(true);
             $table->smallInteger('height')->nullable(true);

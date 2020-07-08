@@ -34,19 +34,19 @@
                     <a href="{{url('jav') . '?' . http_build_query(array_merge($request,['label'=>$item->label]))}}">{{$item->label}}</a>
                 </li>
             @endif
-            @if($item->genres()->count() > 0)
+            @if($item->genres->count() > 0)
                 <li class="list-group-item tag">
                     <i class="fas fa-tags"></i>
-                    @foreach ($item->genres() as $genre)
+                    @foreach ($item->genres as $genre)
                         <a href="{{url('jav') . '?' . http_build_query(array_merge($request,['genre'=>$genre->id]))}}"><span
                                 class="badge badge-pill badge-dark">{{$genre->name}}</span></a>
                     @endforeach
                 </li>
             @endif
-            @if($item->idols()->count() > 0)
+            @if($item->idols->count() > 0)
                 <li class="list-group-item actress">
                     <i class="fas fa-female"></i>
-                    @foreach ($item->idols() as $idol)
+                    @foreach ($item->idols as $idol)
                         <a href="{{url('jav') . '?' . http_build_query(array_merge($request,['idol'=>$idol->id]))}}"><span
                                 class="badge badge-pill badge-info">{{$idol->name}}</span></a>
                     @endforeach
@@ -56,12 +56,11 @@
     </div>
     <div class="card-footer">
         <small class="text-muted"><i class="far fa-calendar-alt mr-1"></i>{{$item->release_date}}</small>
-
         @if(config('adult.download'))
             <span class="float-right">
              <button type="button"
                      class="btn @if($item->is_downloadable == 1)btn-primary @else btn-warning @endif btn-sm ajax-pool"
-                     data-ajax-url="{{route('jav.download.request', $item->item_number)}}"
+                     data-ajax-url="{{route('jav.download.request', $item->dvd_id)}}"
                      data-ajax-command="download"
              >
             @include('includes.general.download')

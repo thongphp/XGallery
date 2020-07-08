@@ -23,7 +23,6 @@ class XCityVideoTest extends TestCase
     public function testGetItem(): void
     {
         $item = $this->crawler->getItem('https://xxx.xcity.jp/avod/detail/?maker=mercury&id=147145');
-        dd($item);
         $this->assertInstanceOf(XCityVideoModel::class, $item);
         $this->assertModelProperties($item->getFillable(), $item);
     }

@@ -58,6 +58,8 @@ final class XCityVideo extends BaseCommand
         $this->progressBarInit($items->count());
         $items->each(function ($item) {
             \App\Jobs\Jav\XCityVideo::dispatch($item);
+            $this->progressBarSetInfo($item);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 

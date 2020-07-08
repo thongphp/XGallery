@@ -36,7 +36,7 @@ class XCityVideoModel extends Mongodb
     ];
 
     protected $fillable = [
-        'title', 'url', 'cover', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker', 'series', 'genres',
-        'director', 'item_number', 'time', 'release_date', 'description'
+        'title', 'url', 'cover', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker', 'series',
+        'genres', 'director', 'item_number', 'time', 'release_date', 'description'
     ];
 }

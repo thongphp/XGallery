@@ -50,6 +50,7 @@ class XCityProfile implements ShouldQueue
             [
                 'name' => $itemDetail->name,
                 'cover' => $itemDetail->cover,
+                'birthday' => $itemDetail->birthday,
                 'blood_type' => $itemDetail->blood_type,
                 'city' => $itemDetail->city,
                 'height' => $itemDetail->height,

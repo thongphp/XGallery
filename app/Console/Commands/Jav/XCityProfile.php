@@ -58,6 +58,8 @@ final class XCityProfile extends BaseCommand
         $this->progressBarInit($items->count());
         $items->each(function ($item) {
             \App\Jobs\Jav\XCityProfile::dispatch($item);
+            $this->progressBarSetInfo($item);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 

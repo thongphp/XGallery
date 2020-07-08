@@ -6,6 +6,7 @@ use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Jav\JavMovieModel;
 use App\Models\Jav\XCityVideoModel;
+use App\Traits\Jav\HasXref;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,6 +21,7 @@ class XCityVideo implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
+    use HasXref;
 
     private string $url;
 
@@ -46,7 +48,7 @@ class XCityVideo implements ShouldQueue
         }
 
         XCityVideoModel::updateOrCreate(['item_number' => $itemDetail->item_number], $itemDetail->getAttributes());
-        JavMovieModel::updateOrCreate(
+        $movie = JavMovieModel::updateOrCreate(
             ['dvd_id' => $itemDetail->item_number],
             [
                 'cover' => $itemDetail->cover,
@@ -63,5 +65,8 @@ class XCityVideo implements ShouldQueue
                 'description' => $itemDetail->description
             ]
         );
+
+        $this->updateGenres($itemDetail->genres, $movie);
+        $this->updateIdols($itemDetail->actresses, $movie);
     }
 }
