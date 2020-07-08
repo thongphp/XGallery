@@ -46,7 +46,8 @@ final class TruyenchonStory extends BaseCommand
     protected function fully(): bool
     {
         $story = TruyenchonModel::orderBy('updated_at', 'asc')->first();
-        $story->touch;
+        $story->touch();
+        $this->output->note('Working on ' . $story->title);
         $crawler = app(\App\Crawlers\Crawler\Truyenchon::class);
 
         /**
@@ -64,11 +65,16 @@ final class TruyenchonStory extends BaseCommand
             ];
         })->toArray();
 
+        $this->progressBarInit(count($chapters));
+
         foreach ($chapters as $chapter) {
             $model = TruyenchonChapterModel::firstOrCreate([
                 'storyUrl' => $story->url, 'chapterUrl' => $chapter['chapterUrl']
             ], $chapter);
             Chapters::dispatch($model);
+            $this->progressBarSetInfo($chapter['chapterUrl']);
+            $this->progressBarSetStatus('QUEUED');
+            $this->progressBar->advance();
         }
 
         return true;

@@ -44,6 +44,7 @@ class Kernel extends ConsoleKernel
             }
             $schedule->command($command->command)
                 ->{$command->every}()
+                ->withoutOverlapping()
                 ->runInBackground();
         }
     }
