@@ -10,8 +10,4 @@
         </div>
     @endif
     {{ $items->links() }}
-        <fieldset>
-            @csrf
-        </fieldset>
-
 @stop
