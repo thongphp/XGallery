@@ -53,6 +53,7 @@ final class Batdongsan extends BaseCommand
         $this->progressBarInit($items->count());
         $items->each(function ($url) {
             \App\Jobs\Batdongsan::dispatch($url);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 

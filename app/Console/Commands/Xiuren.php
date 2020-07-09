@@ -55,6 +55,7 @@ final class Xiuren extends BaseCommand
         $items->each(function ($item) use ($crawler) {
             $itemDetail = $crawler->getItem($item['url']);
             XiurenModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
 

@@ -16,7 +16,9 @@ use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
 use App\Oauth\OauthClient;
 use App\Services\Flickr\Response\PeopleResponseInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Class FlickrClient
@@ -58,11 +60,12 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $method
-     * @param array $parameters
-     * @param bool $force
-     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @param  bool  $force
      * @return object|null
+     * @throws GuzzleException
+     * @throws InvalidArgumentException
      */
     public function get(string $method, array $parameters = [], bool $force = false): ?object
     {

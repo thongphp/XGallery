@@ -31,33 +31,37 @@ Route::namespace('App\Http\Controllers\Auth')
         Route::get('google/callback', [GoogleController::class, 'callback']);
     });
 
-Route::middleware([])->namespace(JavController::class)->prefix('jav')
+Route::middleware(['auth'])->namespace(JavController::class)
+    ->prefix('jav')
     ->group(function () {
         Route::match(['GET', 'POST'], '/', [JavController::class, 'dashboard'])->name('jav.dashboard.view');
-        Route::get('/movie/{id}', [JavController::class, 'movie'])->name('jav.movie.view');
-        Route::get('/genre/{id}', [JavController::class, 'genre'])->name('jav.genre.view');
-        Route::get('/idol/{id}', [JavController::class, 'idol'])->name('jav.idol.view');
-        Route::post('/download/{itemNumber}', [JavController::class, 'download'])->name('jav.download.request');
+        Route::get('movie/{id}', [JavController::class, 'movie'])->name('jav.movie.view');
+        Route::get('genre/{id}', [JavController::class, 'genre'])->name('jav.genre.view');
+        Route::get('idol/{id}', [JavController::class, 'idol'])->name('jav.idol.view');
+        Route::post('download/{itemNumber}', [JavController::class, 'download'])->name('jav.download.request');
     });
 
-Route::middleware([])->namespace(XiurenController::class)->prefix('xiuren')
+Route::middleware(['auth'])->namespace(XiurenController::class)
+    ->prefix('xiuren')
     ->group(function () {
         Route::get('/', [XiurenController::class, 'dashboard'])->name('xiuren.dashboard.view');
-        Route::get('/{id}', [XiurenController::class, 'item'])->name('xiuren.item.view');
-        Route::post('/download/{id}', [XiurenController::class, 'download'])->name('xiuren.download.request');
+        Route::get('{id}', [XiurenController::class, 'item'])->name('xiuren.item.view');
+        Route::post('download/{id}', [XiurenController::class, 'download'])->name('xiuren.download.request');
     });
 
-Route::middleware([])->namespace(TruyenchonController::class)->prefix('truyenchon')
+Route::middleware(['auth'])->namespace(TruyenchonController::class)
+    ->prefix('truyenchon')
     ->group(function () {
         Route::get('/', [TruyenchonController::class, 'dashboard'])->name('truyenchon.dashboard.view');
-        Route::get('/{id}/{chapter}', [TruyenchonController::class, 'story'])->name('truyenchon.story.view');
-        Route::post('/search', [TruyenchonController::class, 'search'])->name('truyenchon.search.view');
-        Route::post('/download/{id}', [TruyenchonController::class, 'download'])->name('truyenchon.download.request');
+        Route::get('{id}/{chapter}', [TruyenchonController::class, 'story'])->name('truyenchon.story.view');
+        Route::post('search', [TruyenchonController::class, 'search'])->name('truyenchon.search.view');
+        Route::post('download/{id}', [TruyenchonController::class, 'download'])->name('truyenchon.download.request');
     });
 
-Route::middleware([])->namespace(FlickrController::class)->prefix('flickr')
+Route::middleware(['auth'])->namespace(FlickrController::class)
+    ->prefix('flickr')
     ->group(function () {
         Route::get('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
         Route::post('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
-        Route::post('/download', [FlickrController::class, 'download'])->name('flickr.download.request');
+        Route::post('download', [FlickrController::class, 'download'])->name('flickr.download.request');
     });
