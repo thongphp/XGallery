@@ -10,7 +10,6 @@
 namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCommand;
-use App\Console\Traits\HasCrawler;
 use App\Models\Jav\JavMovieModel;
 use App\Models\Jav\OnejavModel;
 use App\Traits\Jav\HasXref;
@@ -25,7 +24,6 @@ use Illuminate\Support\Collection;
  */
 final class Onejav extends BaseCommand
 {
-    use HasCrawler;
     use HasXref;
 
     /**
@@ -58,7 +56,7 @@ final class Onejav extends BaseCommand
      */
     protected function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('Onejav')) {
             return false;
         }
 
@@ -103,7 +101,13 @@ final class Onejav extends BaseCommand
 
             $this->updateGenres($item->tags, $movie);
             $this->updateIdols($item->actresses, $movie);
+
+            $this->progressBarSetInfo($item->url);
+            $this->progressBarSetStatus('COMPLETED');
+            $this->progressBar->advance();
         });
+
+        $this->progressBarFinished();
 
         return true;
     }

@@ -2,7 +2,7 @@
 @section('content')
     <div class="row">
         <div class="col-4">
-            {{ $items->links() }}
+
         </div>
     </div>
     <div class="card mb-3">
@@ -16,7 +16,6 @@
             <div class="col-8">
                 <div class="card-body">
                     <h5 class="card-title mr-1"><strong>{{$idol->name}}</strong></h5>
-                    <span class="badge badge-pill badge-primary">{{$items->total()}}</span>
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item birthday">
@@ -57,14 +56,4 @@
             </div>
         </div>
     </div>
-    <div class="row ">
-        <div class="col-12">
-            <div class="card-columns">
-                @foreach ($items as $item)
-                    @include('jav.includes.movie')
-                @endforeach
-            </div>
-        </div>
-    </div>
-    {{ $items->links() }}
 @stop

@@ -11,19 +11,25 @@ trait HasProgressBar
     ." %step%/%steps% URLs [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%"
     .PHP_EOL." %info% [%status%]";
 
+    protected string $progressBarFormatSingle = " %current%/%max% %message%"
+    .PHP_EOL
+    ." [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%"
+    .PHP_EOL." %info% [%status%]";
+
     protected ProgressBar $progressBar;
 
     private int $progressBarStep = 0;
 
     /**
      * @param  int  $max
+     * @param  bool  $isSingle
      * @return ProgressBar
      */
-    protected function progressBarInit($max = 0): ProgressBar
+    protected function progressBarInit($max = 0, bool $isSingle = true): ProgressBar
     {
         $this->progressBar = $this->output->createProgressBar($max);
-        $this->progressBar->setFormat($this->progressBarFormat);
-        $this->progressBar->setMessage('Pages', 'message');
+        $this->progressBar->setFormat($isSingle ? $this->progressBarFormatSingle : $this->progressBarFormat);
+        $this->progressBar->setMessage('Steps', 'message');
         $this->progressBar->setMessage(0, 'steps');
         $this->progressBar->setMessage(0, 'step');
         $this->progressBar->setMessage('', 'info');

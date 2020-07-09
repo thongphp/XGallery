@@ -10,7 +10,6 @@
 namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCommand;
-use App\Console\Traits\HasCrawler;
 use Exception;
 
 /**
@@ -19,8 +18,6 @@ use Exception;
  */
 final class XCityVideo extends BaseCommand
 {
-    use HasCrawler;
-
     /**
      * The name and signature of the console command.
      *
@@ -43,7 +40,7 @@ final class XCityVideo extends BaseCommand
      */
     protected function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('XCityProfile')) {
             return false;
         }
 
@@ -52,6 +49,7 @@ final class XCityVideo extends BaseCommand
 
         if ($items->isEmpty()) {
             $endpoint->fail()->save();
+            $this->output->warning('There are no items to process');
             return false;
         }
 
@@ -63,6 +61,7 @@ final class XCityVideo extends BaseCommand
             $this->progressBar->advance();
         });
 
+        $this->progressBarFinished();
         $endpoint->succeed()->save();
 
         return true;

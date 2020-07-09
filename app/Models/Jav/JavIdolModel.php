@@ -25,4 +25,9 @@ class JavIdolModel extends Model
     ];
 
     protected $table = 'jav_idols';
+
+    public function movies()
+    {
+        return $this->belongsToMany(JavMovieModel::class, 'jav_idols_xref', 'idol_id', 'movie_id');
+    }
 }

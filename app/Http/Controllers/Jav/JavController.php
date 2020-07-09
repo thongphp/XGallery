@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Jav;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
-use App\Models\Jav\JavGenreModel;
 use App\Models\Jav\JavIdolModel;
 use App\Models\Jav\JavMovieModel;
 use App\Models\JavDownload;
@@ -67,7 +66,7 @@ class JavController extends BaseController
             [
                 'item' => $movie,
                 'sidebar' => $this->getMenuItems(),
-                'title' => 'JAV '.$movie->item_number,
+                'title' => 'JAV - '.$movie->dvd_id,
                 'description' => $movie->description,
             ]
         );
@@ -75,38 +74,15 @@ class JavController extends BaseController
 
     /**
      * @param  int  $id
-     * @param  Request  $request
      * @return Application|Factory|View
      */
-    public function genre(int $id, Request $request)
+    public function idol(int $id)
     {
-        $filter = array_merge($request->request->all(), ['genre' => $id]);
-
-        return view(
-            'jav.index',
-            [
-                'items' => app(JavMovies::class)->getItems($filter),
-                'sidebar' => $this->getMenuItems(),
-                'title' => 'JAV genre - '.JavGenreModel::find($id)->name,
-            ]
-        );
-    }
-
-    /**
-     * @param  int  $id
-     * @param  Request  $request
-     * @return Application|Factory|View
-     */
-    public function idol(int $id, Request $request)
-    {
-        $filter = array_merge($request->request->all(), ['idol' => $id]);
-
         $idol = JavIdolModel::find($id);
 
         return view(
             'jav.idol',
             [
-                'items' => app(JavMovies::class)->getItems($filter),
                 'idol' => $idol,
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$idol->name,

@@ -10,7 +10,6 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseCommand;
-use App\Console\Traits\HasCrawler;
 use Exception;
 
 /**
@@ -19,7 +18,6 @@ use Exception;
  */
 final class Batdongsan extends BaseCommand
 {
-    use HasCrawler;
 
     /**
      * The name and signature of the console command.

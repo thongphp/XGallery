@@ -30,6 +30,7 @@ class BaseRepository implements RepositoryInterface
     public function getItems(array $filter = [])
     {
         $id = get_class($this).':'.__FUNCTION__.':'.serialize($filter);
+        Cache::forget($id);
         if (isset($filter['cache']) && $filter['cache'] === 0) {
             Cache::forget($id);
         }

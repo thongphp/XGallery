@@ -10,6 +10,7 @@
 namespace App\Console;
 
 use App\Console\Traits\HasProgressBar;
+use App\Repositories\CrawlerEndpoints;
 use App\Traits\HasObject;
 use Illuminate\Console\Command;
 use Illuminate\Notifications\Notifiable;
@@ -67,5 +68,23 @@ class BaseCommand extends Command
         }
 
         $this->output->error('Failed');
+    }
+
+    protected function getEndpoint(string $name): ?\App\Models\CrawlerEndpoints
+    {
+        /**
+         * @var \App\Models\CrawlerEndpoints $endpoint
+         */
+        if (!$endpoint = app(CrawlerEndpoints::class)->getWorkingItem($name)) {
+            return null;
+        }
+
+        if ((int) $endpoint->page === 0) {
+            $endpoint->page = 1;
+        }
+
+        $this->output->note('Endpoint '.$endpoint->url.' with page '.$endpoint->page);
+
+        return $endpoint;
     }
 }

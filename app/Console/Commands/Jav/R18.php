@@ -19,8 +19,6 @@ use Exception;
  */
 final class R18 extends BaseCommand
 {
-    use HasCrawler;
-
     /**
      * The name and signature of the console command.
      *
@@ -41,7 +39,7 @@ final class R18 extends BaseCommand
      */
     public function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('R18')) {
             return false;
         }
 
@@ -60,6 +58,7 @@ final class R18 extends BaseCommand
             $this->progressBar->advance();
         });
 
+        $this->progressBarFinished();
         $endpoint->succeed()->save();
 
         return true;

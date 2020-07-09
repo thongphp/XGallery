@@ -10,7 +10,6 @@
 namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCommand;
-use App\Console\Traits\HasCrawler;
 use App\Models\Truyentranh\TruyenchonModel;
 use Exception;
 
@@ -20,8 +19,6 @@ use Exception;
  */
 final class Truyenchon extends BaseCommand
 {
-    use HasCrawler;
-
     /**
      * The name and signature of the console command.
      *

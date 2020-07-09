@@ -3,7 +3,6 @@
         @include('includes.card.cover',['cover' => $item->getCover(), 'width' => '100%', 'alt' => $item->name])
     </a>
     <div class="card-body">
-        <div class="col-12">
             <a href="{{route('jav.movie.view',$item->id)}}">
                 <h5 class="card-title mr-1"><strong>{{$item->dvd_id}}</strong></h5>
             </a>
@@ -12,10 +11,10 @@
                 @else
                 <p class="card-text">{{$item->name}}</p>
             @endif
-        </div>
         @php
             $request = request()->all();
         @endphp
+        <div class="row">
         <div class="col-12">
             <ul class="list-group list-group-flush">
                 @if(!empty($item->director))
@@ -55,6 +54,7 @@
                     </li>
                 @endif
             </ul>
+        </div>
         </div>
     </div>
     <div class="card-footer">

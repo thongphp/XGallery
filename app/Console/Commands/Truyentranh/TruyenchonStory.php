@@ -10,7 +10,6 @@
 namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCommand;
-use App\Console\Traits\HasCrawler;
 use App\Jobs\Truyenchon\Chapters;
 use App\Models\Truyentranh\TruyenchonChapterModel;
 use App\Models\Truyentranh\TruyenchonModel;
@@ -23,8 +22,6 @@ use Illuminate\Support\Collection;
  */
 final class TruyenchonStory extends BaseCommand
 {
-    use HasCrawler;
-
     /**
      * The name and signature of the console command.
      *

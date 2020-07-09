@@ -10,7 +10,6 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseCommand;
-use App\Console\Traits\HasCrawler;
 use App\Models\KissgoddessModel;
 
 /**
@@ -19,7 +18,6 @@ use App\Models\KissgoddessModel;
  */
 final class Kissgoddess extends BaseCommand
 {
-    use HasCrawler;
 
     /**
      * The name and signature of the console command.
