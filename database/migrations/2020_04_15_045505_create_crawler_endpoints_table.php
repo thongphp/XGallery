@@ -40,7 +40,7 @@ class CreateCrawlerEndpointsTable extends Migration
                 ],
                 [
                     'crawler' => 'Onejav',
-                    'url' => 'https://onejav.com/new?page=',
+                    'url' => 'https://onejav.com/new',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
@@ -118,7 +118,7 @@ class CreateCrawlerEndpointsTable extends Migration
                 ],
                 [
                     'crawler' => 'XCityVideo',
-                    'url' => 'https://xxx.xcity.jp/avod/list/?style=simple&page=',
+                    'url' => 'https://xxx.xcity.jp/avod/list/?style=simple',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],

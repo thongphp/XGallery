@@ -9,16 +9,16 @@
 
 namespace App\Jobs\Jav;
 
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\JavMovies;
+use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\R18Model;
+use App\Traits\Jav\HasXref;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Process movie in R18
@@ -28,25 +28,18 @@ class R18 implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
+    use HasXref;
 
-    private array $item;
+    private string $url;
 
     /**
      * R18 constructor.
-     * @param  array  $item
+     * @param  string  $url
      */
-    public function __construct(array $item)
+    public function __construct(string $url)
     {
-        $this->item = $item;
+        $this->url = $url;
         $this->onQueue(Queues::QUEUE_JAV);
-    }
-
-    /**
-     * @return RateLimited[]
-     */
-    public function middleware()
-    {
-        return [new RateLimited('r18')];
     }
 
     /**
@@ -56,41 +49,32 @@ class R18 implements ShouldQueue
      */
     public function handle()
     {
-        if (!$itemDetail = app(\App\Crawlers\Crawler\R18::class)->getItemDetail($this->item['url'])) {
+        if (!$itemDetail = app(\App\Crawlers\Crawler\R18::class)->getItem($this->url)) {
             return;
         }
 
-        // This movie is not released yet. Then just skip it
-        if (empty($itemDetail->dvd_id)) {
-            return;
-        }
+        $attributes = $itemDetail->getAttributes();
+        R18Model::updateOrCreate(['content_id' => $attributes['content_id']], $attributes);
 
-        $model = app(JavMovies::class);
-        if (!$movie = $model->where(['item_number' => $itemDetail->dvd_id])->first()) {
-            Log::stack(['jav'])->info('Saving new video', get_object_vars($itemDetail));
-            $movie = app(JavMovies::class);
-        }
+        // Because R18 have movie detail. We will use update instead firstOrCreate
+        $movie = JavMovieModel::updateOrCreate(
+            ['dvd_id' => $itemDetail->dvd_id],
+            [
+                'cover' => $itemDetail->cover,
+                'name' => $itemDetail->title,
+                'release_date' => $itemDetail->release_date,
+                'time' => $itemDetail->runtime,
+                'director' => $itemDetail->director,
+                'studio' => $itemDetail->studio,
+                'label' => $itemDetail->label,
+                'content_id' => $itemDetail->content_id,
+                'series' => $itemDetail->series,
+                'gallery' => $itemDetail->gallery ? json_encode($itemDetail->gallery) : null,
+                'sample' => $itemDetail->sample,
+            ]
+        );
 
-        $movie->reference_url = $itemDetail->url;
-        $movie->cover = $itemDetail->cover;
-        $movie->name = $itemDetail->name;
-        $movie->release_date = $itemDetail->release_date;
-        $movie->director = $itemDetail->director;
-        $movie->studio = $itemDetail->studio;
-        $movie->label = $itemDetail->label;
-        $movie->channel = $itemDetail->channel;
-        $movie->item_number = strtoupper($itemDetail->dvd_id);
-        $movie->content_id = $itemDetail->content_id;
-        $movie->dvd_id = $itemDetail->dvd_id;
-        $movie->series = $itemDetail->series;
-        $movie->gallery = json_encode($itemDetail->gallery);
-        $movie->sample = isset($itemDetail->sample) ? $itemDetail->sample : null;
-
-        $movie->save();
-
-        // Trigger job to update genres and xref
-        UpdateGenres::dispatch($movie, $itemDetail->categories);
-        // Trigger job to update idols and xref
-        UpdateIdols::dispatch($movie, $itemDetail->actress);
+        $this->updateGenres($itemDetail->categories, $movie);
+        $this->updateIdols($itemDetail->actresses, $movie);
     }
 }

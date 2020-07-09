@@ -9,37 +9,69 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Models\BatdongsanModel;
+use App\Notifications\NotificationToSlack;
+use App\Traits\Notifications\HasSlackNotification;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\Url\Url;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Batdongsan
  * @package App\Crawlers\Crawler
  */
-final class Batdongsan extends AbstractCrawler
+final class Batdongsan
 {
+    use Notifiable;
+    use HasSlackNotification;
+
     const CRAWLER_ENDPOINT = 'https://batdongsan.com.vn';
+
+    /**
+     * @param  array  $options
+     * @return HttpClient
+     */
+    public function getClient(array $options = []): HttpClient
+    {
+        return new HttpClient(array_merge($options, config('httpclient')));
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+            return null;
+        }
+
+        return new Crawler($response, $uri);
+    }
 
     /**
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      * @SuppressWarnings("PHPMD.NPathComplexity")
      *
      * @param  string  $itemUri
-     * @return object|null
+     * @return BatdongsanModel|null
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getItem(string $itemUri): ?BatdongsanModel
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        $item = new stdClass();
+        $item = new BatdongsanModel;
         $nameNode = $crawler->filter('.pm-title h1');
 
         if ($nameNode->count() === 0) {
-            $this->getLogger()->warning('Can not get title');
+            $this->notify(new NotificationToSlack('Can not get title via URL: ' . $itemUri, 'warning'));
 
             return null;
         }
@@ -95,38 +127,18 @@ final class Batdongsan extends AbstractCrawler
     }
 
     /**
-     * @param  string  $text
-     * @return string
-     */
-    private function extractEmail(string $text): string
-    {
-        $regex = '`([_a-z0-9-]+)(\.[_a-z0-9-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})`';
-        preg_match_all($regex, html_entity_decode($text), $matches);
-
-        $matches = array_unique($matches[0]);
-
-        return reset($matches);
-    }
-
-    /**
-     * @param  string|null  $indexUri
+     * @param  string  $indexUri
      * @return Collection
      */
-    public function getItemLinks(string $indexUri = null): ?Collection
+    public function getItemLinks(string $indexUri): ?Collection
     {
         if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 
-        $links = $crawler->filter('.search-productItem')->each(function ($node) {
-            return [
-                'url' => self::CRAWLER_ENDPOINT.$node->filter('h3 a')->attr('href'),
-                'title' => $node->filter('h3 a')->attr('title'),
-                'cover' => $node->filter('.p-main-image-crop img.product-avatar-img')->attr('src'),
-            ];
-        });
-
-        return collect($links);
+        return collect($crawler->filter('.search-productItem')->each(function ($node) {
+            return self::CRAWLER_ENDPOINT.$node->filter('h3 a')->attr('href');
+        }));
     }
 
     /**
@@ -145,21 +157,16 @@ final class Batdongsan extends AbstractCrawler
     }
 
     /**
-     * @param  array  $conditions
-     * @return Collection|null
-     */
-    public function search(array $conditions = []): ?Collection
-    {
-        return $this->getIndexLinks($this->buildUrl('tags/'.implode('/', $conditions)));
-    }
-
-    /**
-     * @param  Url  $url
-     * @param  int  $page
+     * @param  string  $text
      * @return string
      */
-    protected function buildUrlWithPage(Url $url, int $page): string
+    private function extractEmail(string $text): string
     {
-        return $this->buildUrl($url->getPath().'/p'.$page);
+        $regex = '`([_a-z0-9-]+)(\.[_a-z0-9-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})`';
+        preg_match_all($regex, html_entity_decode($text), $matches);
+
+        $matches = array_unique($matches[0]);
+
+        return reset($matches);
     }
 }

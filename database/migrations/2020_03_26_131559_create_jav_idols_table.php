@@ -15,9 +15,9 @@ class CreateJavIdolsTable extends Migration
     {
         Schema::create('jav_idols', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->nullable(false);
+            $table->string('name');
             $table->string('alias')->nullable(true);
-            $table->dateTime('birthday')->nullable(true);
+            $table->date('birthday')->nullable(true);
             $table->string('blood_type')->nullable(true);
             $table->string('city')->nullable(true);
             $table->smallInteger('height')->nullable(true);
@@ -25,7 +25,6 @@ class CreateJavIdolsTable extends Migration
             $table->smallInteger('waist')->nullable(true);
             $table->smallInteger('hips')->nullable(true);
             $table->string('cover')->nullable(true);
-            $table->string('reference_url')->nullable(false);
             $table->integer('favorite')->nullable(true);
 
             $table->timestamps();

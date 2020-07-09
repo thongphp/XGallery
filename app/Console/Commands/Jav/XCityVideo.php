@@ -9,14 +9,14 @@
 
 namespace App\Console\Commands\Jav;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
 use Exception;
 
 /**
- * Class XCityVideo
+ * Class XCityVideoModel
  * @package App\Console\Commands
  */
-final class XCityVideo extends BaseCrawlerCommand
+final class XCityVideo extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -38,64 +38,31 @@ final class XCityVideo extends BaseCrawlerCommand
      * @return bool
      * @throws Exception
      */
-    public function fully(): bool
+    protected function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('XCityProfile')) {
             return false;
         }
 
-        $items = $this->getCrawler()->getItemLinks($endpoint->url.$endpoint->page);
+        $items = app(\App\Crawlers\Crawler\XCityVideo::class)
+            ->getItemLinks($endpoint->url . '&page=' . $endpoint->page);
 
-        if (!$items || $items->isEmpty()) {
-            $endpoint->failed = (int) $endpoint->failed + 1;
-            if ($endpoint->failed === 10) {
-                $endpoint->page = 1;
-                $endpoint->failed = 0;
-                $endpoint->save();
-                return false;
-            }
-
-            $endpoint->page = (int) $endpoint->page + 1;
-            $endpoint->save();
-            return false;
-        }
-
-        $endpoint->page = (int) $endpoint->page + 1;
-        $endpoint->save();
-
-        $this->progressBarInit(1);
-        $this->progressBarSetSteps($items->count());
-
-        $items->each(function ($item, $index) {
-            $this->progressBarSetInfo($item['title']);
-            // This queue trigger on limited channel
-            \App\Jobs\Jav\XCityVideo::dispatch($item);
-            $this->progressBarAdvanceStep();
-            $this->progressBarSetStatus('QUEUED');
-        });
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    public function daily(): bool
-    {
-        if (!$items = $this->getCrawler()->getItemLinks('https://xxx.xcity.jp/avod/list/?style=simple')) {
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
+            $this->output->warning('There are no items to process');
             return false;
         }
 
         $this->progressBarInit($items->count());
-
         $items->each(function ($item) {
-            $this->progressBarSetInfo($item['url']);
-            $this->progressBarSetStatus('FETCHING');
-            // Because this is daily request. We don't need use limit channel
             \App\Jobs\Jav\XCityVideo::dispatch($item);
+            $this->progressBarSetInfo($item);
             $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
+
+        $this->progressBarFinished();
+        $endpoint->succeed()->save();
 
         return true;
     }

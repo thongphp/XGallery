@@ -7,8 +7,8 @@
 
     <title>XGallery - {{$title}}</title>
 
-    @section('stylesheets')
-        <!-- Fonts -->
+@section('stylesheets')
+    <!-- Fonts -->
         <link href="//fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
         <link href="{{ asset('storage/vendor/AdminLTE/dist/css/adminlte.min.css') }}" rel="stylesheet" type="text/css">
         <link href="{{ asset('storage/css/xgallery.css') }}" rel="stylesheet" type="text/css">
@@ -24,7 +24,8 @@
               href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"/>
         <link rel="stylesheet"
               href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"/>
-        <!-- Styles -->
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
         <style>
             html, body {
                 background-color: #fff;
@@ -136,6 +137,8 @@
     <!--<script src="{{ asset('storage/vendor/AdminLTE/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>-->
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/vanilla-lazyload@15.1.1/dist/lazyload.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
     <script src="{{ asset('storage/js/xgallery.js') }}"></script>
     <script>
         jQuery(document).ready(function () {

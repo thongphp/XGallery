@@ -9,32 +9,66 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Crawlers\Middleware\TruyenchonRateLimitStore;
+use App\Models\Truyentranh\TruyenchonChapterModel;
 use Exception;
+use GuzzleHttp\HandlerStack;
 use Illuminate\Support\Collection;
+use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 use Spatie\Url\Url;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Truyenchon
  * @package App\Crawlers\Crawler
  */
-final class Truyenchon extends AbstractCrawler
+final class Truyenchon
 {
     /**
-     * @param  string  $itemUri
-     * @return object|null
+     * @param  array  $options
+     * @return HttpClient
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getClient(array $options = []): HttpClient
     {
-        if (!$crawler = $this->crawl($itemUri)) {
+        $stack = HandlerStack::create();
+        $stack->push(RateLimiterMiddleware::perSecond(10, new TruyenchonRateLimitStore()));
+        $options['handler'] = $stack;
+        $options = array_merge($options, config('httpclient'));
+
+        return app(HttpClient::class, $options);
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
             return null;
         }
 
-        $item = new stdClass;
-        $item->url = $itemUri;
+        return new Crawler($response, $uri);
+    }
+
+    /**
+     * @param  string  $chapterUrl
+     * @return TruyenchonChapterModel|null
+     */
+    public function getItem(string $chapterUrl): ?TruyenchonChapterModel
+    {
+        if (!$crawler = $this->crawl($chapterUrl)) {
+            return null;
+        }
+
+        $item = new TruyenchonChapterModel;
+        $item->chapterUrl = $chapterUrl;
         $item->images = collect($crawler->filter('.page-chapter img')->each(function ($img) {
             return $img->attr('data-original');
-        }));
+        }))->toArray();
 
         if ($crawler->filter('h1.txt-primary a')->count()) {
             $item->title = trim($crawler->filter('h1.txt-primary a')->text());
@@ -50,12 +84,12 @@ final class Truyenchon extends AbstractCrawler
     }
 
     /**
-     * @param  string  $itemUri
+     * @param  string  $storyUrl
      * @return Collection
      */
-    public function getItemChapters(string $itemUri): ?Collection
+    public function getChapters(string $storyUrl): ?Collection
     {
-        if (!$crawler = $this->crawl($itemUri)) {
+        if (!$crawler = $this->crawl($storyUrl)) {
             return null;
         }
 
@@ -78,28 +112,26 @@ final class Truyenchon extends AbstractCrawler
      * @param  string|null  $indexUri
      * @return Collection
      */
-    public function getItemLinks(string $indexUri = null): ?Collection
+    public function getStories(string $indexUri = null): ?Collection
     {
         if (!$crawler = $this->crawl($indexUri)) {
             return null;
         }
 
-        $links = $crawler->filter('.ModuleContent .items .item')->each(function ($el) {
+        return collect($crawler->filter('.ModuleContent .items .item')->each(function ($el) {
             return [
                 'url' => $el->filter('.image a')->attr('href'),
                 'cover' => $el->filter('img')->attr('data-original'),
                 'title' => $el->filter('h3 a')->text(),
             ];
-        });
-
-        return collect($links);
+        }));
     }
 
     /**
      * @param  string  $indexUri
-     * @return int|null
+     * @return int
      */
-    public function getIndexPagesCount(string $indexUri = null): int
+    public function getIndexPagesCount(string $indexUri): int
     {
         if (!$crawler = $this->crawl($indexUri)) {
             return 1;
@@ -112,15 +144,5 @@ final class Truyenchon extends AbstractCrawler
         } catch (Exception $exception) {
             return 1;
         }
-    }
-
-    /**
-     * @param  array  $conditions
-     * @return Collection|null
-     */
-    public function search(array $conditions = []): ?Collection
-    {
-        $url = $this->buildUrl('/the-loai', $conditions);
-        return $this->getIndexLinks($url);
     }
 }

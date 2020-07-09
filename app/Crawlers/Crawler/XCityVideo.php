@@ -9,114 +9,141 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Models\Jav\XCityVideoModel;
 use DateTime;
-use Exception;
 use Illuminate\Support\Collection;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class XCityVideo
+ * Class XCityVideoModel
  * @package App\Services\Crawler
  */
-final class XCityVideo extends AbstractCrawler
+final class XCityVideo
 {
+    /**
+     * @param  array  $options
+     * @return HttpClient
+     */
+    public function getClient(array $options = []): HttpClient
+    {
+        return new HttpClient(array_merge($options, config('httpclient')));
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+            return null;
+        }
+
+        return new Crawler($response, $uri);
+    }
 
     /**
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      * @SuppressWarnings("PHPMD.NPathComplexity")
      *
      * @param  string  $itemUri
-     * @return object|null
+     *
+     * @return XCityVideoModel|null
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getItem(string $itemUri): ?XCityVideoModel
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        try {
-            $item = new stdClass();
-            $item->title = $crawler->filter('#program_detail_title')->text(null, false);
-            $item->url = $itemUri;
-            $item->gallery = $crawler->filter('img.launch_thumbnail')->each(function ($el) {
-                return $el->attr('src');
-            });
+        $item = app(XCityVideoModel::class);
+        $item->title = $crawler->filter('#program_detail_title')->text(null, false);
+        $item->url = $itemUri;
+        $item->cover = $crawler->filter('div.photo a')->attr('href');
+        $item->gallery = collect($crawler->filter('img.launch_thumbnail')->each(static function ($el) {
+            return $el->attr('src');
+        }))->unique()->toArray();
 
-            $item->actresses = $crawler->filter('.bodyCol ul li.credit-links a')->each(function ($el) {
-                return ['https://xxx.xcity.jp'.$el->attr('href'), trim($el->text())];
-            });
+        $item->actresses = collect($crawler->filter('.bodyCol ul li.credit-links a')->each(static function ($el) {
+            return trim($el->text());
+        }))->unique()->toArray();
 
-            // Get all fields
-            $fields = collect($crawler->filter('.bodyCol ul li')->each(
-                function ($li) {
-                    if (strpos($li->text(null, false), '★Favorite') !== false) {
-                        return ['favorite' => (int) str_replace('★Favorite', '', $li->text(null, false))];
-                    }
-                    if (strpos($li->text(null, false), 'Sales Date') !== false) {
-                        return [
-                            'sales_date' => DateTime::createFromFormat(
-                                'Y/m/j',
-                                trim(str_replace('Sales Date', '', $li->text(null, false)))
-                            )
-                        ];
-                    }
-                    if (strpos($li->text(null, false), 'Label/Maker') !== false) {
-                        return [
-                            'label' => $li->filter('#program_detail_maker_name')->text(),
-                            'marker' => $li->filter('#program_detail_label_name')->text(),
-                        ];
-                    }
-                    if (strpos($li->text(null, false), 'Genres') !== false) {
-                        $genres = $li->filter('a.genre')->each(
-                            function ($a) {
-                                return trim($a->text(null, false));
-                            }
-                        );
-
-                        return ['genres' => $genres];
-                    }
-                    if (strpos($li->text(null, false), 'Series') !== false) {
-                        return ['series' => trim(str_replace('Series', '', $li->text(null, false)))];
-                    }
-                    if (strpos($li->text(null, false), 'Director') !== false) {
-                        return ['director' => trim(str_replace('Director', '', $li->text(null, false)))];
-                    }
-                    if (strpos($li->text(null, false), 'Item Number') !== false) {
-                        return ['item_number' => trim(str_replace('Item Number', '', $li->text(null, false)))];
-                    }
-                    if (strpos($li->text(null, false), 'Running Time') !== false) {
-                        return [
-                            'time' => (int) trim(str_replace(
-                                ['Running Time', 'min', '.'],
-                                ['', '', ''],
-                                $li->text(null, false)
-                            )),
-                        ];
-                    }
-                    if (strpos($li->text(null, false), 'Release Date') !== false) {
-                        $releaseDate = trim(str_replace('Release Date', '', $li->text(null, false)));
-                        if (!empty($releaseDate) && strpos($releaseDate, 'undelivered now') === false) {
-                            return ['release_date' => DateTime::createFromFormat('Y/m/j', $releaseDate)];
+        // Get all fields
+        $fields = collect($crawler->filter('.bodyCol ul li')->each(
+            static function ($li) {
+                if (strpos($li->text(null, false), '★Favorite') !== false) {
+                    return ['favorite' => (int) str_replace('★Favorite', '', $li->text(null, false))];
+                }
+                if (strpos($li->text(null, false), 'Sales Date') !== false) {
+                    return [
+                        'sales_date' => DateTime::createFromFormat(
+                            'Y/m/j',
+                            trim(str_replace('Sales Date', '', $li->text(null, false)))
+                        )
+                    ];
+                }
+                if (strpos($li->text(null, false), 'Label/Maker') !== false) {
+                    return [
+                        'label' => $li->filter('#program_detail_maker_name')->text(),
+                        'marker' => $li->filter('#program_detail_label_name')->text(),
+                    ];
+                }
+                if (strpos($li->text(null, false), 'Genres') !== false) {
+                    $genres = $li->filter('a.genre')->each(
+                        static function ($a) {
+                            return trim($a->text(null, false));
                         }
-                    }
-                    if (strpos($li->text(null, false), 'Description') !== false) {
-                        return ['description' => trim(str_replace('Description', '', $li->text(null, false)))];
-                    }
-                }
-            ))->reject(function ($value) {
-                return null === $value;
-            })->toArray();
+                    );
 
-            foreach ($fields as $field) {
-                foreach ($field as $key => $value) {
-                    $item->{$key} = empty($value) ? null : $value;
+                    return ['genres' => $genres];
                 }
+                if (strpos($li->text(null, false), 'Series') !== false) {
+                    return ['series' => trim(str_replace('Series', '', $li->text(null, false)))];
+                }
+                if (strpos($li->text(null, false), 'Director') !== false) {
+                    return ['director' => trim(str_replace('Director', '', $li->text(null, false)))];
+                }
+                if (strpos($li->text(null, false), 'Item Number') !== false) {
+                    return ['item_number' => trim(str_replace('Item Number', '', $li->text(null, false)))];
+                }
+                if (strpos($li->text(null, false), 'Running Time') !== false) {
+                    return [
+                        'time' => (int) trim(str_replace(
+                            ['Running Time', 'min', '.'],
+                            ['', '', ''],
+                            $li->text(null, false)
+                        )),
+                    ];
+                }
+                if (strpos($li->text(null, false), 'Release Date') !== false) {
+                    $releaseDate = trim(str_replace('Release Date', '', $li->text(null, false)));
+                    if (!empty($releaseDate) && strpos($releaseDate, 'undelivered now') === false) {
+                        return ['release_date' => DateTime::createFromFormat('Y/m/j', $releaseDate)];
+                    }
+                }
+                if (strpos($li->text(null, false), 'Description') !== false) {
+                    return ['description' => trim(str_replace('Description', '', $li->text(null, false)))];
+                }
+
+                return null;
             }
+        ))->reject(static function ($value) {
+            return null === $value;
+        })->toArray();
 
-            return $item;
-        } catch (Exception $exception) {
-            return null;
+        foreach ($fields as $field) {
+            foreach ($field as $key => $value) {
+                if ($key === 'item_number') {
+                    $value = implode('-', preg_split("/(,?\s+)|((?<=[a-z])(?=\d))|((?<=\d)(?=[a-z]))/i", $value));
+                }
+                $item->{$key} = empty($value) ? null : $value;
+            }
         }
+
+        return $item;
     }
 
     /**
@@ -129,26 +156,19 @@ final class XCityVideo extends AbstractCrawler
             return null;
         }
 
-        $links = $crawler->filter('.x-itemBox')->each(function ($el) {
-            return [
-                'url' => 'https://xxx.xcity.jp'.$el->filter('.x-itemBox-package a')->attr('href'),
-                'title' => $el->filter('.x-itemBox-title a')->attr('title'),
-                'cover' => $el->filter('.x-itemBox-package img')->attr('src')
-            ];
+        $links = $crawler->filter('.x-itemBox')->each(static function ($el) {
+            return 'https://xxx.xcity.jp'.$el->filter('.x-itemBox-package a')->attr('href');
         });
 
         return collect($links);
     }
 
     /**
-     * @param  string  $indexUri
-     * @return int|null
+     * @param  string|null  $indexUri
+     * @return int
      */
     public function getIndexPagesCount(string $indexUri = null): int
     {
-        /**
-         * @TODO Actually we can't get last page. Recursive is required
-         */
         if (!$crawler = $this->crawl($indexUri)) {
             return 1;
         }
@@ -163,11 +183,16 @@ final class XCityVideo extends AbstractCrawler
     }
 
     /**
-     * @param  array  $conditions
+     * @param  string  $searchTerm
+     *
      * @return Collection|null
      */
-    public function search(array $conditions = []): ?Collection
+    public function search(string $searchTerm): ?Collection
     {
-        return null;
+        return $this->getItemLinks(
+            'https://xxx.xcity.jp/avod/result/?'.http_build_query([
+                'genre' => 'avod', 'q' => $searchTerm, 'sg' => 'avod',
+            ])
+        );
     }
 }

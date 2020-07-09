@@ -44,12 +44,6 @@ class OauthClient
             $isCached = false;
         }
 
-        Log::stack(['oauth'])->info(
-            $isCached ? 'Requesting '.$uri.' with CACHE'
-                : 'Requesting '.$uri,
-            [$method, $uri, $parameters]
-        );
-
         if ($isCached) {
             return Cache::get($key);
         }

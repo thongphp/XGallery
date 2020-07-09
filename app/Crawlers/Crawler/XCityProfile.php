@@ -9,33 +9,74 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Models\Jav\XCityProfileModel;
 use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class XCityProfile
- * @package App\Services\Crawler
+ * Class XCityProfileModel
+ * @package App\Crawlers\Crawler
  */
-final class XCityProfile extends AbstractCrawler
+final class XCityProfile
 {
+    protected array $months = [
+        'Jan' => '01',
+        'Feb' => '02',
+        'Mar' => '03',
+        'Apr' => '04',
+        'May' => '05',
+        'Jun' => '06',
+        'Jul' => '07',
+        'Aug' => '08',
+        'Sep' => '09',
+        'Oct' => '10',
+        'Nov' => '11',
+        'Dec' => '12',
+    ];
+
+    /**
+     * @param  array  $options
+     * @return HttpClient
+     */
+    public function getClient(array $options = []): HttpClient
+    {
+        return new HttpClient(array_merge($options, config('httpclient')));
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+            return null;
+        }
+
+        return new Crawler($response, $uri);
+    }
 
     /**
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      * @SuppressWarnings("PHPMD.NPathComplexity")
      *
      * @param  string  $itemUri
-     * @return object|null
+     *
+     * @return XCityProfileModel|null
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getItem(string $itemUri): ?XCityProfileModel
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
         try {
-            $item = new stdClass();
+            $item = app(XCityProfileModel::class);
             $item->name = $crawler->filter('.itemBox h1')->text(null, false);
             $item->url = $itemUri;
             $item->cover = $crawler->filter('.photo p.tn img')->attr('src');
@@ -51,11 +92,12 @@ final class XCityProfile extends AbstractCrawler
                             return null;
                         }
                         $days = explode(' ', $birthday);
-                        $month = $this->getMonth($days[1]);
-                        if (!$month) {
+
+                        if (!isset($this->months[$days[1]])) {
                             return null;
                         }
 
+                        $month = $this->months[$days[1]];
                         return ['birthday' => DateTime::createFromFormat('Y-m-d', $days[0].'-'.$month.'-'.$days[2])];
                     }
                     if (strpos($text, 'Blood Type') !== false) {
@@ -101,9 +143,11 @@ final class XCityProfile extends AbstractCrawler
                             'hips' => $hips ?? null,
                         ];
                     }
+
+                    return null;
                 }
-            ))->reject(function ($value) {
-                return null == $value;
+            ))->reject(static function ($value) {
+                return null === $value;
             })->toArray();
 
             foreach ($fields as $field) {
@@ -119,34 +163,6 @@ final class XCityProfile extends AbstractCrawler
     }
 
     /**
-     * @TODO Remove this function
-     * @param  string  $index
-     * @return bool|mixed
-     */
-    private function getMonth($index)
-    {
-        $months = [
-            'Jan' => '01',
-            'Feb' => '02',
-            'Mar' => '03',
-            'Apr' => '04',
-            'May' => '05',
-            'Jun' => '06',
-            'Jul' => '07',
-            'Aug' => '08',
-            'Sep' => '09',
-            'Oct' => '10',
-            'Nov' => '11',
-            'Dec' => '12',
-        ];
-        if (isset($months[$index])) {
-            return $months[$index];
-        }
-
-        return false;
-    }
-
-    /**
      * @param  string|null  $indexUri
      * @return Collection
      */
@@ -157,30 +173,23 @@ final class XCityProfile extends AbstractCrawler
         }
 
         if ($crawler->filter('.itemBox p.tn')->count() !== 0) {
-            $links = $crawler->filter('.itemBox p.tn')->each(function ($el) {
-                return [
-                    'url' => 'https://xxx.xcity.jp/idol/'.$el->filter('a')->attr('href'),
-                    'name' => $el->filter('a')->attr('title'),
-                    'cover' => $el->filter('a img')->attr('src')
-                ];
+            $links = $crawler->filter('.itemBox p.tn')->each(static function ($el) {
+                return 'https://xxx.xcity.jp/idol/'.$el->filter('a')->attr('href');
             });
 
             return collect($links);
         }
 
-        return collect($crawler->filter('.itemBox p.name a')->each(function ($el) {
-            return [
-                'url' => 'https://xxx.xcity.jp/idol/'.$el->filter('a')->attr('href'),
-                'name' => $el->filter('a')->attr('title'),
-            ];
+        return collect($crawler->filter('.itemBox p.name a')->each(static function ($el) {
+            return 'https://xxx.xcity.jp/idol/'.$el->filter('a')->attr('href');
         }));
     }
 
     /**
      * @param  string  $indexUri
-     * @return int|null
+     * @return int
      */
-    public function getIndexPagesCount(string $indexUri = null): int
+    public function getIndexPagesCount(string $indexUri): int
     {
         /**
          * @TODO Actually we can't get last page. Recursive is required
@@ -204,11 +213,13 @@ final class XCityProfile extends AbstractCrawler
     }
 
     /**
-     * @param  array  $conditions
+     * @param  string  $name
      * @return Collection|null
      */
-    public function search(array $conditions = []): ?Collection
+    public function search(string $name): ?Collection
     {
-        return $this->getIndexLinks($this->buildUrl('idol/', $conditions));
+        return $this->getItemLinks(
+            'https://xxx.xcity.jp/idol/?'.http_build_query(['genre' => 'idol', 'q' => $name, 'sg' => 'idol'])
+        );
     }
 }

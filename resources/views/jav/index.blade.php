@@ -1,5 +1,6 @@
 @extends('base')
 @section('content')
+
     @include('jav.includes.navbar')
     @if ($items->total())
         <div class="card-columns">

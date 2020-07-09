@@ -9,16 +9,15 @@
 
 namespace App\Console\Commands\Truyentranh;
 
-use App\Console\BaseCrawlerCommand;
-use App\Repositories\TruyenchonRepository;
+use App\Console\BaseCommand;
+use App\Models\Truyentranh\TruyenchonModel;
 use Exception;
-use Illuminate\Support\Collection;
 
 /**
- * Class TruyenchonRepository
+ * Class Truyenchon
  * @package App\Console\Commands\Truyentranh
  */
-final class Truyenchon extends BaseCrawlerCommand
+final class Truyenchon extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -40,35 +39,24 @@ final class Truyenchon extends BaseCrawlerCommand
      */
     protected function fully(): bool
     {
-        if (!$pages = $this->getIndexLinks()) {
+        if (!$endpoint = $this->getEndpoint('Truyenchon')) {
             return false;
         }
 
-        if ($pages->isEmpty()) {
-            return true;
+        $items = app(\App\Crawlers\Crawler\Truyenchon::class)->getStories($endpoint->url . '/?page=' . $endpoint->page);
+
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
+            return false;
         }
 
-        $this->progressBarInit($pages->count());
-
-        // Process all pages
-        $pages->each(function ($stories) {
-            /**
-             * @var Collection $stories
-             */
-            if ($stories->isEmpty()) {
-                $this->progressBar->advance();
-                return;
-            }
-            $this->progressBarSetSteps($stories->count());
-
-            // Process items on page
-            $repository = app(TruyenchonRepository::class);
-            $stories->each(function ($story) use ($repository) {
-                $repository->firstOrCreate($story['url'], $story['cover'], $story['title']);
-                $this->progressBarAdvanceStep();
-            });
+        $this->progressBarInit($items->count());
+        $items->each(function ($item) {
+            TruyenchonModel::firstOrCreate(['url'], $item);
             $this->progressBar->advance();
         });
+
+        $endpoint->succeed()->save();
 
         return true;
     }

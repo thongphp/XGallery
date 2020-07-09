@@ -9,29 +9,53 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Models\XiurenModel;
 use Exception;
 use Illuminate\Support\Collection;
-use Spatie\Url\Url;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Xiuren
  * @package App\Services\Crawler
  */
-final class Xiuren extends AbstractCrawler
+final class Xiuren
 {
+    /**
+     * @param  array  $options
+     * @return HttpClient
+     */
+    public function getClient(array $options = []): HttpClient
+    {
+        return new HttpClient(array_merge($options, config('httpclient')));
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+            return null;
+        }
+
+        return new Crawler($response, $uri);
+    }
 
     /**
      * @param  string  $itemUri
-     * @return object|null
+     * @return XiurenModel|null
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getItem(string $itemUri): ?XiurenModel
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        $item = new stdClass;
+        $item = new XiurenModel;
         $item->url = $itemUri;
         $item->images = collect($crawler->filter('#main .post .photoThum a')->each(
             function ($a) {
@@ -65,8 +89,8 @@ final class Xiuren extends AbstractCrawler
     }
 
     /**
-     * @param  string  $indexUri
-     * @return int|null
+     * @param  string|null  $indexUri
+     * @return int
      */
     public function getIndexPagesCount(string $indexUri = null): int
     {
@@ -81,24 +105,5 @@ final class Xiuren extends AbstractCrawler
         } catch (Exception $exception) {
             return 1;
         }
-    }
-
-    /**
-     * @param  array  $conditions
-     * @return Collection|null
-     */
-    public function search(array $conditions = []): ?Collection
-    {
-        return null;
-    }
-
-    /**
-     * @param  Url  $url
-     * @param  int  $page
-     * @return string
-     */
-    protected function buildUrlWithPage(Url $url, int $page): string
-    {
-        return $this->buildUrl($url->getPath().'page-'.$page.'.html');
     }
 }

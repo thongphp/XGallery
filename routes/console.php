@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +14,6 @@ use Illuminate\Support\Facades\Schema;
 | simple approach to interacting with each command's IO methods.
 |
 */
-
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->describe('Display an inspiring quote');
 
 Artisan::command('clear:all', function () {
     array_map('unlink', array_filter((array) glob(storage_path('logs/*.log'))));

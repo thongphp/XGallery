@@ -9,78 +9,108 @@
 
 namespace App\Crawlers\Crawler;
 
+use App\Crawlers\HttpClient;
+use App\Models\Jav\OnejavModel;
+use App\Traits\Notifications\HasSlackNotification;
 use DateTime;
 use Exception;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Spatie\Url\Url;
-use stdClass;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Onejav
  * @package App\Crawlers\Crawler
  */
-final class Onejav extends AbstractCrawler
+final class Onejav
 {
-    const ENDPOINT = 'https://onejav.com';
+    use Notifiable, HasSlackNotification;
+
+    public const ENDPOINT = 'https://onejav.com';
 
     /**
-     * @param  string  $itemUri
-     * @return object|null
+     * @param  array  $options
+     * @return HttpClient
      */
-    public function getItemDetail(string $itemUri): ?object
+    public function getClient(array $options = []): HttpClient
     {
-        if (!$crawler = $this->crawl($itemUri)) {
+        return new HttpClient(array_merge($options, config('httpclient')));
+    }
+
+    /**
+     * @param  string  $uri
+     * @param  array  $options
+     * @return Crawler
+     */
+    public function crawl(string $uri, array $options = []): ?Crawler
+    {
+        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
             return null;
         }
 
-        $item = new stdClass();
-        /**
-         * @TODO Url property should not be there. If itemUri is NULL will cause trouble
-         */
-        $item->url = trim($itemUri);
+        return new Crawler($response, $uri);
+    }
 
-        if ($crawler->filter('.columns img.image')->count()) {
-            $item->cover = trim($crawler->filter('.columns img.image')->attr('src'));
+    /**
+     * @return Collection
+     */
+    public function getDaily(): Collection
+    {
+        $indexUrl = 'https://onejav.com/'.date('Y/m/d');
+        $pages = $this->getIndexPagesCount($indexUrl);
+
+        $items = collect([]);
+
+        for ($page = 1; $page <= $pages; $page++) {
+            $items = $items->merge($this->getItems($indexUrl.'?page'.$page));
         }
 
-        if ($crawler->filter('h5 a')->count()) {
-            $item->title = (trim($crawler->filter('h5 a')->text(null, false)));
+        return $items;
+    }
+
+    /**
+     * @param  string  $indexUri
+     * @return Collection
+     */
+    public function getItems(string $indexUri): Collection
+    {
+        if (!$crawler = $this->crawl($indexUri)) {
+            return collect([]);
         }
 
-        if ($crawler->filter('h5 span')->count()) {
-            $item->size = trim($crawler->filter('h5 span')->text(null, false));
+        return collect($crawler->filter('.container .columns')->each(function ($el) {
+            return $this->parse($el);
+        }));
+    }
 
-            if (strpos($item->size, 'MB') !== false) {
-                $item->size = (float) trim(str_replace('MB', '', $item->size));
-                $item->size = $item->size / 1024;
-            } elseif (strpos($item->size, 'GB') !== false) {
-                $item->size = (float) trim(str_replace('GB', '', $item->size));
-            }
+    /**
+     * @param  string  $indexUri
+     * @return int|null
+     */
+    public function getIndexPagesCount(string $indexUri): int
+    {
+        // Actually we can't get last page. Recursive is required
+        if (!$crawler = $this->crawl($indexUri)) {
+            return 1;
         }
 
-        $item->date = $this->convertStringToDateTime(trim($crawler->filter('.subtitle.is-6 a')->attr('href')));
-        $item->tags = collect($crawler->filter('.tags .tag')->each(
-            function ($tag) {
-                return trim($tag->text(null, false));
+        try {
+            $page = (int) $crawler->filter('a.pagination-link')->last()->text();
+            $class = $crawler->filter('a.pagination-link')->last()->attr('class');
+
+            $url = Url::fromString($indexUri);
+
+            if (strpos($class, 'is-inverted') !== false) {
+                $url = $url->getScheme().'://'.$url->getHost().$url->getPath().'?page='.$page;
+                $page = $this->getIndexPagesCount($url);
             }
-        ))->reject(function ($value) {
-            return null === $value || empty($value);
-        });
 
-        $description = $crawler->filter('.level.has-text-grey-dark');
-        $item->description = trim($description->count() ? trim($description->text(null, false)) : null);
-
-        $item->actresses = collect($crawler->filter('.panel .panel-block')->each(
-            function ($actress) {
-                return trim($actress->text(null, false));
-            }
-        ))->reject(function ($value) {
-            return null === $value || empty($value);
-        });
-
-        $item->torrent = self::ENDPOINT.trim($crawler->filter('.control.is-expanded a')->attr('href'));
-
-        return $item;
+            return $page;
+        } catch (Exception $exception) {
+            return 1;
+        }
     }
 
     /**
@@ -102,103 +132,56 @@ final class Onejav extends AbstractCrawler
     }
 
     /**
-     * @param  string|null  $indexUri
-     * @return Collection
+     * @param  Crawler  $crawler
+     * @return OnejavModel
      */
-    public function getItemLinks(string $indexUri = null): ?Collection
+    private function parse(Crawler $crawler): OnejavModel
     {
-        if (!$crawler = $this->crawl($indexUri)) {
-            return null;
+        $item = app(OnejavModel::class);
+        $item->url = self::ENDPOINT.trim($crawler->filter('h5.title a')->attr('href'));
+
+        if ($crawler->filter('.columns img.image')->count()) {
+            $item->cover = trim($crawler->filter('.columns img.image')->attr('src'));
         }
 
-        $links = $crawler->filter('.container .columns')->each(function ($el) {
-            $data = [];
-
-            if ($el->filter('.columns img.image')->count()) {
-                $data['cover'] = trim($el->filter('.columns img.image')->attr('src'));
-            }
-
-            $data['url'] = self::ENDPOINT.trim($el->filter('h5.title a')->attr('href'));
-
-            if ($el->filter('h5 a')->count()) {
-                $data['title'] = (trim($el->filter('h5 a')->text(null, false)));
-            }
-
-            if ($el->filter('h5 span')->count()) {
-                $data['size'] = trim($el->filter('h5 span')->text(null, false));
-
-                if (strpos($data['size'], 'MB') !== false) {
-                    $data['size'] = (float) trim(str_replace('MB', '', $data['size']));
-                    $data['size'] = $data['size'] / 1024;
-                } elseif (strpos($data['size'], 'GB') !== false) {
-                    $data['size'] = (float) trim(str_replace('GB', '', $data['size']));
-                }
-            }
-
-            // Date
-            $data['date'] = $this->convertStringToDateTime(trim($el->filter('.subtitle.is-6 a')->attr('href')));
-            $data['tags'] = collect($el->filter('.tags .tag')->each(
-                function ($tag) {
-                    return trim($tag->text(null, false));
-                }
-            ))->reject(function ($value) {
-                return null === $value || empty($value);
-            })->toArray();
-
-            $description = $el->filter('.level.has-text-grey-dark');
-            $data['description'] = trim($description->count() ? trim($description->text(null, false)) : null);
-
-            $data['actresses'] = collect($el->filter('.panel .panel-block')->each(
-                function ($actress) {
-                    return trim($actress->text(null, false));
-                }
-            ))->reject(function ($value) {
-                return null === $value || empty($value);
-            })->toArray();
-
-            $data['torrent'] = self::ENDPOINT.trim($el->filter('.control.is-expanded a')->attr('href'));
-
-            return $data;
-        });
-
-        return collect($links);
-    }
-
-    /**
-     * @param  string  $indexUri
-     * @return int|null
-     */
-    public function getIndexPagesCount(string $indexUri = null): int
-    {
-        /**
-         * @TODO Actually we can't get last page. Recursive is required
-         */
-        if (!$crawler = $this->crawl($indexUri)) {
-            return 1;
+        if ($crawler->filter('h5 a')->count()) {
+            $item->title = (trim($crawler->filter('h5 a')->text(null, false)));
+            $item->title = implode('-', preg_split("/(,?\s+)|((?<=[a-z])(?=\d))|((?<=\d)(?=[a-z]))/i", $item->title));
         }
 
-        try {
-            $page = (int) $crawler->filter('a.pagination-link')->last()->text();
-            $class = $crawler->filter('a.pagination-link')->last()->attr('class');
+        if ($crawler->filter('h5 span')->count()) {
+            $item->size = trim($crawler->filter('h5 span')->text(null, false));
 
-            if (strpos($class, 'is-inverted') !== false) {
-                $url = $this->buildUrlWithPage(Url::fromString($indexUri), $page);
-                $page = $this->getIndexPagesCount($url);
+            if (strpos($item->size, 'MB') !== false) {
+                $item->size = (float) trim(str_replace('MB', '', $item->size));
+                $item->size = $item->size / 1024;
+            } elseif (strpos($item->size, 'GB') !== false) {
+                $item->size = (float) trim(str_replace('GB', '', $item->size));
             }
-
-            return $page;
-        } catch (Exception $exception) {
-            return 1;
         }
-    }
 
-    /**
-     * @param  array  $conditions
-     * @return Collection|null
-     */
-    public function search(array $conditions = []): ?Collection
-    {
-        $url = $this->buildUrl('/search/'.implode('', $conditions));
-        return $this->getIndexLinks($url);
+        $item->date = $this->convertStringToDateTime(trim($crawler->filter('.subtitle.is-6 a')->attr('href')));
+        $item->tags = collect($crawler->filter('.tags .tag')->each(
+            function ($tag) {
+                return trim($tag->text(null, false));
+            }
+        ))->reject(function ($value) {
+            return null === $value || empty($value);
+        })->unique()->toArray();
+
+        $description = $crawler->filter('.level.has-text-grey-dark');
+        $item->description = trim($description->count() ? trim($description->text(null, false)) : null);
+
+        $item->actresses = collect($crawler->filter('.panel .panel-block')->each(
+            function ($actress) {
+                return trim($actress->text(null, false));
+            }
+        ))->reject(function ($value) {
+            return null === $value || empty($value);
+        })->unique()->toArray();
+
+        $item->torrent = self::ENDPOINT.trim($crawler->filter('.control.is-expanded a')->attr('href'));
+
+        return $item;
     }
 }

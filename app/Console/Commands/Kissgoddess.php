@@ -9,15 +9,16 @@
 
 namespace App\Console\Commands;
 
-use App\Console\BaseCrawlerCommand;
-use Illuminate\Database\Eloquent\Model;
+use App\Console\BaseCommand;
+use App\Models\KissgoddessModel;
 
 /**
  * Class Kissgoddess
  * @package App\Console\Commands
  */
-final class Kissgoddess extends BaseCrawlerCommand
+final class Kissgoddess extends BaseCommand
 {
+
     /**
      * The name and signature of the console command.
      *
@@ -33,10 +34,33 @@ final class Kissgoddess extends BaseCrawlerCommand
     protected $description = 'Fetching data from https://kissgoddess.com/gallery/';
 
     /**
-     * @return Model
+     * @return bool
+     * @throws \Exception
      */
-    protected function getModel(): Model
+    public function fully(): bool
     {
-        return app(\App\Models\Kissgoddess::class);
+        if (!$endpoint = $this->getEndpoint('Kissgoddess')) {
+            return false;
+        }
+
+        $crawler = app(\App\Crawlers\Crawler\Kissgoddess::class);
+        $items = app(\App\Crawlers\Crawler\Kissgoddess::class)->getItemLinks($endpoint->url.'/'.$endpoint->page.'.html');
+
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
+            return false;
+        }
+
+        $this->progressBarInit($items->count());
+        $items->each(function ($item) use ($crawler) {
+            $itemDetail = $crawler->getItem($item['url']);
+            KissgoddessModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
+            $this->progressBarSetStatus('QUEUED');
+            $this->progressBar->advance();
+        });
+
+        $endpoint->succeed()->save();
+
+        return true;
     }
 }

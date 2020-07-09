@@ -9,18 +9,23 @@
 
 namespace App\Console\Commands\Jav;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
+use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\OnejavModel;
+use App\Traits\Jav\HasXref;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class Onejav
+ * @description This command only use for basic movie information WITH download link and genre. Idol with name only
+ * This command will not trigger any queues
  * @package App\Console\Commands\Jav
  */
-final class Onejav extends BaseCrawlerCommand
+final class Onejav extends BaseCommand
 {
+    use HasXref;
+
     /**
      * The name and signature of the console command.
      *
@@ -33,65 +38,15 @@ final class Onejav extends BaseCrawlerCommand
      *
      * @var string
      */
-    protected $description = 'Fetching data from Onejav';
+    protected $description = 'Fetching data from OnejavModel';
 
     /**
      * @return bool
      */
     protected function daily(): bool
     {
-        return $this->indexProcess('https://onejav.com/'.date('Y/m/d'));
-    }
-
-    /**
-     * Get links in a index page and process these
-     * @param  string  $url
-     * @return bool
-     */
-    private function indexProcess(string $url)
-    {
-        if (!$pages = $this->getCrawler()->getIndexLinks($url)) {
-            return false;
-        }
-
-        $this->progressBarInit($pages->count());
-
-        $pages->each(function ($items) {
-            // Pages process
-            $this->progressBarSetSteps($items->count());
-            $this->itemsProcess($items);
-            $this->progressBar->advance();
-        });
-        return true;
-    }
-
-    /**
-     * Process a collection of items
-     *
-     * @SuppressWarnings("unused")
-     *
-     * @param  Collection  $items
-     */
-    private function itemsProcess(Collection $items)
-    {
-        if ($items->isEmpty()) {
-            $this->progressBar->setMessage('There are no items', 'info');
-            return;
-        }
-
-        $items->each(function ($item, $index) {
-            $this->progressBarSetInfo($item['title']);
-            // Convert to Mongo DateTime
-            $originalItem = $item;
-            if (isset($item['date']) && null !== $item['date']) {
-                $item['date'] = new UTCDateTime($item['date']->getTimestamp() * 1000);
-            }
-            $this->insertItem($item);
-            // Process to OneJAV to JavMovies with: Idols & Genres
-            \App\Jobs\Jav\OneJav::dispatch($originalItem);
-            $this->progressBarAdvanceStep();
-            $this->progressBarSetStatus('QUEUED');
-        });
+        $crawler = app(\App\Crawlers\Crawler\Onejav::class);
+        return $this->itemsProcess($crawler->getDaily());
     }
 
     /**
@@ -101,42 +56,59 @@ final class Onejav extends BaseCrawlerCommand
      */
     protected function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('Onejav')) {
             return false;
         }
 
-        // For moment we can't use getIndexLinks because we are using recursive to get last page of this site
-        $items = $this->getCrawler()->getItemLinks($endpoint->url.$endpoint->page);
+        $items = app(\App\Crawlers\Crawler\Onejav::class)->getItems($endpoint->url.'?page='.$endpoint->page);
 
-        if (!$items || $items->isEmpty()) {
-            $endpoint->failed = (int) $endpoint->failed + 1;
-            if ($endpoint->failed === 10) {
-                $endpoint->page = 1;
-                $endpoint->failed = 0;
-                $endpoint->save();
-                return false;
-            }
-
-            $endpoint->page = (int) $endpoint->page + 1;
-            $endpoint->save();
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
             return false;
         }
 
-        $endpoint->page = (int) $endpoint->page + 1;
-        $endpoint->save();
-
-        $this->progressBarInit(1);
-        $this->progressBar->setMessage($items->count(), 'steps');
         $this->itemsProcess($items);
+        $endpoint->succeed()->save();
 
         return true;
     }
 
     /**
-     * @return Model
+     * @param  Collection  $items
+     * @return bool
      */
-    protected function getModel(): Model
+    private function itemsProcess(Collection $items)
     {
-        return app(\App\Models\Onejav::class);
+        if ($items->isEmpty()) {
+            return true;
+        }
+
+        $this->progressBarInit($items->count());
+        $items->each(function ($item) {
+            $attributes = $item->getAttributes();
+            /**
+             * @var OnejavModel $item
+             */
+            $item = OnejavModel::updateOrCreate(['url' => $attributes['url']], $attributes);
+            $movie = JavMovieModel::updateOrCreate(
+                ['dvd_id' => $item->title],
+                [
+                    'release_date' => $item->date,
+                    'is_downloadable' => true,
+                    'description' => $item->description
+                ]
+            );
+
+            $this->updateGenres($item->tags, $movie);
+            $this->updateIdols($item->actresses, $movie);
+
+            $this->progressBarSetInfo($item->url);
+            $this->progressBarSetStatus('COMPLETED');
+            $this->progressBar->advance();
+        });
+
+        $this->progressBarFinished();
+
+        return true;
     }
 }

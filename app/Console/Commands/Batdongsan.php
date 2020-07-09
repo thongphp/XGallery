@@ -9,15 +9,16 @@
 
 namespace App\Console\Commands;
 
-use App\Console\BaseCrawlerCommand;
+use App\Console\BaseCommand;
 use Exception;
 
 /**
  * Class Batdongsan
  * @package App\Console\Commands
  */
-final class Batdongsan extends BaseCrawlerCommand
+final class Batdongsan extends BaseCommand
 {
+
     /**
      * The name and signature of the console command.
      *
@@ -38,28 +39,25 @@ final class Batdongsan extends BaseCrawlerCommand
      */
     protected function fully(): bool
     {
-        if (!$pages = $this->getIndexLinks()) {
+        if (!$endpoint = $this->getEndpoint('Batdongsan')) {
             return false;
         }
 
-        $this->progressBarInit($pages->count());
+        $items = app(\App\Crawlers\Crawler\Batdongsan::class)->getItemLinks($endpoint->url.'/p' . $endpoint->page);
 
-        // Process all pages
-        $pages->each(function ($page) {
-            if (!$page) {
-                return;
-            }
-            $this->progressBarSetSteps($page->count());
-            // Process items on page
-            $page->each(function ($item) {
-                $this->progressBarSetInfo($item['url']);
-                $this->progressBarSetStatus('FETCHING');
-                \App\Jobs\Batdongsan::dispatch($item['url']);
-                $this->progressBarAdvanceStep();
-                $this->progressBarSetStatus('QUEUED');
-            });
+        if ($items->isEmpty()) {
+            $endpoint->fail()->save();
+            return false;
+        }
+
+        $this->progressBarInit($items->count());
+        $items->each(function ($url) {
+            \App\Jobs\Batdongsan::dispatch($url);
+            $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         });
+
+        $endpoint->succeed()->save();
 
         return true;
     }

@@ -11,10 +11,10 @@ namespace App\Http\Controllers\Jav;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
+use App\Models\Jav\JavIdolModel;
+use App\Models\Jav\JavMovieModel;
 use App\Models\JavDownload;
-use App\Models\JavGenres;
-use App\Models\JavIdols;
-use App\Models\JavMovies;
+use App\Repositories\JavMovies;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -34,18 +34,22 @@ class JavController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * @param  Request  $request
-     * @param  \App\Repositories\JavMovies  $repository
+     * @param Request $request
+     * @param JavMovies $repository
+     *
      * @return Application|Factory|View
      */
-    public function dashboard(Request $request, \App\Repositories\JavMovies $repository)
+    public function dashboard(Request $request, JavMovies $repository)
     {
-        $items = $repository->getItems($request->request->all());
+        $items = $repository->getItems($request);
 
         return view(
             'jav.index',
             [
-                'items' => $repository->getItems($request->request->all()),
+                'items' => $items,
+                'directors' => $repository->getDirectors()->pluck('director'),
+                'studios' => $repository->getStudios()->pluck('studio'),
+                'series' => $repository->getSeries()->pluck('series'),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$items->total().' Movies - '.$items->currentPage().' / '.$items->lastPage(),
             ]
@@ -58,14 +62,14 @@ class JavController extends BaseController
      */
     public function movie(int $id)
     {
-        $movie = JavMovies::find($id);
+        $movie = JavMovieModel::find($id);
 
         return view(
             'jav.movie',
             [
                 'item' => $movie,
                 'sidebar' => $this->getMenuItems(),
-                'title' => 'JAV '.$movie->item_number,
+                'title' => 'JAV - '.$movie->dvd_id,
                 'description' => $movie->description,
             ]
         );
@@ -73,38 +77,15 @@ class JavController extends BaseController
 
     /**
      * @param  int  $id
-     * @param  Request  $request
      * @return Application|Factory|View
      */
-    public function genre(int $id, Request $request)
+    public function idol(int $id)
     {
-        $filter = array_merge($request->request->all(), ['genre' => $id]);
-
-        return view(
-            'jav.index',
-            [
-                'items' => app(\App\Repositories\JavMovies::class)->getItems($filter),
-                'sidebar' => $this->getMenuItems(),
-                'title' => 'JAV genre - '.JavGenres::find($id)->name,
-            ]
-        );
-    }
-
-    /**
-     * @param  int  $id
-     * @param  Request  $request
-     * @return Application|Factory|View
-     */
-    public function idol(int $id, Request $request)
-    {
-        $filter = array_merge($request->request->all(), ['idol' => $id]);
-
-        $idol = JavIdols::find($id);
+        $idol = JavIdolModel::find($id);
 
         return view(
             'jav.idol',
             [
-                'items' => app(\App\Repositories\JavMovies::class)->getItems($filter),
                 'idol' => $idol,
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$idol->name,
@@ -117,11 +98,11 @@ class JavController extends BaseController
      * @return JsonResponse
      * @throws Throwable
      */
-    public function download(string $itemNumber)
+    public function download(string $itemNumber): JsonResponse
     {
         if (JavDownload::where(['item_number' => $itemNumber])->first()) {
             return response()->json([
-                'html' => Toast::warning('Download', 'Item <strong>'.$itemNumber.'</strong> already exists')
+                'html' => Toast::warning('Download', 'Item <strong>'.$itemNumber.'</strong> already exists'),
             ]);
         }
 

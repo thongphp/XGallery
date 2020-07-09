@@ -11,7 +11,7 @@ namespace App\Jobs\Truyenchon;
 
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\TruyenchonChapterModel;
+use App\Models\Truyentranh\TruyenchonChapterModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -45,7 +45,7 @@ class TruyenchonDownload implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $chapters = TruyenchonChapterModel::where(['storyUrl' => $this->storyUrl])->get();
 

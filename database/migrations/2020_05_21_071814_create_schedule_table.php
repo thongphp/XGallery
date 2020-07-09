@@ -5,9 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Class CreateScheduleTable
- */
 class CreateScheduleTable extends Migration
 {
     /**
@@ -64,6 +61,7 @@ class CreateScheduleTable extends Migration
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
+                // System
                 [
                     'command' => 'cache:clear',
                     'every' => 'daily',
@@ -82,22 +80,10 @@ class CreateScheduleTable extends Migration
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
+                // JAV
                 [
                     'command' => 'jav:onejav daily',
                     'every' => 'daily',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ],
-                [
-                    'command' => 'jav:r18 daily',
-                    'every' => 'daily',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ],
-
-                [
-                    'command' => 'batdongsan',
-                    'every' => 'everyMinute',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
@@ -107,6 +93,12 @@ class CreateScheduleTable extends Migration
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
+                /*                [
+                        'command' => 'jav:r18 daily',
+                        'every' => 'daily',
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
+                    ],*/
                 [
                     'command' => 'jav:r18 fully',
                     'every' => 'everyFiveMinutes',
@@ -126,20 +118,26 @@ class CreateScheduleTable extends Migration
                     'updated_at' => Carbon::now()
                 ],
                 [
+                    'command' => 'batdongsan',
+                    'every' => 'everyTenMinutes',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ],
+                [
                     'command' => 'xiuren',
                     'every' => 'everyFiveMinutes',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],
-                [
-                    'command' => 'phodacbiet',
-                    'every' => 'everyFiveMinutes',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ],
+                /*                [
+                                    'command' => 'phodacbiet',
+                                    'every' => 'everyFiveMinutes',
+                                    'created_at' => Carbon::now(),
+                                    'updated_at' => Carbon::now()
+                                ],*/
                 [
                     'command' => 'kissgoddess',
-                    'every' => 'everyFiveMinutes',
+                    'every' => 'everyThirtyMinutes',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ],

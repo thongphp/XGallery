@@ -141,22 +141,13 @@ return [
     | queued jobs and will be provisioned by Horizon during deployment.
     |
     */
-    'env'=> 'local',
+    'env'=> env('APP_ENV', 'local'),
 
     'environments' => [
         'production' => [
             'supervisor-production' => [
                 'connection' => 'redis',
-                'queue' => [
-                    Queues::QUEUE_DEFAULT,
-                    Queues::QUEUE_JAV,
-                    Queues::QUEUE_JAV_DOWNLOADS,
-                    Queues::QUEUE_TRUYENTRANH,
-                    Queues::QUEUE_DOWNLOADS,
-                    Queues::QUEUE_BATDONGSAN,
-                    Queues::QUEUE_FLICKR,
-                    Queues::QUEUE_PHOTOS
-                ],
+                'queue' => Queues::QUEUES,
                 'balance' => 'auto',
                 'processes' => 35,
                 'minProcesses' => 1,
@@ -168,16 +159,7 @@ return [
         'local' => [
             'supervisor-local' => [
                 'connection' => 'redis',
-                'queue' => [
-                    Queues::QUEUE_DEFAULT,
-                    Queues::QUEUE_JAV,
-                    Queues::QUEUE_JAV_DOWNLOADS,
-                    Queues::QUEUE_TRUYENTRANH,
-                    Queues::QUEUE_DOWNLOADS,
-                    Queues::QUEUE_BATDONGSAN,
-                    Queues::QUEUE_FLICKR,
-                    Queues::QUEUE_PHOTOS
-                ],
+                'queue' => Queues::QUEUES,
                 'balance' => 'auto',
                 'processes' => 35,
                 'minProcesses' => 1,

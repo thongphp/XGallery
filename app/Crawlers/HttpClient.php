@@ -9,12 +9,13 @@
 
 namespace App\Crawlers;
 
-use App\Crawlers\Crawler\Traits\HasCurl;
-use App\Crawlers\Traits\HasHeaders;
-use App\Events\HttpResponded;
-use App\Events\OrderShipped;
+use App\Notifications\NotificationToSlack;
+use App\Traits\Notifications\HasSlackNotification;
+use Campo\UserAgent;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -27,30 +28,21 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class HttpClient extends Client
 {
-    use HasCurl;
-    use HasHeaders;
+    use Notifiable, HasSlackNotification;
 
     protected ResponseInterface $response;
-
-    private array $errors = [];
 
     /**
      * @param  string  $method
      * @param  string  $uri
      * @param  array  $options
      * @return string|null
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws
      */
     public function request($method, $uri = '', array $options = []): ?string
     {
-        $key = $this->getKey([$method, $uri]);
+        $key = md5(serialize([$method, $uri]));
         $isCached = Cache::has($key);
-        Log::stack(['http'])
-            ->info(
-                $isCached
-                    ? 'Request URI: '.urldecode($uri).' with CACHED key '.$key
-                    : 'Request URI: '.urldecode($uri)
-            );
 
         if ($isCached) {
             return Cache::get($key);
@@ -58,9 +50,8 @@ class HttpClient extends Client
 
         try {
             $this->response = parent::request($method, $uri, array_merge($options, ['headers' => $this->getHeaders()]));
-        } catch (Exception $exception) {
-            Log::stack(['http'])->error($exception->getMessage());
-            $this->errors[$uri] = $exception->getMessage();
+        } catch (GuzzleException $exception) {
+            $this->notify(new NotificationToSlack($exception->getMessage()));
             return null;
         }
 
@@ -69,20 +60,11 @@ class HttpClient extends Client
                 Cache::put($key, $this->response->getBody()->getContents(), 1800);
                 break;
             default:
-                Log::stack(['http'])->error($this->response->getStatusCode());
+                Log::stack(['http'])->error($this->response->getStatusCode(), func_get_args());
                 return null;
         }
 
         return Cache::get($key);
-    }
-
-    /**
-     * @param  array  $args
-     * @return string
-     */
-    protected function getKey(array $args): string
-    {
-        return md5(serialize($args));
     }
 
     /**
@@ -114,10 +96,62 @@ class HttpClient extends Client
     }
 
     /**
-     * @return array
+     * @param  string  $url
+     * @param  string  $saveToFile
+     * @return bool|string
      */
-    public function getErrors(): array
+    protected function downloadRemoteFile(string $url, string $saveToFile)
     {
-        return $this->errors;
+        $ch = curl_init($url);
+
+        // Issue a HEAD request and follow any redirects.
+        curl_setopt($ch, CURLOPT_NOBODY, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        if (!$data = curl_exec($ch)) {
+            $this->notify(new NotificationToSlack('Can not get download data'));
+            return false;
+        }
+
+        $status = curl_getinfo($ch);
+        curl_close($ch);
+
+        if ($status['http_code'] != Response::HTTP_OK
+            && $status['http_code'] < Response::HTTP_MULTIPLE_CHOICES
+            && $status['http_code'] > Response::HTTP_PERMANENTLY_REDIRECT) {
+            Log::stack(['http'])->warning('Invalid response', [func_get_args(), $status]);
+            return false;
+        }
+
+        if (!Storage::put($saveToFile, $data)) {
+            Log::stack(['http'])->warning('Can not save to file', func_get_args());
+            return false;
+        }
+
+        if ((int) $status['download_content_length'] < 0
+            || (int) $status['download_content_length'] === Storage::size($saveToFile)
+        ) {
+            return $saveToFile;
+        }
+
+        Storage::delete($saveToFile);
+
+        return false;
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    protected function getHeaders(): array
+    {
+        return [
+            'Accept-Encoding' => 'gzip, deflate',
+            'User-Agent' => UserAgent::random([
+                'device_type' => ['Desktop'],
+            ]),
+        ];
     }
 }
