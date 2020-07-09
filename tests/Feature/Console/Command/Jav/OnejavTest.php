@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Console\Command\Jav;
 
+use App\Models\CrawlerEndpoints;
 use App\Models\Jav\JavMovieModel;
 use App\Models\Jav\OnejavModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Tests\Traits\FlickrMongoDatabase;
 
 class OnejavTest extends TestCase
 {
-    use RefreshDatabase, FlickrMongoDatabase;
+    use RefreshDatabase;
 
     public function testGetDaily()
     {
@@ -30,5 +30,6 @@ class OnejavTest extends TestCase
         $this->assertNotNull($movies->first()->release_date);
         $this->assertNotNull($movies->first()->dvd_id);
         $this->assertEquals(1, $movies->first()->is_downloadable);
+        $this->assertEquals(2, CrawlerEndpoints::where(['crawler'=>'Onejav'])->first()->page);
     }
 }
