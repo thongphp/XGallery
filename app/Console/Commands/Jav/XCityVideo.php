@@ -40,7 +40,7 @@ final class XCityVideo extends BaseCommand
      */
     protected function fully(): bool
     {
-        if (!$endpoint = $this->getEndpoint('XCityProfile')) {
+        if (!$endpoint = $this->getEndpoint('XCityVideo')) {
             return false;
         }
 
