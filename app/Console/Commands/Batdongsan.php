@@ -39,7 +39,7 @@ final class Batdongsan extends BaseCommand
      */
     protected function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('Batdongsan')) {
             return false;
         }
 

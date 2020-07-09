@@ -39,7 +39,7 @@ final class Kissgoddess extends BaseCommand
      */
     public function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('Kissgoddess')) {
             return false;
         }
 

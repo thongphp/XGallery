@@ -39,7 +39,7 @@ final class Xiuren extends BaseCommand
      */
     public function fully(): bool
     {
-        if (!$endpoint = $this->getCrawlerEndpoint()) {
+        if (!$endpoint = $this->getEndpoint('Xiuren')) {
             return false;
         }
 

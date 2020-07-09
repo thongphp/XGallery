@@ -41,12 +41,15 @@ class JavController extends BaseController
      */
     public function dashboard(Request $request, JavMovies $repository)
     {
-        $items = $repository->getItems($request->request->all());
+        $items = $repository->getItems($request);
 
         return view(
             'jav.index',
             [
-                'items' => $repository->getItems($request->request->all()),
+                'items' => $items,
+                'directors' => $repository->getDirectors()->pluck('director'),
+                'studios' => $repository->getStudios()->pluck('studio'),
+                'series' => $repository->getSeries()->pluck('series'),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$items->total().' Movies - '.$items->currentPage().' / '.$items->lastPage(),
             ]

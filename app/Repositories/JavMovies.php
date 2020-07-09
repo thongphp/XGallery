@@ -12,6 +12,8 @@ namespace App\Repositories;
 use App\Models\Jav\JavMovieModel;
 use App\Models\Jav\JavMovieXrefModel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class JavMovieModel
@@ -24,32 +26,69 @@ class JavMovies
     ];
 
     /**
-     * @param  array  $filter
+     * @param  Request  $request
      * @return LengthAwarePaginator
      */
-    public function getItems(array $filter = [])
+    public function getItems(Request $request)
     {
         $builder = app(JavMovieModel::class)->query();
 
-        if (isset($filter['keyword']) && !empty($filter['keyword'])) {
-            $filter['searchBy'] = $filter['searchBy'] ?? 'keyword';
-            switch ($filter['searchBy']) {
-                case 'keyword':
-                    $builder->where(function ($query) use ($filter) {
-                        foreach ($this->filterFields as $filterField) {
-                            $query = $query->orWhere($filterField, 'LIKE', '%'.$filter['keyword'].'%');
-                        }
-                    });
-                    break;
-                default:
-                    $builder->where($filter['searchBy'], 'LIKE', '%'.$filter['keyword'].'%');
-                    break;
-            }
+        if ($keyword = $request->get('keyword')) {
+            $builder->where(function ($query) use ($keyword) {
+                foreach ($this->filterFields as $filterField) {
+                    $query->orWhere($filterField, 'LIKE', '%'.$keyword.'%');
+                }
+            });
+        }
+
+        if ($directors = $request->get('filter_director')) {
+            $builder->where(function ($query) use ($directors) {
+                foreach ($directors as $director) {
+                    $query->orWhere('director', 'LIKE', '%'.$director.'%');
+                }
+            });
+        }
+
+        if ($studios = $request->get('filter_studios')) {
+            $builder->where(function ($query) use ($studios) {
+                foreach ($studios as $studio) {
+                    $query->orWhere('studio', 'LIKE', '%'.$studio.'%');
+                }
+            });
+        }
+
+        if ($series = $request->get('filter_series')) {
+            $builder->where(function ($query) use ($series) {
+                foreach ($series as $serie) {
+                    $query->orWhere('series', 'LIKE', '%'.$serie.'%');
+                }
+            });
         }
 
         // @todo Filter by multi genres & idols
-        $perPage = isset($filter['per-page']) ? (int) $filter['per-page'] : 15;
 
-        return $builder->paginate($perPage);
+        return $builder->paginate($request->get('perPage', 15));
+    }
+
+    public function getDirectors()
+    {
+        return DB::table('jav_movies')->select('director')
+            ->whereNotNull('director')
+            ->where('director', '<>', '----')
+            ->groupBy('director')->get('director');
+    }
+
+    public function getStudios()
+    {
+        return DB::table('jav_movies')->select('studio')
+            ->whereNotNull('studio')
+            ->groupBy('studio')->get();
+    }
+
+    public function getSeries()
+    {
+        return DB::table('jav_movies')->select('series')
+            ->whereNotNull('series')
+            ->groupBy('series')->get();
     }
 }
