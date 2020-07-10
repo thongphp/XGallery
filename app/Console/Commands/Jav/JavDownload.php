@@ -39,11 +39,14 @@ final class JavDownload extends BaseCommand
             return true;
         }
 
+        $this->progressBarInit($downloads->count());
         $downloads->each(function ($download) {
+            $this->progressBarSetInfo($download->item_number);
             $item = $download->downloads()->first();
             $crawler = app(Onejav::class);
             $item = $crawler->getItems($item->url)->first();
             $crawler->getClient()->download($item->torrent, 'onejav');
+            $this->progressBarSetStatus('FINISHED');
             $download->forceDelete();
         });
 

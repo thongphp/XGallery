@@ -16,6 +16,7 @@ use App\Repositories\TruyenchonRepository;
 use App\Traits\Notifications\HasSlackNotification;
 use Campo\UserAgent;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -48,7 +49,7 @@ class TruyenchonChapterDownload implements ShouldQueue
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException|\ImagickException
+     * @throws GuzzleException|\ImagickException
      */
     public function handle()
     {

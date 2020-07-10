@@ -73,59 +73,58 @@ final class XCityVideo
 
         // Get all fields
         $fields = collect($crawler->filter('.bodyCol ul li')->each(
-            static function ($li) {
-                if (strpos($li->text(null, false), '★Favorite') !== false) {
-                    return ['favorite' => (int) str_replace('★Favorite', '', $li->text(null, false))];
+            function ($li) {
+                $node = $li->filter('.koumoku');
+                if ($node->count() == 0) {
+                    return [];
                 }
-                if (strpos($li->text(null, false), 'Sales Date') !== false) {
-                    return [
-                        'sales_date' => DateTime::createFromFormat(
-                            'Y/m/j',
-                            trim(str_replace('Sales Date', '', $li->text(null, false)))
-                        )
-                    ];
-                }
-                if (strpos($li->text(null, false), 'Label/Maker') !== false) {
-                    return [
-                        'label' => $li->filter('#program_detail_maker_name')->text(),
-                        'marker' => $li->filter('#program_detail_label_name')->text(),
-                    ];
-                }
-                if (strpos($li->text(null, false), 'Genres') !== false) {
-                    $genres = $li->filter('a.genre')->each(
-                        static function ($a) {
-                            return trim($a->text(null, false));
-                        }
-                    );
 
-                    return ['genres' => $genres];
-                }
-                if (strpos($li->text(null, false), 'Series') !== false) {
-                    return ['series' => trim(str_replace('Series', '', $li->text(null, false)))];
-                }
-                if (strpos($li->text(null, false), 'Director') !== false) {
-                    return ['director' => trim(str_replace('Director', '', $li->text(null, false)))];
-                }
-                if (strpos($li->text(null, false), 'Item Number') !== false) {
-                    return ['item_number' => trim(str_replace('Item Number', '', $li->text(null, false)))];
-                }
-                if (strpos($li->text(null, false), 'Running Time') !== false) {
-                    return [
-                        'time' => (int) trim(str_replace(
-                            ['Running Time', 'min', '.'],
-                            ['', '', ''],
-                            $li->text(null, false)
-                        )),
-                    ];
-                }
-                if (strpos($li->text(null, false), 'Release Date') !== false) {
-                    $releaseDate = trim(str_replace('Release Date', '', $li->text(null, false)));
-                    if (!empty($releaseDate) && strpos($releaseDate, 'undelivered now') === false) {
-                        return ['release_date' => DateTime::createFromFormat('Y/m/j', $releaseDate)];
-                    }
-                }
-                if (strpos($li->text(null, false), 'Description') !== false) {
-                    return ['description' => trim(str_replace('Description', '', $li->text(null, false)))];
+                $label = $node->text();
+
+                switch ($label) {
+                    case '★Favorite':
+                        return ['favorite' => (int) $li->filter('.favorite-count')->text()];
+                    case 'Sales Date':
+                        return [
+                            'sales_date' => DateTime::createFromFormat(
+                                'Y/m/j',
+                                trim(str_replace('Sales Date', '', $li->text()))
+                            )
+                        ];
+                    case 'Label/Maker':
+                        return [
+                            'label' => $li->filter('#program_detail_maker_name')->text(),
+                            'marker' => $li->filter('#program_detail_label_name')->text(),
+                        ];
+                    case 'Series':
+                        return ['series' => trim(str_replace('Series', '', $li->text()))];
+                    case 'Genres':
+                        $genres = $li->filter('a.genre')->each(
+                            static function ($a) {
+                                return trim($a->text(null, false));
+                            }
+                        );
+
+                        return ['genres' => $genres];
+                    case 'Director':
+                        return ['director' => trim($li->filter('#program_detail_director')->text())];
+                    case 'Item Number':
+                        return ['item_number' => trim($li->filter('#hinban')->text())];
+                    case 'Running Time':
+                        return [
+                            'time' => (int) trim(str_replace(
+                                ['Running Time', 'min', '.'],
+                                ['', '', ''],
+                                $li->text(null, false)
+                            )),
+                        ];
+
+                    case 'Release Date':
+                        $releaseDate = trim(str_replace('Release Date', '', $li->text(null, false)));
+                        if (!empty($releaseDate) && strpos($releaseDate, 'undelivered now') === false) {
+                            return ['release_date' => DateTime::createFromFormat('Y/m/j', $releaseDate)];
+                        }
+
                 }
 
                 return null;
@@ -142,6 +141,8 @@ final class XCityVideo
                 $item->{$key} = empty($value) ? null : $value;
             }
         }
+
+        $item->description = $crawler->filter('p.lead')->text();
 
         return $item;
     }

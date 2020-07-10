@@ -20,11 +20,54 @@ class XCityVideoTest extends TestCase
         $this->crawler = app(XCityVideo::class);
     }
 
-    public function testGetItem(): void
+    public function itemProviders()
     {
-        $item = $this->crawler->getItem('https://xxx.xcity.jp/avod/detail/?maker=mercury&id=147145');
+        return [
+            [
+                'url' => 'https://xxx.xcity.jp/avod/detail/?maker=firststar&id=146516',
+                'expectFields' => [
+                    'title', 'url', 'cover', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker',
+                    'series',
+                    'genres', 'director', 'item_number', 'time', 'release_date', 'description'
+                ]
+            ],
+            [
+                'url' => 'https://xxx.xcity.jp/avod/detail/?maker=prestige&id=148334',
+                'expectFields' => [
+                    'title', 'url', 'cover', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker',
+                    'series',
+                    'genres', 'director', 'item_number', 'time', 'release_date', 'description'
+                ]
+            ],
+            [
+                'url' => 'https://xxx.xcity.jp/avod/detail/?maker=shin-toho&id=142760',
+                'expectFields' => [
+                    'title', 'url', 'cover', 'gallery', 'actresses', 'favorite', 'label', 'marker',
+                    'series',
+                    'genres', 'director', 'item_number', 'time', 'release_date', 'description'
+                ]
+            ],
+            [
+                'url' => 'https://xxx.xcity.jp/avod/detail/?maker=kuki&id=6355',
+                'expectFields' => [
+                    'title', 'url', 'cover', 'gallery', 'actresses', 'favorite', 'sales_date', 'label', 'marker',
+                    'series',
+                    'genres', 'director', 'item_number', 'time', 'release_date', 'description'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider itemProviders
+     * @param  string  $url
+     * @param  array  $expectFields
+     */
+    public function testGetItem(string $url, array $expectFields): void
+    {
+        $item = $this->crawler->getItem($url);
         $this->assertInstanceOf(XCityVideoModel::class, $item);
-        $this->assertModelProperties($item->getFillable(), $item);
+        $this->assertModelProperties($expectFields, $item);
     }
 
     public function testGetIndexPagesCount(): void

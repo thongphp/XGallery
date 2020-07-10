@@ -21,6 +21,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class Oauth extends Mongodb implements Authenticatable
 {
     protected $collection = 'oauths';
+
     protected $fillable = ['id'];
 
     public function getAuthIdentifierName()
