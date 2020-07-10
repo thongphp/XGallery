@@ -15,7 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Download Flickr photo and trigger sync with Google
@@ -78,8 +77,6 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
         $photoSizes = $photo->sizes;
         $sourceSize = end($photoSizes);
         $httpClient = app(HttpClient::class);
-
-        Log::debug(__FUNCTION__, [$sourceSize, $photo]);
 
         $source = is_array($sourceSize) ? $sourceSize['source'] : $sourceSize->source;
 

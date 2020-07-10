@@ -5,7 +5,6 @@ namespace App\Jobs\Google;
 use App\Exceptions\Google\GooglePhotoApiMediaCreateException;
 use App\Exceptions\Google\GooglePhotoApiUploadException;
 use App\Facades\GooglePhotoClient;
-use App\Jobs\Middleware\RateLimited;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use Illuminate\Bus\Queueable;
@@ -40,15 +39,6 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
         $this->googleAlbumId = $googleAlbumId;
 
         $this->onQueue(Queues::QUEUE_GOOGLE);
-    }
-
-    /**
-     * @return RateLimited[]
-     */
-    public function middleware(): array
-    {
-        // @todo update ratelimit config
-        return [new RateLimited('google')];
     }
 
     /**
