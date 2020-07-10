@@ -11,7 +11,6 @@ namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
 use App\Models\BatdongsanModel;
-use App\Notifications\NotificationToSlack;
 use App\Traits\Notifications\HasSlackNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
@@ -71,8 +70,6 @@ final class Batdongsan
         $nameNode = $crawler->filter('.pm-title h1');
 
         if ($nameNode->count() === 0) {
-            $this->notify(new NotificationToSlack('Can not get title via URL: ' . $itemUri, 'warning'));
-
             return null;
         }
 

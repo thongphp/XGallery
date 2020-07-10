@@ -17,7 +17,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +59,7 @@ class HttpClient extends Client
                 Cache::put($key, $this->response->getBody()->getContents(), 1800);
                 break;
             default:
-                Log::stack(['http'])->error($this->response->getStatusCode(), func_get_args());
+                $this->notify(new NotificationToSlack($uri.' responded with status code '.$this->response->getStatusCode()));
                 return null;
         }
 
@@ -121,12 +120,12 @@ class HttpClient extends Client
         if ($status['http_code'] != Response::HTTP_OK
             && $status['http_code'] < Response::HTTP_MULTIPLE_CHOICES
             && $status['http_code'] > Response::HTTP_PERMANENTLY_REDIRECT) {
-            Log::stack(['http'])->warning('Invalid response', [func_get_args(), $status]);
+            $this->notify(new NotificationToSlack('Can not download '.$url.'. Status code: '.$status['http_code']));
             return false;
         }
 
         if (!Storage::put($saveToFile, $data)) {
-            Log::stack(['http'])->warning('Can not save to file', func_get_args());
+            $this->notify(new NotificationToSlack('Can not save file '.$saveToFile));
             return false;
         }
 

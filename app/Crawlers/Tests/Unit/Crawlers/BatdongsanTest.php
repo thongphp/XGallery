@@ -35,6 +35,10 @@ class BatdongsanTest extends TestCase
             [
                 'url' => 'https://batdongsan.com.vn/ban-dat-duong-bau-sen-phuong-bau-sen/chinh-chu-lo-25-303-mt-kinh-doanh-ngay-ubnd-p-sen-pr26162851',
                 'expectTitle' => 'CHÍNH CHỦ LÔ 25/303 MT KINH DOANH NGAY UBND P. BÀU SEN'
+            ],
+            [
+                'url' => 'https://batdongsan.com.vn/ban-nha-rieng-duong-70-2-xa-van-canh-1/hot-co-hoi-co-o-to-do-cua-tai-phuong-ha-noi-pr26120640',
+                'expectTitle' => 'HOT CƠ HỘI CÓ NHÀ Ô TÔ ĐỖ CỬA TẠI VÂN CANH, PHƯƠNG CANH, HÀ NỘI'
             ]
         ];
     }
@@ -62,6 +66,6 @@ class BatdongsanTest extends TestCase
 
     public function testGetPagesCount(): void
     {
-        $this->assertEquals(9824, $this->crawler->getIndexPagesCount('https://batdongsan.com.vn/nha-dat-ban'));
+        $this->assertGreaterThan(9824, $this->crawler->getIndexPagesCount('https://batdongsan.com.vn/nha-dat-ban'));
     }
 }
