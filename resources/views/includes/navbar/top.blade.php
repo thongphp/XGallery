@@ -8,8 +8,6 @@
         </ul>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
-            </ul>
-            <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <form class="form-inline my-2 my-lg-0" action="">
                         <span class="mr-sm-2">
@@ -24,6 +22,13 @@
                         </span>
                     </form>
                 </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                @auth
+                    <li class="nav-item">
+                        <i class="fas fa-user"></i> {{\Illuminate\Support\Facades\Auth::user()->getAuthIdentifier()}}
+                    </li>
+                @endauth
             </ul>
         </div>
     </nav>
