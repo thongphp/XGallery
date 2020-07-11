@@ -39,6 +39,7 @@ class XiurenDownload implements ShouldQueue
      */
     public function handle()
     {
-        $crawler->download(app(Xiuren::class)->getItem($this->url));
+        $crawler = app(Xiuren::class);
+        $crawler->download($crawler->getItem($this->url));
     }
 }
