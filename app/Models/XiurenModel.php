@@ -11,6 +11,7 @@ namespace App\Models;
 
 use App\Database\Mongodb;
 use App\Models\Traits\HasCover;
+use Spatie\Url\Url;
 
 /**
  * Class Xiuren
@@ -26,4 +27,9 @@ class XiurenModel extends Mongodb
     public $collection = 'xiuren';
 
     protected $fillable = ['url', 'cover', 'images'];
+
+    public function getTitle()
+    {
+        return Url::fromString($this->url)->getPath();
+    }
 }
