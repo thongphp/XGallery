@@ -106,4 +106,14 @@ final class Xiuren
             return 1;
         }
     }
+
+    /**
+     * @param  XiurenModel  $item
+     */
+    public function download(XiurenModel $item)
+    {
+        foreach ($item->images as $image) {
+            $this->getClient()->download($image, 'xiuren' . DIRECTORY_SEPARATOR . $item->getTitle());
+        }
+    }
 }
