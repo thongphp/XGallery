@@ -58,6 +58,8 @@ final class Kissgoddess
 
         $itemUri = str_replace('.html', '', $itemUri);
 
+        // @todo Too much sub-requests. Reduce it later
+
         for ($page = 1; $page <= $pages; $page++) {
             $crawler = $this->crawl($itemUri.'_'.$page.'.html');
 
@@ -119,6 +121,13 @@ final class Kissgoddess
             return (int) str_replace('.html', '', $page);
         } catch (Exception $exception) {
             return 1;
+        }
+    }
+
+    public function download(KissgoddessModel $item)
+    {
+        foreach ($item->images as $image) {
+            $this->getClient()->download($image, 'kissgoddess' . DIRECTORY_SEPARATOR . $item->title);
         }
     }
 }

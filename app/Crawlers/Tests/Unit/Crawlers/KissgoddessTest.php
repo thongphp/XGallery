@@ -24,9 +24,25 @@ class KissgoddessTest extends TestCase
         $this->crawler = app(Kissgoddess::class);
     }
 
-    public function testGetItem(): void
+    public function urlDataProvider()
     {
-        $item = $this->crawler->getItem('https://kissgoddess.com/album/32774.html');
+        return [
+            [
+                'url' => 'https://kissgoddess.com/album/32774.html',
+            ],
+            [
+                'url' => 'https://kissgoddess.com/album/32313.html'
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider urlDataProvider
+     * @param  string  $url
+     */
+    public function testGetItem(string $url): void
+    {
+        $item = $this->crawler->getItem($url);
         $this->assertInstanceOf(KissgoddessModel::class, $item);
         $this->assertModelProperties(['url','images'], $item);
     }
