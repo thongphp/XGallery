@@ -108,9 +108,10 @@ class HttpClient extends Client
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if (!$data = curl_exec($ch)) {
-            $this->notify(new NotificationToSlack('Can not get download data'));
+            $this->notify(new NotificationToSlack('Can not get download URL: '.$url.'. Error: '.curl_error($ch)));
             return false;
         }
 
