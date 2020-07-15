@@ -104,7 +104,7 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$response) {
-            throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId, $response);
+            throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId, $response, $file);
         }
     }
 }
