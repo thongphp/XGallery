@@ -13,7 +13,7 @@ namespace App\Http\Controllers\Auth;
  * Class FlickrController
  * @package App\Http\Controllers\Auth
  */
-class FlickrController extends SocialiteController
+class FlickrController extends AuthenticateController
 {
     protected array $with = ['perms' => 'read, write, delete'];
     protected string $drive = 'flickr';

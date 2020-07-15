@@ -9,6 +9,7 @@
 
 namespace App\Providers;
 
+use App\Facades\UserActivity;
 use App\Services\Flickr\UrlExtractor;
 use App\Services\FlickrClient;
 use App\Services\FlickrValidate;
@@ -48,6 +49,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind('flickrurlextractor', function () {
             return new UrlExtractor;
+        });
+
+        $this->app->bind(UserActivity::class, function () {
+            return new \App\Services\UserActivity;
         });
     }
 

@@ -19,15 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/login', [DashboardController::class, 'login'])->name('login');
 Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard.view')->middleware([]);
 
 Route::namespace('App\Http\Controllers\Auth')
     ->prefix('oauth')
     ->group(function () {
-        Route::get('flickr', [\App\Http\Controllers\Auth\FlickrController::class, 'login']);
+        Route::get('flickr', [\App\Http\Controllers\Auth\FlickrController::class, 'oauth']);
         Route::get('flickr/callback', [\App\Http\Controllers\Auth\FlickrController::class, 'callback']);
-        Route::get('google', [GoogleController::class, 'login']);
+        Route::get('google', [GoogleController::class, 'oauth'])->name('oauth.login');
         Route::get('google/callback', [GoogleController::class, 'callback']);
     });
 

@@ -11,10 +11,8 @@ namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
 use App\Models\Jav\OnejavModel;
-use App\Traits\Notifications\HasSlackNotification;
 use DateTime;
 use Exception;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Spatie\Url\Url;
 use Symfony\Component\DomCrawler\Crawler;
@@ -26,8 +24,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class Onejav
 {
-    use Notifiable, HasSlackNotification;
-
     public const ENDPOINT = 'https://onejav.com';
 
     /**

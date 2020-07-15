@@ -15,7 +15,7 @@ class CreateUserActivitiesTable extends Migration
     {
         Schema::create('user_activities', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('actor_id');
+            $table->string('actor_id')->nullable();
             $table->string('actor_table');
             $table->string('action', 125);
             $table->string('object_id')->nullable();

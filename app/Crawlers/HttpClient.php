@@ -9,13 +9,9 @@
 
 namespace App\Crawlers;
 
-use App\Notifications\NotificationToSlack;
-use App\Traits\Notifications\HasSlackNotification;
 use Campo\UserAgent;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Psr\Http\Message\ResponseInterface;
@@ -27,9 +23,16 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class HttpClient extends Client
 {
-    use Notifiable, HasSlackNotification;
-
     protected ResponseInterface $response;
+
+    public function __construct(array $config = [])
+    {
+        $config['headers'] = [
+            'Accept-Encoding' => 'gzip, deflate',
+            'User-Agent' => UserAgent::random(['device_type' => ['Desktop']]),
+        ];
+        parent::__construct($config);
+    }
 
     /**
      * @param  string  $method
@@ -47,19 +50,13 @@ class HttpClient extends Client
             return Cache::get($key);
         }
 
-        try {
-            $this->response = parent::request($method, $uri, array_merge($options, ['headers' => $this->getHeaders()]));
-        } catch (GuzzleException $exception) {
-            $this->notify(new NotificationToSlack($exception->getMessage()));
-            return null;
-        }
+        $this->response = parent::request($method, $uri, $options);
 
         switch ($this->response->getStatusCode()) {
             case Response::HTTP_OK:
                 Cache::put($key, $this->response->getBody()->getContents(), 1800);
                 break;
             default:
-                $this->notify(new NotificationToSlack($uri.' responded with status code '.$this->response->getStatusCode()));
                 return null;
         }
 
@@ -70,6 +67,7 @@ class HttpClient extends Client
      * @param  string  $url
      * @param  string  $saveTo
      * @return bool|string
+     * @throws Exception
      */
     public function download(string $url, string $saveTo)
     {
@@ -98,6 +96,7 @@ class HttpClient extends Client
      * @param  string  $url
      * @param  string  $saveToFile
      * @return bool|string
+     * @throws Exception
      */
     protected function downloadRemoteFile(string $url, string $saveToFile)
     {
@@ -111,7 +110,7 @@ class HttpClient extends Client
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if (!$data = curl_exec($ch)) {
-            $this->notify(new NotificationToSlack('Can not get download URL: '.$url.'. Error: '.curl_error($ch)));
+            // @todo Exception notify
             return false;
         }
 
@@ -121,13 +120,11 @@ class HttpClient extends Client
         if ($status['http_code'] != Response::HTTP_OK
             && $status['http_code'] < Response::HTTP_MULTIPLE_CHOICES
             && $status['http_code'] > Response::HTTP_PERMANENTLY_REDIRECT) {
-            $this->notify(new NotificationToSlack('Can not download '.$url.'. Status code: '.$status['http_code']));
-            return false;
+            throw new Exception('Unexpected response '.$status['http_code']);
         }
 
         if (!Storage::put($saveToFile, $data)) {
-            $this->notify(new NotificationToSlack('Can not save file '.$saveToFile));
-            return false;
+            throw new Exception('Can not save '.$url.' to '.$saveToFile);
         }
 
         if ((int) $status['download_content_length'] < 0
@@ -139,19 +136,5 @@ class HttpClient extends Client
         Storage::delete($saveToFile);
 
         return false;
-    }
-
-    /**
-     * @return array
-     * @throws Exception
-     */
-    protected function getHeaders(): array
-    {
-        return [
-            'Accept-Encoding' => 'gzip, deflate',
-            'User-Agent' => UserAgent::random([
-                'device_type' => ['Desktop'],
-            ]),
-        ];
     }
 }

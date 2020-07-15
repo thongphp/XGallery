@@ -106,37 +106,11 @@ return [
             'level' => 'debug',
         ],
 
-        // Used for crawling
-        'crawl' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/crawl.log'),
-            'level' => 'debug',
-        ],
-
-        'jav' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/jav.log'),
-            'level' => 'debug',
-        ],
-
         'oauth' => [
             'driver' => 'daily',
             'path' => storage_path('logs/oauth.log'),
             'level' => 'debug',
         ],
-
-        'queue' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/queue.log'),
-            'level' => 'debug',
-        ],
-
-        'download' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/download.log'),
-            'level' => 'debug',
-        ]
-
     ],
 
 ];

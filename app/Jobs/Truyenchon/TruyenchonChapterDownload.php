@@ -11,16 +11,13 @@ namespace App\Jobs\Truyenchon;
 
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Notifications\TruyenchonRequestDownloadException;
 use App\Repositories\TruyenchonRepository;
-use App\Traits\Notifications\HasSlackNotification;
 use Campo\UserAgent;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
@@ -34,7 +31,7 @@ use Symfony\Component\HttpFoundation\Response;
 class TruyenchonChapterDownload implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use HasJob, Notifiable, HasSlackNotification;
+    use HasJob;
 
     private string $chapterUrl;
 
@@ -88,7 +85,7 @@ class TruyenchonChapterDownload implements ShouldQueue
                     $images[] = $filePath;
                 }
             } catch (\Exception $exception) {
-                $this->notify(new TruyenchonRequestDownloadException($exception, $chapter->chapterUrl));
+                // @todo Exception notify
             }
         }
 

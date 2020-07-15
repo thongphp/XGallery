@@ -15,7 +15,7 @@ use Google_Service_PhotosLibrary;
  * Class GoogleController
  * @package App\Http\Controllers\Auth
  */
-class GoogleController extends SocialiteController
+class GoogleController extends AuthenticateController
 {
     protected array $with = ['access_type' => 'offline', 'prompt' => 'consent select_account'];
     protected string $drive = 'Google';

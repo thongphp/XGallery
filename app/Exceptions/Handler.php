@@ -9,18 +9,19 @@
 
 namespace App\Exceptions;
 
-use Doctrine\DBAL\Driver\PDOException;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
-use MongoDB\Driver\Exception\ConnectionTimeoutException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use Notifiable;
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -50,10 +51,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        if ($exception instanceof ConnectionTimeoutException || $exception instanceof PDOException) {
-            Log::stack(['slack'])->critical($exception->getMessage());
-            return;
-        }
+        $this->notify(new \App\Notifications\Exception($exception));
 
         if (App::environment('local')) {
             parent::report($exception);
@@ -65,7 +63,6 @@ class Handler extends ExceptionHandler
         }
 
         parent::report($exception);
-        return;
     }
 
     /**
@@ -80,5 +77,16 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         return parent::render($request, $exception);
+    }
+
+    /**
+     * Route notifications for the Slack channel.
+     *
+     * @param  Notification  $notification
+     * @return string
+     */
+    public function routeNotificationForSlack($notification)
+    {
+        return 'https://hooks.slack.com/services/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';
     }
 }

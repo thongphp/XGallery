@@ -5,18 +5,13 @@ namespace App\Services;
 use App\Exceptions\Google\GooglePhotoApiAlbumCreateException;
 use App\Exceptions\Google\GooglePhotoApiMediaCreateException;
 use App\Exceptions\Google\GooglePhotoApiUploadException;
-use App\Notifications\NotificationToSlack;
 use App\Oauth\GoogleOauthClient;
-use App\Traits\Notifications\HasSlackNotification;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
 class GooglePhoto extends GoogleOauthClient
 {
     private const TITLE_MAX_LENGTH = 500;
     public const ALBUMS_ENDPOINT = 'https://photoslibrary.googleapis.com/v1/albums';
-
-    use Notifiable, HasSlackNotification;
 
     /**
      * Ref: https://developers.google.com/photos/library/reference/rest/v1/albums/create
@@ -25,7 +20,7 @@ class GooglePhoto extends GoogleOauthClient
      *
      * @return object
      *
-     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
+     * @throws GooglePhotoApiAlbumCreateException
      * @throws \JsonException
      */
     public function createAlbum(string $title): object
@@ -106,7 +101,6 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$response) {
-            $this->notify(new NotificationToSlack($response . "\n\r" . serialize([$uploadToken, $googleAlbumId, $file]), 'error'));
             throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId);
         }
     }

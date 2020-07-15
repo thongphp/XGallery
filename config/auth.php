@@ -70,7 +70,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => \App\Models\Oauth::class,
+            'model' => \App\Models\User::class,
         ],
 
         // 'users' => [

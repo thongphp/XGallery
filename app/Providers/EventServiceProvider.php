@@ -26,9 +26,6 @@ class EventServiceProvider extends ServiceProvider
             //'SocialiteProviders\\Google\\GoogleExtendSocialite@handle',
 
         ],
-        'App\Events\UserActivity' => [
-            'App\Listeners\UserActivity',
-        ],
     ];
 
     /**

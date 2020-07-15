@@ -10,7 +10,6 @@
 namespace App\Models;
 
 use App\Database\Mongodb;
-use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
  * Class Oauth
@@ -19,48 +18,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
  *
  * @property string $id;
  */
-class Oauth extends Mongodb implements Authenticatable
+class Oauth extends Mongodb
 {
     protected $collection = 'oauths';
 
     protected $fillable = ['id'];
-
-    protected $hidden = [
-        'remember_token',
-    ];
-
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-    }
-
-    public function getAuthIdentifier()
-    {
-        return $this->id;
-    }
-
-    public function getAuthPassword()
-    {
-        // TODO: Implement getAuthPassword() method.
-    }
-
-    public function getRememberToken(): string
-    {
-        return $this->remember_token;
-    }
-
-    /**
-     * @SuppressWarnings("unused")
-     *
-     * @param  string  $value
-     */
-    public function setRememberToken($value)
-    {
-        $this->remember_token = $value;
-    }
-
-    public function getRememberTokenName()
-    {
-        return 'remember_token';
-    }
 }

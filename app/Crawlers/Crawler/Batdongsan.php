@@ -11,8 +11,6 @@ namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
 use App\Models\BatdongsanModel;
-use App\Traits\Notifications\HasSlackNotification;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\Url\Url;
@@ -25,9 +23,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class Batdongsan
 {
-    use Notifiable;
-    use HasSlackNotification;
-
     const CRAWLER_ENDPOINT = 'https://batdongsan.com.vn';
 
     /**

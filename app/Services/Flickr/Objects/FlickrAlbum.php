@@ -2,12 +2,10 @@
 
 namespace App\Services\Flickr\Objects;
 
-use App\Events\FlickrDownloadRequest;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Facades\FlickrClient;
+use App\Facades\UserActivity;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
-use App\Traits\Notifications\HasSlackNotification;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 
 /**
@@ -16,8 +14,6 @@ use Illuminate\Support\Collection;
  */
 class FlickrAlbum
 {
-    use Notifiable, HasSlackNotification;
-
     private string $id;
     private ?object $album;
     private Collection $photos;
@@ -120,6 +116,22 @@ class FlickrAlbum
     public function download(): void
     {
         FlickrDownloadAlbum::dispatch($this);
-        event(new FlickrDownloadRequest('download', $this));
+        UserActivity::notify('%s request %s album', 'download', [
+            'object_id' => $this->album->photoset->id,
+            'extra' => [
+                'title' => $this->album->photoset->title,
+                // Fields are displayed in a table on the message
+                'fields' => [
+                    'ID' => $this->album->photoset->id,
+                    'Photos' => $this->album->photoset->photos,
+                    'Owner' => $this->album->photoset->owner
+                ],
+                'footer' => $this->album->photoset->description ?? null,
+                'action' => [
+                    'Check on Flickr',
+                    'https://www.flickr.com/photos/'.$this->album->photoset->owner.'/albums/'.$this->album->photoset->id
+                ]
+            ]
+        ]);
     }
 }

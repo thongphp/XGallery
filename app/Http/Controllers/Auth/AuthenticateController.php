@@ -2,14 +2,31 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\BaseController;
 use App\Models\Oauth;
+use App\Models\User;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class SocialiteController extends BaseController
+class AuthenticateController extends Controller
 {
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthenticatesUsers;
+
+    /**
+     * Where to redirect users after login.
+     *
+     * @var string
+     */
+    protected $redirectTo = RouteServiceProvider::HOME;
+
     protected array $with = [];
     protected string $drive = '';
     protected array $scopes = [];
@@ -19,7 +36,7 @@ class SocialiteController extends BaseController
      *
      * @return RedirectResponse
      */
-    public function login()
+    public function oauth()
     {
         return Socialite::driver($this->drive)
             ->scopes($this->scopes)
@@ -41,20 +58,24 @@ class SocialiteController extends BaseController
         }
 
         $code = $request->get('code');
-        $model = Oauth::firstOrCreate(['id' => $user->getId()]);
+        $oauth = Oauth::updateOrCreate(['id' => $user->getId()]);
 
         foreach ($user as $key => $value) {
             if ($key === 'accessTokenResponseBody') {
                 continue;
             }
-            $model->setAttribute($key, $value);
+            $oauth->setAttribute($key, $value);
         }
 
-        $model->setAttribute('name', strtolower($this->drive))
+        $oauth->setAttribute('name', strtolower($this->drive))
             ->setAttribute('code', $code)
             ->save();
 
-        auth()->login($model, true);
+        $user = User::updateOrCreate([
+            'oauth_id' => $oauth->id, 'name' => $oauth->user['name'], 'email' => $oauth->user['email']
+        ]);
+
+        Auth::login($user, true);
 
         return redirect()
             ->route('dashboard.dashboard.view')

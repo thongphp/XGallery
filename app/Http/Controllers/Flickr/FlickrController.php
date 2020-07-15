@@ -17,11 +17,9 @@ use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadContact;
-use App\Notifications\FlickrRequestException;
 use App\Services\Flickr\Objects\FlickrAlbum;
 use App\Services\Flickr\Objects\FlickrGallery;
 use App\Services\Flickr\Url\FlickrUrlInterface;
-use App\Traits\Notifications\HasSlackNotification;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -30,7 +28,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -41,7 +38,6 @@ use Symfony\Component\HttpFoundation\Request;
 class FlickrController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    use Notifiable, HasSlackNotification;
 
     /**
      * @param  Request  $request
@@ -177,8 +173,6 @@ class FlickrController extends BaseController
                     throw new Exception();
             }
         } catch (Exception $exception) {
-            $this->notify(new FlickrRequestException($exception->getMessage(), $request->get('url')));
-
             return response()->json([
                 'html' => Toast::warning('Download', $exception->getMessage())
             ]);
