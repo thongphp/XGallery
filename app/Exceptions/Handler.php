@@ -87,6 +87,6 @@ class Handler extends ExceptionHandler
      */
     public function routeNotificationForSlack($notification)
     {
-        return 'https://hooks.slack.com/services/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';
+        return config('services.slack.webhook_url');
     }
 }

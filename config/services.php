@@ -41,4 +41,8 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_CALLBACK_URL'),
     ],
+
+    'slack' => [
+        'webhook_url' => env('SLACK_HOOK')
+    ]
 ];
