@@ -15,10 +15,13 @@ class UserActivity extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @SuppressWarnings("unused")
+     *
+     * @param mixed $notifiable
+     *
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['slack', 'database'];
     }
@@ -26,17 +29,25 @@ class UserActivity extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @SuppressWarnings("unused")
+     *
+     * @param mixed $notifiable
+     *
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
             //
         ];
     }
 
-    public function toSlack(UserActivityModel $notifiable)
+    /**
+     * @param UserActivityModel $notifiable
+     *
+     * @return SlackMessage
+     */
+    public function toSlack(UserActivityModel $notifiable): SlackMessage
     {
         $slackMessage = (new SlackMessage)
             ->from('User activity')

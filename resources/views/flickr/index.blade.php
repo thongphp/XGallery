@@ -60,10 +60,12 @@
                                 <div class="card-body">
                                     {!! $message !!}
                                 </div>
+                                @if($data)
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item">{{$data->photoset->title}}</li>
                                     <li class="list-group-item">{{$data->photoset->id}}</li>
                                 </ul>
+                                @endif
                                 <div class="card-footer text-muted">
                                     <a href="{{$profile->photosurl}}" target="_blank">{{$profile->photosurl}}</a>
                                     <span class="float-right">{{$profile->photos->count}}</span>

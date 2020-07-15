@@ -9,10 +9,13 @@
 
 namespace App\Oauth;
 
+use App\Exceptions\OAuthClientException;
 use App\Repositories\OAuthRepository;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
+use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -24,24 +27,17 @@ use Psr\SimpleCache\InvalidArgumentException;
 class OauthClient
 {
     /**
-     * @param  string  $method
-     * @param  string  $uri
-     * @param  array  $parameters
-     * @param  bool|false  $force
+     * @param string $method
+     * @param string $uri
+     * @param array $parameters
      *
      * @return mixed|string|null
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws InvalidArgumentException
+     * @throws GuzzleException|OAuthClientException
      */
-    public function request(string $method, string $uri, array $parameters = [], bool $force = false)
+    public function request(string $method, string $uri, array $parameters = [])
     {
         $key = md5(serialize([$method, $uri, $parameters]));
         $isCached = Cache::has($key);
-
-        if ($force) {
-            Cache::delete($key);
-            $isCached = false;
-        }
 
         if ($isCached) {
             return Cache::get($key);
@@ -54,8 +50,7 @@ class OauthClient
         $response = $client->request($method, $uri, $parameters);
 
         if ($response->getStatusCode() !== 200) {
-            Log::stack(['oauth'])->warning('Status code '.$response->getStatusCode());
-            return null;
+            throw new OAuthClientException((string) $response->getBody(), $response->getStatusCode());
         }
 
         /**

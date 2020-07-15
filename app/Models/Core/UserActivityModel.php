@@ -32,8 +32,11 @@ class UserActivityModel extends Model
     /**
      * Route notifications for the Slack channel.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  Notification  $notification
-     * @return string
+     *
+     * @return mixed
      */
     public function routeNotificationForSlack($notification)
     {

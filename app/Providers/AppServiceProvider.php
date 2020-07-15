@@ -9,12 +9,13 @@
 
 namespace App\Providers;
 
-use App\Facades\UserActivity;
+use App\Facades\UserActivity as UserActivityFacade;
 use App\Services\Flickr\UrlExtractor;
 use App\Services\FlickrClient;
 use App\Services\FlickrValidate;
 use App\Services\GoogleDrive;
 use App\Services\GooglePhoto;
+use App\Services\UserActivity;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -51,8 +52,8 @@ class AppServiceProvider extends ServiceProvider
             return new UrlExtractor;
         });
 
-        $this->app->bind(UserActivity::class, function () {
-            return new \App\Services\UserActivity;
+        $this->app->bind(UserActivityFacade::class, function () {
+            return new UserActivity;
         });
     }
 
