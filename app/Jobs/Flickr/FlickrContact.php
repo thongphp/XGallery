@@ -54,7 +54,9 @@ class FlickrContact implements ShouldQueue
             return;
         } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
             // Do delete deleted user
-            FlickrContactModel::where([FlickrContactModel::KEY_NSID => $this->nsid])->first()->delete();
+            if ($model = FlickrContactModel::where([FlickrContactModel::KEY_NSID => $this->nsid])->first()) {
+                $model->delete();
+            }
             return;
         }
     }
