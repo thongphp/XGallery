@@ -41,6 +41,7 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
 
     /**
      * @throws CurlDownloadFileException
+     * @throws \Exception
      */
     public function handle(): void
     {
@@ -67,9 +68,9 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     }
 
     /**
-     * @param FlickrPhotoModel $photo
-     *
+     * @param  FlickrPhotoModel  $photo
      * @return bool|string
+     * @throws \Exception
      */
     private function downloadPhoto(FlickrPhotoModel $photo)
     {

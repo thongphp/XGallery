@@ -28,9 +28,9 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
     private string $googleAlbumId;
 
     /**
-     * @param string $filePath
-     * @param string $description
-     * @param string $googleAlbumId
+     * @param  string  $filePath
+     * @param  string  $description
+     * @param  string  $googleAlbumId
      */
     public function __construct(string $filePath, string $description, string $googleAlbumId)
     {

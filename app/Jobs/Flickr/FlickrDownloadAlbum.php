@@ -3,6 +3,7 @@
 namespace App\Jobs\Flickr;
 
 use App\Facades\GooglePhotoClient;
+use App\Facades\UserActivity;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
@@ -35,7 +36,6 @@ class FlickrDownloadAlbum implements ShouldQueue
     }
 
     /**
-     * @throws \App\Exceptions\Google\GooglePhotoApiAlbumCreateException
      * @throws \JsonException
      */
     public function handle(): void
@@ -50,6 +50,8 @@ class FlickrDownloadAlbum implements ShouldQueue
             FlickrContact::dispatch($owner);
         }
 
-        $this->syncPhotos($this->album->getPhotos()->toArray(), $owner, $googleAlbumId);
+        $photos = $this->album->getPhotos()->toArray();
+        $this->syncPhotos($photos, $owner, $googleAlbumId);
+        UserActivity::notify('%s %s '.count($photos).' photos', 'download');
     }
 }

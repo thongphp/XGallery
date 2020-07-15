@@ -6,7 +6,10 @@ use App\Exceptions\Google\GooglePhotoApiAlbumCreateException;
 use App\Exceptions\Google\GooglePhotoApiMediaCreateException;
 use App\Exceptions\Google\GooglePhotoApiUploadException;
 use App\Oauth\GoogleOauthClient;
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Storage;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class GooglePhoto extends GoogleOauthClient
 {
@@ -15,13 +18,12 @@ class GooglePhoto extends GoogleOauthClient
 
     /**
      * Ref: https://developers.google.com/photos/library/reference/rest/v1/albums/create
-     *
-     * @param string $title
-     *
+     * @param  string  $title
      * @return object
-     *
      * @throws GooglePhotoApiAlbumCreateException
+     * @throws GuzzleException
      * @throws \JsonException
+     * @throws InvalidArgumentException
      */
     public function createAlbum(string $title): object
     {
@@ -51,14 +53,14 @@ class GooglePhoto extends GoogleOauthClient
 
     /**
      * https://developers.google.com/photos/library/reference/rest/v1/mediaItems/batchCreate¬
-     *
-     * @param string $file
-     * @param string $title
-     * @param string $googleAlbumId
-     *
-     * @throws \App\Exceptions\Google\GooglePhotoApiMediaCreateException
-     * @throws \App\Exceptions\Google\GooglePhotoApiUploadException
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @param  string  $file
+     * @param  string  $title
+     * @param  string  $googleAlbumId
+     * @throws GooglePhotoApiMediaCreateException
+     * @throws GooglePhotoApiUploadException
+     * @throws GuzzleException
+     * @throws InvalidArgumentException
+     * @throws FileNotFoundException
      * @throws \JsonException
      */
     public function uploadAndCreateMedia(string $file, string $title, string $googleAlbumId): void
