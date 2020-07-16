@@ -34,6 +34,7 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
     public function __construct(string $filePath, string $description, string $googleAlbumId)
     {
         $this->filePath = $filePath;
+        // @todo variable name does not make sense
         $this->description = $description;
         $this->googleAlbumId = $googleAlbumId;
         $this->onQueue(Queues::QUEUE_GOOGLE);

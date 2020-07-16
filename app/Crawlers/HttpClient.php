@@ -129,7 +129,7 @@ class HttpClient extends Client
         if ((int) $status['download_content_length'] < 0
             || (int) $status['download_content_length'] === Storage::size($saveToFile)
         ) {
-            throw new Exception('File downloaded does not match original size');
+            throw new Exception('File downloaded does not match original size: ' . $url);
         }
 
         Storage::delete($saveToFile);
