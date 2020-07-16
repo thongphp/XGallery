@@ -4,11 +4,13 @@ namespace App\Jobs\Traits;
 
 use App\Jobs\Flickr\FlickrDownloadPhotoToLocal;
 use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\User;
 use App\Repositories\Flickr\PhotoRepository;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
 /**
  * Trait SyncPhotos
+ * @property User $user
  * @package App\Jobs\Traits
  */
 trait SyncPhotos
