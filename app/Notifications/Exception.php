@@ -34,6 +34,14 @@ class Exception extends Notification
         return (new SlackMessage)
             ->from('Exception')
             ->error()
-            ->content($this->exception->getMessage());
+            ->content($this->exception->getMessage())
+            ->attachment(function ($attachment) use ($notifiable) {
+                $attachment
+                    ->title($this->exception->getFile())
+                    ->fields([
+                        'File' => $this->exception->getFile(),
+                        'Line' => $this->exception->getLine(),
+                    ]);
+            });
     }
 }
