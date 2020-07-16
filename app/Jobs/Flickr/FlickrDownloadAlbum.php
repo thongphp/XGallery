@@ -7,7 +7,6 @@ use App\Facades\UserActivity;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Jobs\Traits\SyncPhotos;
-use App\Models\User;
 use App\Repositories\Flickr\ContactRepository;
 use App\Services\Flickr\Objects\FlickrAlbum;
 use Illuminate\Bus\Queueable;
@@ -26,16 +25,13 @@ class FlickrDownloadAlbum implements ShouldQueue
     use HasJob, SyncPhotos;
 
     private FlickrAlbum $album;
-    private User $user;
 
     /**
      * @param  FlickrAlbum  $album
-     * @param  User  $user
      */
-    public function __construct(FlickrAlbum $album, User $user)
+    public function __construct(FlickrAlbum $album)
     {
         $this->album = $album;
-        $this->user = $user;
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
@@ -57,7 +53,7 @@ class FlickrDownloadAlbum implements ShouldQueue
         // @todo Notification in even not job
         UserActivity::notify(
             '%s request %s album',
-            $this->user,
+            null,
             'download',
             [
                 'object_id' => $this->album->getId(),
@@ -79,14 +75,6 @@ class FlickrDownloadAlbum implements ShouldQueue
                 ],
             ]
         );
-
-        /**
-         * Store google album id into flickr_downloads
-         * Now we have album_id & google_album_id & user_id
-         */
-        $download = $this->album->getDownload();
-        $download->google_album_id = $googleAlbumId;
-        $download->save();
 
         $this->syncPhotos($this->album->getPhotos()->toArray(), $owner, $googleAlbumId);
     }

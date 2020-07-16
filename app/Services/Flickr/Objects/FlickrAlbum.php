@@ -5,9 +5,7 @@ namespace App\Services\Flickr\Objects;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
-use App\Models\Flickr\FlickrDownload;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class FlickrAlbum
@@ -18,7 +16,6 @@ class FlickrAlbum
     private string $id;
     private ?object $album;
     private Collection $photos;
-    private FlickrDownload $download;
 
     /**
      * FlickrAlbum constructor.
@@ -113,22 +110,8 @@ class FlickrAlbum
         return $this->album !== null;
     }
 
-    /**
-     * @return FlickrDownload
-     */
-    public function getDownload(): FlickrDownload
-    {
-        return $this->download;
-    }
-
     public function download(): void
     {
-        $user = Auth::user();
-        $this->download = FlickrDownload::firstOrCreate(
-            ['user_id' => $user->getAuthIdentifier(), 'album_id' => $this->getId()],
-            ['photos_count' => $this->getPhotosCount()]
-        );
-
-        FlickrDownloadAlbum::dispatch($this, $user);
+        FlickrDownloadAlbum::dispatch($this);
     }
 }
