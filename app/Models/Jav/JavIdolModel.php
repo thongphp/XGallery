@@ -10,6 +10,7 @@
 namespace App\Models\Jav;
 
 use App\Models\Traits\HasCover;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -24,10 +25,19 @@ class JavIdolModel extends Model
         'name', 'alias', 'birthday', 'blood_type', 'city', 'height', 'breast', 'waist', 'hips', 'cover', 'favorite'
     ];
 
+    protected $casts = [
+        'birthday' => 'date'
+    ];
+
     protected $table = 'jav_idols';
 
     public function movies()
     {
         return $this->belongsToMany(JavMovieModel::class, 'jav_idols_xref', 'idol_id', 'movie_id');
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->birthday->diffInYears(Carbon::now());
     }
 }
