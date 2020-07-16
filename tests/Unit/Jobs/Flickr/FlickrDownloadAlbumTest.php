@@ -10,7 +10,6 @@ use App\Models\Flickr\FlickrPhotoModel;
 use App\Services\Flickr\Objects\FlickrAlbum;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
 use Tests\TestCase;
 use Tests\Traits\FlickrClientMock;
 use Tests\Traits\FlickrMongoDatabase;
@@ -25,7 +24,12 @@ class FlickrDownloadAlbumTest extends TestCase
     {
         $this->mockFlickrClientCommand('getPhotoSetInfo');
         $this->mockFlickrClientCommand('getPhotoSetPhotos');
-        GooglePhotoClient::shouldReceive('createAlbum')->andReturn((object)['id' => 'google-album-' . self::ALBUM_ID]);
+        GooglePhotoClient::shouldReceive('createAlbum')->andReturn(
+            (object)[
+                'id' => 'google-album-' . self::ALBUM_ID,
+                'productUrl' => 'https://google.com'
+            ]
+        );
 
         $flickAlbum = new FlickrAlbum('123456');
         $this->assertTrue($flickAlbum->load());

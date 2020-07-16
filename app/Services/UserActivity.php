@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Core\UserActivityModel;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 /**
  * Class UserActivity
@@ -11,9 +11,14 @@ use Illuminate\Support\Facades\Auth;
  */
 class UserActivity
 {
-    public function notify(string $text, string $action, array $args = [])
+    /**
+     * @param  string  $text // Usually follow format SOMEONE do ACTION on SOMETHING
+     * @param  User|null  $user
+     * @param  string  $action
+     * @param  array  $args
+     */
+    public function notify(string $text, ?User $user, string $action, array $args = [])
     {
-        $user = Auth::user();
         $userActivity = app(UserActivityModel::class);
         $userActivity->actor_table = 'users';
         $userActivity->actor_id = $user ? $user->id : null;

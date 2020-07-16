@@ -65,6 +65,7 @@ class GooglePhoto extends GoogleOauthClient
      */
     public function uploadAndCreateMedia(string $file, string $title, string $googleAlbumId): void
     {
+        // @todo Verify supported format https://developers.google.com/photos/library/guides/upload-media
         $uploadToken = $this->request(
             'post',
             'https://photoslibrary.googleapis.com/v1/uploads',
@@ -79,7 +80,7 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$uploadToken) {
-            throw new GooglePhotoApiUploadException($file);
+            throw new GooglePhotoApiUploadException($file, $uploadToken);
         }
 
         $response = $this->request(
@@ -103,7 +104,7 @@ class GooglePhoto extends GoogleOauthClient
         );
 
         if (!$response) {
-            throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId);
+            throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId, $response);
         }
     }
 }

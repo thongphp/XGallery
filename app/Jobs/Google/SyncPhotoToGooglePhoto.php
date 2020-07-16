@@ -2,8 +2,6 @@
 
 namespace App\Jobs\Google;
 
-use App\Exceptions\Google\GooglePhotoApiMediaCreateException;
-use App\Exceptions\Google\GooglePhotoApiUploadException;
 use App\Facades\GooglePhotoClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
@@ -14,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Spatie\RateLimitedMiddleware\RateLimited;
 
 /**
  * @package App\Jobs\Google
@@ -35,22 +34,28 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
     public function __construct(string $filePath, string $description, string $googleAlbumId)
     {
         $this->filePath = $filePath;
+        // @todo variable name does not make sense
         $this->description = $description;
         $this->googleAlbumId = $googleAlbumId;
-
         $this->onQueue(Queues::QUEUE_GOOGLE);
+    }
+
+    public function middleware()
+    {
+        return [(new RateLimited())
+            ->allow(1)
+            ->everySeconds(1)
+            ->releaseAfterSeconds(30)];
     }
 
     /**
      * @throws FileNotFoundException
-     * @throws GooglePhotoApiMediaCreateException
-     * @throws GooglePhotoApiUploadException
      * @throws \JsonException
      */
     public function handle(): void
     {
         if (!Storage::exists($this->filePath)) {
-            throw new FileNotFoundException($this->filePath);
+            throw new FileNotFoundException('File not found '.$this->filePath);
         }
 
         GooglePhotoClient::uploadAndCreateMedia($this->filePath, $this->description, $this->googleAlbumId);

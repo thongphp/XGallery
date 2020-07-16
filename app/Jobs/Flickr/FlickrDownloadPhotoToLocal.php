@@ -29,8 +29,8 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     private string $googleAlbumId;
 
     /**
-     * @param string $id
-     * @param string $googleAlbumId
+     * @param  string  $id
+     * @param  string  $googleAlbumId
      */
     public function __construct(string $id, string $googleAlbumId)
     {
@@ -40,7 +40,6 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     }
 
     /**
-     * @throws CurlDownloadFileException
      * @throws \Exception
      */
     public function handle(): void
@@ -60,11 +59,12 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
             return;
         }
 
-        if (!$filePath = $this->downloadPhoto($photo)) {
-            throw new CurlDownloadFileException('Can not download photo: '.$this->id);
-        }
-
-        SyncPhotoToGooglePhoto::dispatch($filePath, $photo->title, $this->googleAlbumId);
+        SyncPhotoToGooglePhoto::dispatch(
+            $this->downloadPhoto($photo),
+            // @todo Title sometime be null
+            $photo->title,
+            $this->googleAlbumId
+        );
     }
 
     /**
@@ -81,6 +81,10 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
 
         $source = is_array($sourceSize) ? $sourceSize['source'] : $sourceSize->source;
 
-        return $httpClient->download($source, 'flickr/'.$photo->owner);
+        if ($filePath = $httpClient->download($source, 'flickr/'.$photo->owner)) {
+            return $filePath;
+        }
+
+        throw new CurlDownloadFileException('Can not download photo '.$this->id.' '.$source);
     }
 }
