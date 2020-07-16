@@ -2,7 +2,6 @@
 
 namespace App\Services\Flickr\Objects;
 
-use App\Events\FlickrDownloadRequest;
 use App\Exceptions\Flickr\FlickrApiGalleryGetInfoException;
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrDownloadGallery;
@@ -115,6 +114,5 @@ class FlickrGallery
     public function download()
     {
         FlickrDownloadGallery::dispatch($this);
-        event(new FlickrDownloadRequest('download', $this));
     }
 }
