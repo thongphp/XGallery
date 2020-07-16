@@ -50,8 +50,32 @@ class FlickrDownloadAlbum implements ShouldQueue
             FlickrContact::dispatch($owner);
         }
 
-        $photos = $this->album->getPhotos()->toArray();
-        $this->syncPhotos($photos, $owner, $googleAlbumId);
-        UserActivity::notify('%s %s '.count($photos).' photos', 'download');
+        // @todo Notification in even not job
+        UserActivity::notify(
+            '%s request %s album',
+            null,
+            'download',
+            [
+                'object_id' => $this->album->getId(),
+                'extra' => [
+                    'title' => $this->album->getTitle(),
+                    'title_link' => 'https://www.flickr.com/photos/'.$this->album->getOwner().'/albums/'.$this->album->getId(),
+                    // Fields are displayed in a table on the message
+                    'fields' => [
+                        'ID' => $this->album->getId(),
+                        'Photos' => $this->album->getPhotosCount(),
+                        'Owner' => $this->album->getOwner(),
+                        'Sync to Google' => $this->album->getTitle().' ['.$googleAlbumId.']'
+                    ],
+                    'footer' => $this->album->getDescription(),
+                    'action' => [
+                        'Check on Google',
+                        $googleAlbum->productUrl
+                    ]
+                ],
+            ]
+        );
+
+        $this->syncPhotos($this->album->getPhotos()->toArray(), $owner, $googleAlbumId);
     }
 }

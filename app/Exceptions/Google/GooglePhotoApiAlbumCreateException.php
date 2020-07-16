@@ -11,7 +11,7 @@ class GooglePhotoApiAlbumCreateException extends Exception
      */
     public function __construct(string $albumTitle)
     {
-        $message = 'Can not create album with title: '.$albumTitle;
+        $message = 'Can not create album with title '.$albumTitle;
         parent::__construct($message);
     }
 }

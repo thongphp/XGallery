@@ -26,7 +26,7 @@
             <ul class="navbar-nav ml-auto">
                 @auth
                     <li class="nav-item">
-                        <i class="fas fa-user"></i> {{\Illuminate\Support\Facades\Auth::user()->getAuthIdentifier()}}
+                        <i class="fas fa-user"></i> {{\Illuminate\Support\Facades\Auth::user()->name}}
                     </li>
                 @endauth
             </ul>

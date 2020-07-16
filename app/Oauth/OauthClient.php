@@ -10,7 +10,6 @@
 namespace App\Oauth;
 
 use App\Repositories\OAuthRepository;
-use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
@@ -25,10 +24,10 @@ use Psr\SimpleCache\InvalidArgumentException;
 class OauthClient
 {
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array $parameters
-     * @param bool|false $force
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $parameters
+     * @param  bool|false  $force
      *
      * @return mixed|string|null
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -52,12 +51,7 @@ class OauthClient
             return null;
         }
 
-        try {
-            $response = $client->request($method, $uri, $parameters);
-        } catch (Exception $exception) {
-            Log::stack(['oauth'])->error($exception->getMessage());
-            return null;
-        }
+        $response = $client->request($method, $uri, $parameters);
 
         if ($response->getStatusCode() !== 200) {
             Log::stack(['oauth'])->warning('Status code '.$response->getStatusCode());
@@ -86,7 +80,6 @@ class OauthClient
     protected function getClient(): ?Client
     {
         if (!$client = app(OAuthRepository::class)->findBy(['name' => 'flickr'])) {
-            Log::stack(['oauth'])->warning('Flickr Oauth not found');
             return null;
         }
 

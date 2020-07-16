@@ -52,7 +52,7 @@ class UserActivity extends Notification
          */
         $slackMessage->attachment(function ($attachment) use ($notifiable) {
             $attachment
-                ->title($notifiable->extra->title)
+                ->title($notifiable->extra->title, $notifiable->extra->title_link ?? null)
                 ->fields(get_object_vars($notifiable->extra->fields))
                 ->footer($notifiable->extra->footer ?? null);
 

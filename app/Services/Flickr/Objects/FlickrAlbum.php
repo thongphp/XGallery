@@ -4,7 +4,6 @@ namespace App\Services\Flickr\Objects;
 
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Facades\FlickrClient;
-use App\Facades\UserActivity;
 use App\Jobs\Flickr\FlickrDownloadAlbum;
 use Illuminate\Support\Collection;
 
@@ -28,24 +27,6 @@ class FlickrAlbum
         $this->photos = collect([]);
     }
 
-    public function __toString(): string
-    {
-        return sprintf(
-            'album `%s` ( id `%s` ) with `%d` photos',
-            $this->getTitle(),
-            $this->getId(),
-            $this->getPhotosCount()
-        );
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
     /**
      * @return bool
      */
@@ -58,6 +39,14 @@ class FlickrAlbum
         }
 
         return $this->isValid();
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     /**
@@ -106,6 +95,14 @@ class FlickrAlbum
     }
 
     /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->album->photoset->description ?? null;
+    }
+
+    /**
      * @return bool
      */
     public function isValid(): bool
@@ -116,22 +113,5 @@ class FlickrAlbum
     public function download(): void
     {
         FlickrDownloadAlbum::dispatch($this);
-        UserActivity::notify('%s request %s album', 'download', [
-            'object_id' => $this->album->photoset->id,
-            'extra' => [
-                'title' => $this->album->photoset->title,
-                // Fields are displayed in a table on the message
-                'fields' => [
-                    'ID' => $this->album->photoset->id,
-                    'Photos' => $this->album->photoset->photos,
-                    'Owner' => $this->album->photoset->owner
-                ],
-                'footer' => $this->album->photoset->description ?? null,
-                'action' => [
-                    'Check on Flickr',
-                    'https://www.flickr.com/photos/'.$this->album->photoset->owner.'/albums/'.$this->album->photoset->id
-                ]
-            ]
-        ]);
     }
 }
