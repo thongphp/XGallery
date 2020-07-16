@@ -80,6 +80,10 @@ class FlickrDownloadAlbum implements ShouldQueue
             ]
         );
 
+        /**
+         * Store google album id into flickr_downloads
+         * Now we have album_id & google_album_id & user_id
+         */
         $download = $this->album->getDownload();
         $download->google_album_id = $googleAlbumId;
         $download->save();
