@@ -12,7 +12,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use Spatie\RateLimitedMiddleware\RateLimited;
 
 /**
  * @package App\Jobs\Google
@@ -37,16 +36,6 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
         $this->description = $description;
         $this->googleAlbumId = $googleAlbumId;
         $this->onQueue(Queues::QUEUE_GOOGLE);
-    }
-
-    public function middleware()
-    {
-        $rateLimitedMiddleware = (new RateLimited())
-            ->allow(10)
-            ->everySeconds(30)
-            ->releaseAfterSeconds(90);
-
-        return [$rateLimitedMiddleware];
     }
 
     /**
