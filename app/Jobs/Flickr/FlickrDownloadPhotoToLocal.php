@@ -80,12 +80,10 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
 
         $source = is_array($sourceSize) ? $sourceSize['source'] : $sourceSize->source;
 
-        $filePath = $httpClient->download($source, 'flickr/'.$photo->owner);
-
-        if (!$filePath) {
-            throw new CurlDownloadFileException('Can not download photo '.$this->id.' '.$source);
+        if ($filePath = $httpClient->download($source, 'flickr/'.$photo->owner)) {
+            return $filePath;
         }
 
-        return $filePath;
+        throw new CurlDownloadFileException('Can not download photo '.$this->id.' '.$source);
     }
 }

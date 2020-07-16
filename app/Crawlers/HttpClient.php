@@ -110,8 +110,7 @@ class HttpClient extends Client
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if (!$data = curl_exec($ch)) {
-            // @todo Exception notify
-            return false;
+            throw new Exception(curl_error($ch));
         }
 
         $status = curl_getinfo($ch);
@@ -130,7 +129,7 @@ class HttpClient extends Client
         if ((int) $status['download_content_length'] < 0
             || (int) $status['download_content_length'] === Storage::size($saveToFile)
         ) {
-            return $saveToFile;
+            throw new Exception('File downloaded does not match original size');
         }
 
         Storage::delete($saveToFile);
