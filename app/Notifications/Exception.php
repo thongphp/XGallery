@@ -20,16 +20,26 @@ class Exception extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  mixed  $notifiable
+     *
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         // Because we are trigger notification in Handler not model. We can't use database here
         return ['slack'];
     }
 
-    public function toSlack($notifiable)
+    /**
+     * @SuppressWarnings("unused")
+     *
+     * @param $notifiable
+     *
+     * @return SlackMessage
+     */
+    public function toSlack($notifiable): SlackMessage
     {
         return (new SlackMessage)
             ->from('Exception')

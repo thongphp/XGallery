@@ -4,6 +4,7 @@ namespace App\Services\Flickr\Objects;
 
 use App\Exceptions\Flickr\FlickrApiGalleryGetInfoException;
 use App\Facades\FlickrClient;
+use App\Http\Requests\FlickrDownloadRequest;
 use App\Jobs\Flickr\FlickrDownloadGallery;
 use Illuminate\Support\Collection;
 

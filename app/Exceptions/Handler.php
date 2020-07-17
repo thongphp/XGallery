@@ -9,6 +9,7 @@
 
 namespace App\Exceptions;
 
+use App\Notifications\Exception as NotificationException;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
@@ -49,9 +50,9 @@ class Handler extends ExceptionHandler
      *
      * @throws Exception
      */
-    public function report(Throwable $exception)
+    public function report(Throwable $exception): void
     {
-        $this->notify(new \App\Notifications\Exception($exception));
+        $this->notify(new NotificationException($exception));
 
         if (App::environment('local')) {
             parent::report($exception);
@@ -82,7 +83,10 @@ class Handler extends ExceptionHandler
     /**
      * Route notifications for the Slack channel.
      *
+     * @SuppressWarnings("unused")
+     *
      * @param  Notification  $notification
+     *
      * @return string
      */
     public function routeNotificationForSlack($notification)
