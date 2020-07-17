@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Core\UserActivityModel;
 use App\Models\User;
+use App\Notifications\UserActivity as UserActivityNotification;
 
 /**
  * Class UserActivity
@@ -30,6 +31,6 @@ class UserActivity
             }
         }
         $userActivity->save();
-        $userActivity->notify(new \App\Notifications\UserActivity);
+        $userActivity->notify(new UserActivityNotification);
     }
 }

@@ -14,6 +14,7 @@ use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
+use App\Exceptions\OAuthClientException;
 use App\Oauth\OauthClient;
 use App\Services\Flickr\Response\PeopleResponseInterface;
 use GuzzleHttp\Exception\GuzzleException;
@@ -62,12 +63,12 @@ class FlickrClient extends OauthClient
     /**
      * @param  string  $method
      * @param  array  $parameters
-     * @param  bool  $force
+     *
      * @return object|null
      * @throws GuzzleException
-     * @throws InvalidArgumentException
+     * @throws OAuthClientException
      */
-    public function get(string $method, array $parameters = [], bool $force = false): ?object
+    public function get(string $method, array $parameters = []): ?object
     {
         $content = $this->request(
             'GET',
@@ -78,8 +79,7 @@ class FlickrClient extends OauthClient
                     $this->getDefaultFlickrParameters(),
                     $parameters
                 )
-            ],
-            $force
+            ]
         );
 
         if (!$content) {
@@ -229,16 +229,15 @@ class FlickrClient extends OauthClient
 
     /**
      * @param string $nsid
-     * @param bool $force
      *
      * @return PeopleResponseInterface|object
      * @throws FlickrApiPeopleGetInfoException
      * @throws FlickrApiPeopleGetInfoUserDeletedException
      * @throws FlickrApiPeopleGetInfoInvalidUserException
      */
-    public function getPeopleInfo(string $nsid, bool $force = false)
+    public function getPeopleInfo(string $nsid)
     {
-        $result = $this->get(self::PEOPLE_GET_INFO, ['user_id' => $nsid], $force);
+        $result = $this->get(self::PEOPLE_GET_INFO, ['user_id' => $nsid]);
 
         if ($result->stat === self::RESPONSE_STAT_OK) {
             return $result->person;

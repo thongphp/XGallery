@@ -3,6 +3,7 @@
 namespace App\Exceptions\Google;
 
 use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class GooglePhotoApiUploadException extends Exception
 {
@@ -12,6 +13,7 @@ class GooglePhotoApiUploadException extends Exception
      */
     public function __construct(string $file, $response)
     {
+        Storage::delete($file);
         $message = 'Can not add uploading media. File '.$file. '. Response ' . json_encode($response);
         parent::__construct($message);
     }
