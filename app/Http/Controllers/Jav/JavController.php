@@ -14,7 +14,9 @@ use App\Http\Helpers\Toast;
 use App\Models\Jav\JavIdolModel;
 use App\Models\Jav\JavMovieModel;
 use App\Models\JavDownload;
-use App\Repositories\JavMovies;
+use App\Repositories\ConfigRepository;
+use App\Repositories\JavIdolsRepository;
+use App\Repositories\JavMoviesRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -35,11 +37,11 @@ class JavController extends BaseController
 
     /**
      * @param Request $request
-     * @param JavMovies $repository
+     * @param JavMoviesRepository $repository
      *
      * @return Application|Factory|View
      */
-    public function dashboard(Request $request, JavMovies $repository)
+    public function dashboard(Request $request, JavMoviesRepository $repository)
     {
         $items = $repository->getItems($request);
 
@@ -47,9 +49,27 @@ class JavController extends BaseController
             'jav.index',
             [
                 'items' => $items,
-                'directors' => $repository->getDirectors()->pluck('director'),
-                'studios' => $repository->getStudios()->pluck('studio'),
-                'series' => $repository->getSeries()->pluck('series'),
+                'directors' => $repository->populateDirectorOptions(
+                    $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DIRECTOR, [])
+                ),
+                'studios' => $repository->populateStudioOptions(
+                    $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_STUDIO, [])
+                ),
+                'channels' => $repository->populateChannelOptions(
+                    $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_CHANNEL, [])
+                ),
+                'series' => $repository->populateSeriesOptions(
+                    $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_SERIES, [])
+                ),
+                'idols' => $repository->populateIdolOptions(
+                    $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL, [])
+                ),
+                'genres' => $repository->populateGenreOptions(
+                    $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_GENRE, [])
+                ),
+                'dateFrom' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_FROM, null),
+                'dateTo' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_TO, null),
+                'downloadable' => (boolean)$request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE, false),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$items->total().' Movies - '.$items->currentPage().' / '.$items->lastPage(),
             ]

@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Jav;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Jav\JavIdolModel;
-use App\Repositories\JavIdolRepository;
+use App\Repositories\JavIdolsRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -26,11 +26,11 @@ class IdolsController extends BaseController
 
     /**
      * @param Request $request
-     * @param JavIdolRepository $repository
+     * @param JavIdolsRepository $repository
      *
      * @return Application|Factory|View
      */
-    public function idols(Request $request, JavIdolRepository $repository)
+    public function idols(Request $request, JavIdolsRepository $repository)
     {
         $items = $repository->getItems($request);
 

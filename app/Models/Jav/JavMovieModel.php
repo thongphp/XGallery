@@ -11,6 +11,7 @@ namespace App\Models\Jav;
 
 use App\Models\Traits\HasCover;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class JavMovieModel
@@ -56,13 +57,18 @@ class JavMovieModel extends Model
         'is_downloadable',
     ];
 
-
-    public function idols()
+    /**
+     * @return BelongsToMany
+     */
+    public function idols(): BelongsToMany
     {
         return $this->belongsToMany(JavIdolModel::class, 'jav_idols_xref', 'movie_id', 'idol_id');
     }
 
-    public function genres()
+    /**
+     * @return BelongsToMany
+     */
+    public function genres(): BelongsToMany
     {
         return $this->belongsToMany(JavGenreModel::class, 'jav_genres_xref', 'movie_id', 'genre_id');
     }

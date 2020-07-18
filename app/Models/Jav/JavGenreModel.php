@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class JavGenreModel
  * @package App\Models\Jav
+ *
+ * @property string $id
+ * @property string $name
  */
 class JavGenreModel extends Model
 {
