@@ -4,6 +4,7 @@ namespace App\Repositories\Flickr;
 
 use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\BaseRepository;
+use App\Repositories\ConfigRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class PhotoRepository extends BaseRepository
@@ -23,7 +24,13 @@ class PhotoRepository extends BaseRepository
      */
     public function getPhotosWithNoSizes(int $limit = 100)
     {
-        return $this->getItems([FlickrPhotoModel::KEY_SIZES => null, 'per-page' => $limit, 'cache' => 0]);
+        return $this->getItems(
+            [
+                FlickrPhotoModel::KEY_SIZES => null,
+                ConfigRepository::KEY_PER_PAGE => $limit,
+                'cache' => 0,
+            ]
+        );
     }
 
     /**

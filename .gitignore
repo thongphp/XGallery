@@ -30,3 +30,4 @@ Homestead.json
 /vendor/
 _ide_helper.php
 .phpstorm.meta.php
+.DS_Store

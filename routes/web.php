@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Flickr\FlickrController;
+use App\Http\Controllers\Jav\IdolsController;
 use App\Http\Controllers\Jav\JavController;
 use App\Http\Controllers\Truyenchon\TruyenchonController;
 use App\Http\Controllers\Xiuren\XiurenController;
@@ -36,7 +37,8 @@ Route::middleware(['auth'])->namespace(JavController::class)
         Route::match(['GET', 'POST'], '/', [JavController::class, 'dashboard'])->name('jav.dashboard.view');
         Route::get('movie/{id}', [JavController::class, 'movie'])->name('jav.movie.view');
         Route::get('genre/{id}', [JavController::class, 'genre'])->name('jav.genre.view');
-        Route::get('idol/{id}', [JavController::class, 'idol'])->name('jav.idol.view');
+        Route::match(['GET', 'POST'], '/idols', [IdolsController::class, 'idols'])->name('jav.idols.dashboard.view');
+        Route::get('idol/{id}', [IdolsController::class, 'idol'])->name('jav.idol.view');
         Route::post('download/{itemNumber}', [JavController::class, 'download'])->name('jav.download.request');
     });
 
