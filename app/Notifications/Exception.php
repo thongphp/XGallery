@@ -45,7 +45,7 @@ class Exception extends Notification
             ->from('Exception')
             ->error()
             ->content($this->exception->getMessage())
-            ->attachment(function ($attachment) use ($notifiable) {
+            ->attachment(function ($attachment) {
                 $attachment
                     ->title($this->exception->getFile())
                     ->fields([

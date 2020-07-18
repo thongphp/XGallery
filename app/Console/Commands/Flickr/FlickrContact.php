@@ -11,6 +11,7 @@ namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
 use App\Models\Flickr\FlickrContactModel;
+use App\Repositories\ConfigRepository;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
@@ -41,7 +42,7 @@ final class FlickrContact extends BaseCommand
         $contactRepository = app(ContactRepository::class);
 
         $contact = $contactRepository->getItemByConditions([
-            'sort-by' => 'updated_at', FlickrContactModel::KEY_STATE => null, 'cache' => 0
+            ConfigRepository::KEY_SORT_BY => 'updated_at', FlickrContactModel::KEY_STATE => null, 'cache' => 0
         ]);
 
         if (!$contact) {
@@ -49,7 +50,7 @@ final class FlickrContact extends BaseCommand
             $this->output->note('Reset state of all contacts');
 
             $contact = $contactRepository->getItemByConditions([
-                'sort-by' => 'updated_at', FlickrContactModel::KEY_STATE => null, 'cache' => 0
+                ConfigRepository::KEY_SORT_BY => 'updated_at', FlickrContactModel::KEY_STATE => null, 'cache' => 0
             ]);
         }
 

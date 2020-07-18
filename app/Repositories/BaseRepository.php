@@ -35,12 +35,18 @@ class BaseRepository implements RepositoryInterface
             Cache::forget($id);
         }
 
-        $orderBy = $filter['sort-by'] ?? $this->primaryKey;
-        $orderDir = $filter['sort-dir'] ?? 'asc';
-        $perPage = isset($filter['per-page']) ? (int) $filter['per-page'] : 15;
+        $orderBy = $filter[ConfigRepository::KEY_SORT_BY] ?? $this->primaryKey;
+        $orderDir = $filter[ConfigRepository::KEY_SORT_DIRECTION] ?? 'asc';
+        $perPage = isset($filter[ConfigRepository::KEY_PER_PAGE]) ?
+            (int) $filter[ConfigRepository::KEY_PER_PAGE] : ConfigRepository::DEFAULT_PER_PAGE;
         $page = request()->except('page');
 
-        unset($filter['cache'], $filter['sort-by'], $filter['sort-dir'], $filter['per-page']);
+        unset(
+            $filter['cache'],
+            $filter[ConfigRepository::KEY_SORT_BY],
+            $filter[ConfigRepository::KEY_SORT_DIRECTION],
+            $filter[ConfigRepository::KEY_PER_PAGE]
+        );
 
         return Cache::remember(
             $id,

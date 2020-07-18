@@ -76,24 +76,6 @@ class JavController extends BaseController
     }
 
     /**
-     * @param  int  $id
-     * @return Application|Factory|View
-     */
-    public function idol(int $id)
-    {
-        $idol = JavIdolModel::find($id);
-
-        return view(
-            'jav.idol',
-            [
-                'idol' => $idol,
-                'sidebar' => $this->getMenuItems(),
-                'title' => 'JAV - '.$idol->name,
-            ]
-        );
-    }
-
-    /**
      * @param  string  $itemNumber
      * @return JsonResponse
      * @throws Throwable

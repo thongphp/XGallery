@@ -67,7 +67,8 @@ class JavMovies
 
         // @todo Filter by multi genres & idols
 
-        return $builder->paginate($request->get('perPage', 15));
+        return $builder->paginate($request->get('perPage', ConfigRepository::DEFAULT_PER_PAGE))
+            ->appends(request()->except('page', '_token'));
     }
 
     public function getDirectors()

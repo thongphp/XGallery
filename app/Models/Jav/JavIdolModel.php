@@ -12,10 +12,13 @@ namespace App\Models\Jav;
 use App\Models\Traits\HasCover;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class JavIdolModel
  * @package App\Models\Jav
+ *
+ * @property string $name
  */
 class JavIdolModel extends Model
 {
@@ -31,13 +34,18 @@ class JavIdolModel extends Model
 
     protected $table = 'jav_idols';
 
-    public function movies()
+    public function movies(): BelongsToMany
     {
         return $this->belongsToMany(JavMovieModel::class, 'jav_idols_xref', 'idol_id', 'movie_id');
     }
 
     public function getAge(): ?int
     {
-        return $this->birthday->diffInYears(Carbon::now());
+        return $this->birthday ? $this->birthday->diffInYears(Carbon::now()) : null;
+    }
+
+    public function getBirthday(): ?string
+    {
+        return $this->birthday ? $this->birthday->format('Y-m-d') : null;
     }
 }
