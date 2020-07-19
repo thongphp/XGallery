@@ -26,12 +26,12 @@
                                  with font-awesome or any other icon font library -->
                             @foreach ($sidebar as $item)
                                 <li class="nav-{{$item->type}}">
-                                    @if($item->type == 'header')
+                                    @if($item->type === 'header')
                                         @if(!empty($item->icon))<i class="{{$item->icon}}"></i>@endif
                                         <span style="text-transform: uppercase">{{$item->name}}</span>
                                     @else
                                         <a href="{{$item->link ? route($item->link.'.dashboard.view') : '#'}}"
-                                           class="nav-link {{ Request::is($item->link) ? 'active' : '' }}">
+                                           class="nav-link {{ Request::is(str_replace('.', '/', $item->link)) ? 'active' : '' }}">
                                             @if(!empty($item->icon))<i class="{{$item->icon}}"></i>@endif
                                             {{$item->name}}
                                         </a>
