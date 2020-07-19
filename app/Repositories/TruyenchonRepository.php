@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\Truyentranh\TruyenchonChapterModel;
-use App\Models\Truyentranh\TruyenchonModel;
+use App\Models\Truyenchon\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonModel;
 
 /**
  * Class TruyenchonRepository
@@ -44,7 +44,12 @@ class TruyenchonRepository extends BaseRepository
         ]);
     }
 
-    public function getChapterByUrl(string $url)
+    /**
+     * @param string $url
+     *
+     * @return TruyenchonChapterModel|null
+     */
+    public function getChapterByUrl(string $url): ?TruyenchonChapterModel
     {
         return TruyenchonChapterModel::where(['chapterUrl' => $url])->first();
     }

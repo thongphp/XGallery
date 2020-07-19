@@ -30,6 +30,8 @@ class JavMoviesRepository
 {
     use HasOrdering, HasSortOptions, HasFilterValues;
 
+    public const ID = 'jav_movies.id';
+
     private array $filterFields = [
         'name', 'content_id', 'dvd_id', 'description', 'director', 'studio', 'label', 'channel', 'series',
     ];
@@ -84,7 +86,7 @@ class JavMoviesRepository
         );
 
         if ($genres = $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_GENRE)) {
-            $builder->leftJoin('jav_genres_xref', 'jav_movies.id', 'jav_genres_xref.movie_id')
+            $builder->leftJoin('jav_genres_xref', self::ID, 'jav_genres_xref.movie_id')
                 ->whereIn('jav_genres_xref.genre_id', $genres);
         }
 
@@ -230,7 +232,7 @@ class JavMoviesRepository
      */
     private function processIdolFilter(Builder $builder, Request $request): void
     {
-        $builder->leftJoin('jav_idols_xref', 'jav_movies.id', 'jav_idols_xref.movie_id')
+        $builder->leftJoin('jav_idols_xref', self::ID, 'jav_idols_xref.movie_id')
             ->leftJoin('jav_idols', 'jav_idols.id', 'jav_idols_xref.idol_id');
 
         $this->processFilterValues(

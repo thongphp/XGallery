@@ -10,12 +10,12 @@
 namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCommand;
-use App\Models\Truyentranh\TruyenchonModel;
+use App\Models\Truyenchon\TruyenchonModel;
 use Exception;
 
 /**
  * Class Truyenchon
- * @package App\Console\Commands\Truyentranh
+ * @package App\Console\Commands\Truyenchon
  */
 final class Truyenchon extends BaseCommand
 {

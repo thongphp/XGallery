@@ -10,14 +10,16 @@
 namespace App\Http\Controllers\Truyenchon;
 
 use App\Http\Controllers\BaseController;
-use App\Jobs\Truyenchon\TruyenchonDownload;
-use App\Models\Truyentranh\TruyenchonModel;
+use App\Http\Helpers\Toast;
+use App\Jobs\Truyenchon\TruyenchonStoryDownload;
+use App\Models\Truyenchon\TruyenchonModel;
 use App\Repositories\TruyenchonRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 /**
@@ -28,33 +30,49 @@ class TruyenchonController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    /**
+     * @param TruyenchonRepository $repository
+     *
+     * @return Application|Factory|View
+     */
     public function dashboard(TruyenchonRepository $repository)
     {
-        return view('truyenchon.index', $this->getViewDefaultOptions([
-            'items' => $repository->getItems(),
-            'title' => 'Flickr'
-        ]));
+        return view(
+            'truyenchon.index',
+            $this->getViewDefaultOptions(
+                [
+                    'items' => $repository->getItems(),
+                    'title' => 'Truyenchon',
+                ]
+            )
+        );
     }
 
     /**
-     * @param  string  $id
-     * @param  string  $chapter
+     * @param string $id
+     * @param string $chapter
+     *
      * @return Application|Factory|View
      */
     public function story(string $id, string $chapter)
     {
+        /** @var TruyenchonModel $story */
         $story = TruyenchonModel::find($id);
-        $keys = array_keys($story->chapters);
-        $keys = array_reverse($keys);
+        $keys = [];
+        foreach ($story->chapters as $item) {
+            $keys[] = $item->chapter;
+        }
         $position = array_search($chapter, $keys);
-        $nextKey = $keys[$position + 1] ?? 0;
+        $nextKey = $keys[$position - 1] ?? null;
+        $prevKey = $keys[$position + 1] ?? null;
 
         return view(
             'truyenchon.story',
             [
                 'story' => $story,
-                'items' => $story->chapters[$chapter],
+                'items' => $story->chapters[$position]->images,
                 'next' => $nextKey,
+                'prev' => $prevKey,
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'Truyenchon - '.$story->title,
             ]
@@ -62,10 +80,19 @@ class TruyenchonController extends BaseController
     }
 
     /**
-     * @param  string  $id
+     * @param string $id
+     *
+     * @return JsonResponse
      */
-    public function download(string $id)
+    public function download(string $id): JsonResponse
     {
-        TruyenchonDownload::dispatch($id);
+        $story = TruyenchonModel::find($id);
+        $message = sprintf(
+            'Added story <span class="badge badge-primary">%s</span> into download queue successfully',
+            $story->title
+        );
+        TruyenchonStoryDownload::dispatch($id);
+
+        return response()->json(['html' => Toast::success('Download', $message)]);
     }
 }

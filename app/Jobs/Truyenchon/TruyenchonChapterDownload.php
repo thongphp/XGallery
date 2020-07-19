@@ -9,10 +9,15 @@
 
 namespace App\Jobs\Truyenchon;
 
+use App\Exceptions\Truyenchon\TruyenchonChapterDownloadException;
+use App\Exceptions\Truyenchon\TruyenchonChapterDownloadWritePDFException;
+use App\Facades\UserActivity;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Mail\TruyenchonDownloadChapterMail;
 use App\Repositories\TruyenchonRepository;
 use Campo\UserAgent;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
@@ -20,8 +25,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
 use Imagick;
+use ImagickException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -37,7 +45,8 @@ class TruyenchonChapterDownload implements ShouldQueue
 
     /**
      * TruyenchonChapterDownload constructor.
-     * @param  string  $chapterUrl
+     *
+     * @param string $chapterUrl
      */
     public function __construct(string $chapterUrl)
     {
@@ -46,14 +55,39 @@ class TruyenchonChapterDownload implements ShouldQueue
     }
 
     /**
-     * @throws GuzzleException|\ImagickException
+     * @throws GuzzleException
+     * @throws ImagickException
+     * @throws TruyenchonChapterDownloadException
+     * @throws TruyenchonChapterDownloadWritePDFException
      */
-    public function handle()
+    public function handle(): void
     {
-        $chapter = app(TruyenchonRepository::class)->getChapterByUrl($this->chapterUrl);
-        /**
-         * We are using GuzzleHttp instead our Client because it's required for custom header
-         */
+        $chapterModel = app(TruyenchonRepository::class)->getChapterByUrl($this->chapterUrl);
+
+        if (!$chapterModel) {
+            return;
+        }
+
+        UserActivity::notify(
+            '%s request %s in Comic [Truyenchon] - Chapter',
+            Auth::user(),
+            'download',
+            [
+                'object_id' => $chapterModel->getAttribute('_id'),
+                'extra' => [
+                    'title' => $chapterModel->chapter,
+                    // Fields are displayed in a table on the message
+                    'fields' => [
+                        'ID' => $chapterModel->getAttribute('_id'),
+                        'Chapter' => $chapterModel->chapter,
+                        'Chapter URL' => $chapterModel->chapterUrl,
+                    ],
+                    'footer' => $chapterModel->storyUrl,
+                ],
+            ]
+        );
+
+        // We are using GuzzleHttp instead our Client because it's required for custom header
         $client = new Client();
 
         $parts = explode('/', $this->chapterUrl);
@@ -64,28 +98,35 @@ class TruyenchonChapterDownload implements ShouldQueue
         }
 
         $images = [];
-        foreach ($chapter->images as $index => $image) {
+        $requestHeaders = [
+            'User-Agent' => UserAgent::random([]),
+            'Cache-Control' => 'no-cache',
+            'Referer' => $chapterModel->chapterUrl,
+        ];
+        foreach ($chapterModel->images as $index => $image) {
             $filePath = $savePath.'/'.$index.'.jpeg';
-            $resource = fopen($filePath, 'w');
+            $resource = fopen($filePath, 'wb');
+
             try {
-                $response = $client->request('GET', $image, [
-                    'headers' => [
-                        'User-Agent' => UserAgent::random([]),
-                        'Cache-Control' => 'no-cache',
-                        'Referer' => $chapter->chapterUrl
-                    ],
-                    'sink' => $resource,
-                ]);
+                $response = $client->request('GET', $image, ['headers' => $requestHeaders, 'sink' => $resource]);
 
                 if ($response->getStatusCode() !== Response::HTTP_OK) {
-                    continue;
+                    throw new TruyenchonChapterDownloadException(
+                        $filePath,
+                        $chapterModel->chapterUrl,
+                        $response->getBody()
+                    );
                 }
 
                 if (file_exists($filePath)) {
                     $images[] = $filePath;
                 }
-            } catch (\Exception $exception) {
-                // @todo Exception notify
+            } catch (Exception $exception) {
+                throw new TruyenchonChapterDownloadException(
+                    $filePath,
+                    $chapterModel->chapterUrl,
+                    $exception->getMessage()
+                );
             }
         }
 
@@ -96,14 +137,19 @@ class TruyenchonChapterDownload implements ShouldQueue
         $pdf = new Imagick($images);
         $pdf->setImageFormat('pdf');
 
-        if (!$pdf->writeImages($savePath.'/'.$parts[4].'.pdf', true)) {
-            return;
+        $pdfPath = $savePath.'/'.$parts[4].'.pdf';
+
+        if (!$pdf->writeImages($pdfPath, true)) {
+            throw new TruyenchonChapterDownloadWritePDFException($chapterModel->chapterUrl, $pdfPath);
         }
 
         foreach ($images as $image) {
             unlink($image);
         }
 
-        // @todo Send notification to user
+        Mail::to(config('mail.to'))
+            ->send(new TruyenchonDownloadChapterMail($chapterModel, $pdfPath));
+
+        // @TODO: Consider remove PDF file after send mail.
     }
 }

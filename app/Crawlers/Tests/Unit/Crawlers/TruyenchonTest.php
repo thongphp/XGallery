@@ -5,7 +5,7 @@ namespace App\Crawlers\Tests\Unit\Crawlers;
 use App\Crawlers\Crawler\Truyenchon;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\Truyentranh\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonChapterModel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 

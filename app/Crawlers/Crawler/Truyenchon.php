@@ -11,7 +11,7 @@ namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
 use App\Crawlers\Middleware\TruyenchonRateLimitStore;
-use App\Models\Truyentranh\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonChapterModel;
 use Exception;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Support\Collection;

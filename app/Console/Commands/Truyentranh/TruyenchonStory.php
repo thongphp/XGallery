@@ -10,15 +10,15 @@
 namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCommand;
-use App\Jobs\Truyenchon\Chapters;
-use App\Models\Truyentranh\TruyenchonChapterModel;
-use App\Models\Truyentranh\TruyenchonModel;
+use App\Jobs\Truyenchon\TruyenchonChapterGetImages;
+use App\Models\Truyenchon\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonModel;
 use Exception;
 use Illuminate\Support\Collection;
 
 /**
  * Class TruyenchonStory
- * @package App\Console\Commands\Truyentranh
+ * @package App\Console\Commands\Truyenchon
  */
 final class TruyenchonStory extends BaseCommand
 {
@@ -68,7 +68,7 @@ final class TruyenchonStory extends BaseCommand
             $model = TruyenchonChapterModel::firstOrCreate([
                 'storyUrl' => $story->url, 'chapterUrl' => $chapter['chapterUrl']
             ], $chapter);
-            Chapters::dispatch($model);
+            TruyenchonChapterGetImages::dispatch($model);
             $this->progressBarSetInfo($chapter['chapterUrl']);
             $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
