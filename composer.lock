@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "22fe31f349c3e45d5364c4a05824ae90",
+    "content-hash": "33106df51082d592e71ecc7c90f38dfd",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1587,6 +1587,49 @@
                 }
             ],
             "time": "2020-04-23T06:36:15+00:00"
+        },
+        {
+            "name": "justbetter/laravel-pagination-with-havings",
+            "version": "1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/justbetter/laravel-pagination-with-havings.git",
+                "reference": "845a17ca9344ca9a92f86ee90241556df1d52e87"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/justbetter/laravel-pagination-with-havings/zipball/845a17ca9344ca9a92f86ee90241556df1d52e87",
+                "reference": "845a17ca9344ca9a92f86ee90241556df1d52e87",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0|^7.0",
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JustBetter\\PaginationWithHavings\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roy Duineveld",
+                    "email": "royduineveld@gmail.com"
+                }
+            ],
+            "description": "Makes it possible to use pagination with havings in queries.",
+            "homepage": "https://github.com/justbetter/laravel-pagination-with-havings",
+            "keywords": [
+                "having",
+                "laravel",
+                "pagination"
+            ],
+            "time": "2020-03-12T10:49:10+00:00"
         },
         {
             "name": "kamermans/guzzle-oauth2-subscriber",

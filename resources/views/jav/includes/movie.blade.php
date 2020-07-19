@@ -20,27 +20,26 @@
                     @if(!empty($item->director))
                         <li class="list-group-item director">
                             <i class="fas fa-user mr-2"></i><strong class="mr-1">Director</strong>
-                            <a href="{{url('jav') . '?' . http_build_query(array_merge($request,['director'=>$item->director]))}}">{{$item->director}}</a>
+                            <span class="text-info">{{$item->director}}</span>
                         </li>
                     @endif
                     @if(!empty($item->studio))
                         <li class="list-group-item studio">
                             <i class="fas fa-tag mr-2"></i><strong class="mr-1">Studio</strong>
-                            <a href="{{url('jav') . '?' . http_build_query(array_merge($request,['studio'=>$item->studio]))}}">{{$item->studio}}</a>
+                            <span class="text-info">{{$item->studio}}</span>
                         </li>
                     @endif
                     @if(!empty($item->label))
                         <li class="list-group-item label">
                             <i class="fas fa-tag mr-2"></i><strong class="mr-1">Label</strong>
-                            <a href="{{url('jav') . '?' . http_build_query(array_merge($request,['label'=>$item->label]))}}">{{$item->label}}</a>
+                            <span class="text-info">{{$item->label}}</span>
                         </li>
                     @endif
                     @if($item->genres->count() > 0)
                         <li class="list-group-item tag">
                             <i class="fas fa-tags"></i>
                             @foreach ($item->genres as $genre)
-                                <a href="{{url('jav') . '?' . http_build_query(array_merge($request,['genre'=>$genre->id]))}}"><span
-                                        class="badge badge-pill badge-dark">{{$genre->name}}</span></a>
+                                {{$genre->name}}
                             @endforeach
                         </li>
                     @endif

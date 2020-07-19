@@ -13,10 +13,12 @@ use App\Models\Jav\JavGenreModel;
 use App\Models\Jav\JavIdolModel;
 use App\Models\Jav\JavMovieModel;
 use App\Objects\Option;
+use App\Traits\Jav\HasFilterValues;
+use App\Traits\Jav\HasOrdering;
+use App\Traits\Jav\HasSortOptions;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -26,6 +28,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class JavMoviesRepository
 {
+    use HasOrdering, HasSortOptions, HasFilterValues;
+
     private array $filterFields = [
         'name', 'content_id', 'dvd_id', 'description', 'director', 'studio', 'label', 'channel', 'series',
     ];
@@ -39,39 +43,41 @@ class JavMoviesRepository
     {
         $builder = app(JavMovieModel::class)->query();
 
-        if ($keyword = $request->get('keyword')) {
-            $builder->where(function ($query) use ($keyword) {
-                foreach ($this->filterFields as $filterField) {
-                    $query->orWhere('jav_movies.'.$filterField, 'LIKE', '%'.$keyword.'%');
+        if ($keyword = $request->get(ConfigRepository::KEY_KEYWORD)) {
+            $builder->where(
+                function ($query) use ($keyword) {
+                    foreach ($this->filterFields as $filterField) {
+                        $query->orWhere('jav_movies.'.$filterField, 'LIKE', '%'.$keyword.'%');
+                    }
                 }
-            });
+            );
         }
 
-        $this->buildFilterMultipleValues(
+        $this->processFilterValues(
             $builder,
             'jav_movies.director',
-            $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DIRECTOR, [])
+            $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DIRECTOR, []),
         );
 
-        $this->buildFilterMultipleValues(
+        $this->processFilterValues(
             $builder,
             'jav_movies.studio',
             $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_STUDIO, [])
         );
 
-        $this->buildFilterMultipleValues(
+        $this->processFilterValues(
             $builder,
             'jav_movies.series',
             $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_SERIES, [])
         );
 
-        $this->buildFilterMultipleValues(
+        $this->processFilterValues(
             $builder,
             'jav_movies.channel',
             $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_CHANNEL, [])
         );
 
-        $this->buildFilterMultipleValues(
+        $this->processFilterValues(
             $builder,
             'jav_movies.is_downloadable',
             $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE, null)
@@ -98,6 +104,7 @@ class JavMoviesRepository
         }
 
         $this->processIdolFilter($builder, $request);
+        $this->processOrdering($builder, $request);
 
         return $builder->select('jav_movies.*')
             ->paginate($request->get('perPage', ConfigRepository::DEFAULT_PER_PAGE))
@@ -217,80 +224,44 @@ class JavMoviesRepository
             ->toArray();
     }
 
+    /**
+     * @param Builder $builder
+     * @param Request $request
+     */
     private function processIdolFilter(Builder $builder, Request $request): void
     {
         $builder->leftJoin('jav_idols_xref', 'jav_movies.id', 'jav_idols_xref.movie_id')
             ->leftJoin('jav_idols', 'jav_idols.id', 'jav_idols_xref.idol_id');
 
-        $this->buildFilterMultipleValues(
+        $this->processFilterValues(
             $builder,
             'jav_idols_xref.idol_id',
             $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL, [])
         );
 
-        if ($idolHeight = $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HEIGHT)) {
-            $this->buildFilterMultipleValues($builder, 'jav_idols.height', (int) $idolHeight);
-        }
-
-        if ($idolBreast = $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_BREAST)) {
-            $this->buildFilterMultipleValues($builder, 'jav_idols.breast', (int) $idolBreast);
-        }
-
-        if ($idolWaist = $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_WAIST)) {
-            $this->buildFilterMultipleValues($builder, 'jav_idols.waist', (int) $idolWaist);
-        }
-
-        if ($idolHips = $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HIPS)) {
-            $this->buildFilterMultipleValues($builder, 'jav_idols.hips', (int) $idolHips);
-        }
-    }
-
-    /**
-     * @param Builder $builder
-     * @param string $column
-     * @param array|string $value
-     *
-     * @return void
-     */
-    private function buildFilterMultipleValues(Builder $builder, string $column, $value): void
-    {
-        if (empty($value)) {
-            return;
-        }
-
-        if (is_array($value)) {
-            $builder->orWhereIn($column, $value);
-
-            return;
-        }
-
-        $builder->orWhere($column, '=', $value);
-    }
-
-    /**
-     * @param Collection $results
-     * @param array $selectedOptions
-     * @param string $key
-     *
-     * @return array
-     */
-    private function sortOptions(Collection $results, array $selectedOptions, string $key): array
-    {
-        return $results
-            ->map(
-                static function ($item) use ($selectedOptions, $key) {
-                    return new Option($item->{$key}, $item->{$key}, in_array($item->{$key}, $selectedOptions, true));
-                }
-            )
-            ->sort(
-                static function (Option $itemA, Option $itemB) {
-                    if ($itemA->isSelected() !== $itemB->isSelected()) {
-                        return !$itemA->isSelected();
-                    }
-
-                    return $itemA->getText() <=> $itemB->getText();
-                }
-            )
-            ->toArray();
+        $this->processFilterValues(
+            $builder,
+            'jav_idols.height',
+            (int) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HEIGHT),
+            '>='
+        );
+        $this->processFilterValues(
+            $builder,
+            'jav_idols.breast',
+            (int) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_BREAST),
+            '>='
+        );
+        $this->processFilterValues(
+            $builder,
+            'jav_idols.waist',
+            (int) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_WAIST),
+            '>='
+        );
+        $this->processFilterValues(
+            $builder,
+            'jav_idols.hips',
+            (int) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HIPS),
+            '>='
+        );
     }
 }

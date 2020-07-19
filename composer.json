@@ -20,6 +20,7 @@
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/oauth-subscriber": "^0.3.0",
         "jenssegers/mongodb": "^3.6",
+        "justbetter/laravel-pagination-with-havings": "^1.4",
         "kamermans/guzzle-oauth2-subscriber": "^1.0",
         "laminas/laminas-hydrator": "^3.0",
         "laravel/framework": "^6.0",

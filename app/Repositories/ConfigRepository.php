@@ -11,6 +11,15 @@ final class ConfigRepository
     public const KEY_SORT_BY = 'sortBy';
     public const KEY_SORT_DIRECTION = 'sortDir';
     public const KEY_PER_PAGE = 'perPage';
+    public const KEY_KEYWORD = 'keyword';
+
+    /* JAV Idols */
+    public const JAV_IDOLS_FILTER_AGE_FROM = 'filter_age_from';
+    public const JAV_IDOLS_FILTER_AGE_TO = 'filter_age_to';
+    public const JAV_IDOLS_FILTER_HEIGHT = 'filter_height';
+    public const JAV_IDOLS_FILTER_BREAST = 'filter_breast';
+    public const JAV_IDOLS_FILTER_WAIST = 'filter_waist';
+    public const JAV_IDOLS_FILTER_HIPS = 'filter_hips';
 
     /* JAV Movies */
     public const KEY_JAV_MOVIES_FILTER_DIRECTOR = 'filter_director';
