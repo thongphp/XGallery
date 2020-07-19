@@ -70,6 +70,10 @@ class JavController extends BaseController
                 'dateFrom' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_FROM, null),
                 'dateTo' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_TO, null),
                 'downloadable' => (boolean)$request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE, false),
+                'idolHeight' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HEIGHT, null),
+                'idolBreast' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_BREAST, null),
+                'idolWaist' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_WAIST, null),
+                'idolHips' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HIPS, null),
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$items->total().' Movies - '.$items->currentPage().' / '.$items->lastPage(),
             ]

@@ -20,7 +20,8 @@ class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
      */
     public function load(): bool
     {
-        $this->profile = $userInfo = FlickrClient::getPeopleInfo($this->id);
+        $this->profile = FlickrClient::getPeopleInfo($this->id);
+
         return $this->isValid();
     }
 
@@ -81,7 +82,7 @@ class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
         return null;
     }
 
-    public function notification()
+    public function notification(): void
     {
         // @todo Notification in even not job
         UserActivity::notify(
