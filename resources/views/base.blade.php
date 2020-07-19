@@ -143,6 +143,7 @@
     <script>
         jQuery(document).ready(function () {
             xgallery.ajax.init();
+            xgallery.datepicker.init();
             var lazyLoadInstance = new LazyLoad({
                 elements_selector: ".lazy"
                 // ... more custom settings?

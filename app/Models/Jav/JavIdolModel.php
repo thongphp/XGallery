@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Class JavIdolModel
  * @package App\Models\Jav
  *
+ * @property string $id
  * @property string $name
  */
 class JavIdolModel extends Model

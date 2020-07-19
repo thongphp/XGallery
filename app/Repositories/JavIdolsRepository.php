@@ -3,11 +3,14 @@
 namespace App\Repositories;
 
 use App\Models\Jav\JavIdolModel;
+use App\Objects\Option;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Request;
 
-class JavIdolRepository
+class JavIdolsRepository
 {
     private array $filterFields = [
         'name', 'alias', 'blood_type', 'city',

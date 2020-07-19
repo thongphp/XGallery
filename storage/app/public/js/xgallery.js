@@ -1,6 +1,17 @@
 (function (window, jQuery) {
     let xgallery = {};
 
+    xgallery.datepicker = {
+        init: function () {
+            jQuery(".input-group.input-daterange").datepicker({
+                format: "yyyy/mm/dd",
+                clearBtn: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+        }
+    }
+
     xgallery.lazyload = {
         lazyloadInstance: false,
 
@@ -66,7 +77,7 @@
                 xgallery.ajax.request({ 'url': jQuery(this).find('input[name="url"]').val(), 'ajaxUrl': jQuery(this).attr('action') });
             })
         }
-    }
+    };
 
     window.xgallery = xgallery;
 })(window, jQuery);
