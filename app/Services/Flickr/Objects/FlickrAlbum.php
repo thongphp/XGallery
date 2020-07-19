@@ -4,28 +4,17 @@ namespace App\Services\Flickr\Objects;
 
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Facades\FlickrClient;
-use App\Jobs\Flickr\FlickrDownloadAlbum;
+use App\Facades\UserActivity;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class FlickrAlbum
  * @package App\Services\Flickr\Objects
  */
-class FlickrAlbum
+final class FlickrAlbum extends FlickrDownload
 {
-    private string $id;
     private ?object $album;
-    private Collection $photos;
-
-    /**
-     * FlickrAlbum constructor.
-     * @param  string  $id
-     */
-    public function __construct(string $id)
-    {
-        $this->id = $id;
-        $this->photos = collect([]);
-    }
 
     /**
      * @return bool
@@ -39,14 +28,6 @@ class FlickrAlbum
         }
 
         return $this->isValid();
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     /**
@@ -110,8 +91,28 @@ class FlickrAlbum
         return $this->album !== null;
     }
 
-    public function download(): void
+    protected function notification(): void
     {
-        FlickrDownloadAlbum::dispatch($this);
+        // @todo Notification in even not job
+        UserActivity::notify(
+            '%s request %s album',
+            Auth::user(),
+            'download',
+            [
+                'object_id' => $this->getId(),
+                'extra' => [
+                    'title' => $this->getTitle(),
+                    'title_link' => 'https://www.flickr.com/photos/'.$this->getOwner().'/albums/'.$this->getId(),
+                    // Fields are displayed in a table on the message
+                    'fields' => [
+                        'ID' => $this->getId(),
+                        'Photos' => $this->getPhotosCount(),
+                        'Owner' => $this->getOwner(),
+                        'Sync to Google' => $this->getTitle().' ['.$this->googleAlbum->id.']'
+                    ],
+                    'footer' => $this->getDescription(),
+                ],
+            ]
+        );
     }
 }

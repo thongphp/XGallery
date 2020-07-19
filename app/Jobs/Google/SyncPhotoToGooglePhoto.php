@@ -43,7 +43,7 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
     public function middleware()
     {
         return [(new RateLimited())
-            ->allow(1)
+            ->allow(5)
             ->everySeconds(1)
             ->releaseAfterSeconds(30)];
     }

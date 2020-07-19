@@ -16,9 +16,9 @@ use App\Facades\FlickrClient;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
-use App\Jobs\Flickr\FlickrDownloadContact;
 use App\Services\Flickr\Objects\FlickrAlbum;
 use App\Services\Flickr\Objects\FlickrGallery;
+use App\Services\Flickr\Objects\FlickrProfile;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -85,6 +85,7 @@ class FlickrController extends BaseController
      * @param  FlickrDownloadRequest  $request
      *
      * @return JsonResponse
+     * @throws Exception
      */
     public function download(FlickrDownloadRequest $request): JsonResponse
     {
@@ -96,90 +97,53 @@ class FlickrController extends BaseController
 
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos of %s <strong>%s</strong>';
 
-        try {
-            switch ($result->getType()) {
-                case FlickrUrlInterface::TYPE_ALBUM:
-                    // @todo Actually it should be model instead
-                    $album = new FlickrAlbum($result->getId());
+        switch ($result->getType()) {
+            case FlickrUrlInterface::TYPE_ALBUM:
+                // @todo Actually it should be model instead
+                $flickr = new FlickrAlbum($result->getId());
+                break;
 
-                    if (!$album->load()) {
-                        return response()->json([
-                            'html' => Toast::warning(
-                                'Download',
-                                'Can not get Album information'
-                            )
-                        ]);
-                    }
+            case FlickrUrlInterface::TYPE_GALLERY:
+                $flickr = new FlickrGallery($result->getId());
+                break;
 
-                    if ($album->getPhotosCount() === 0) {
-                        return response()->json([
-                            'html' => Toast::warning(
-                                'Download',
-                                'Album has no photos'
-                            )
-                        ]);
-                    }
+            case FlickrUrlInterface::TYPE_PROFILE:
+                $flickr = new FlickrProfile($result->getOwner());
+                break;
+            default:
+                throw new Exception();
+        }
 
-                    $album->download();
-
-                    $flashMessage = sprintf(
-                        $flashMessage,
-                        $album->getPhotosCount(),
-                        'album',
-                        $album->getTitle()
-                    );
-
-                    break;
-
-                case FlickrUrlInterface::TYPE_GALLERY:
-                    $gallery = new FlickrGallery($result->getId());
-
-                    if (!$gallery->load()) {
-                        return response()->json([
-                            'html' => Toast::warning(
-                                'Download',
-                                'Can not get Gallery information'
-                            )
-                        ]);
-                    }
-
-                    if ($gallery->getPhotosCount() === 0) {
-                        return response()->json([
-                            'html' => Toast::warning(
-                                'Download',
-                                'Album has no photos'
-                            )
-                        ]);
-                    }
-
-                    $gallery->download();
-
-                    $flashMessage = sprintf(
-                        $flashMessage,
-                        $gallery->getPhotosCount(),
-                        'gallery',
-                        $gallery->getTitle()
-                    );
-
-                    break;
-
-                case FlickrUrlInterface::TYPE_PROFILE:
-                    FlickrDownloadContact::dispatch($result->getOwner());
-
-                    $flashMessage = 'Added download all photos of user <strong>'.$result->getOwner().'</strong>';
-
-                    break;
-                default:
-                    throw new Exception();
-            }
-        } catch (Exception $exception) {
+        if (!$flickr->load()) {
             return response()->json([
-                'html' => Toast::warning('Download', $exception->getMessage())
+                'html' => Toast::warning(
+                    'Download',
+                    'Can not get '.ucfirst(FlickrUrlInterface::TYPE_PROFILE).' information'
+                )
             ]);
         }
 
+        if ($flickr->getPhotosCount() === 0) {
+            return response()->json([
+                'html' => Toast::warning(
+                    'Download',
+                    ucfirst(FlickrUrlInterface::TYPE_PROFILE).' has no photos'
+                )
+            ]);
+        }
+
+        $flickr->download();
+
         return response()->json([
-            'html' => Toast::success('Download', $flashMessage)
+            'html' => Toast::success(
+                'Download',
+                sprintf(
+                    $flashMessage,
+                    $flickr->getPhotosCount(),
+                    ucfirst(FlickrUrlInterface::TYPE_PROFILE),
+                    $flickr->getTitle()
+                )
+            )
         ]);
     }
 }

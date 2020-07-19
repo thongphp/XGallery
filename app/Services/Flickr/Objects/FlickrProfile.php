@@ -2,31 +2,25 @@
 
 namespace App\Services\Flickr\Objects;
 
-use App\Exceptions\Flickr\FlickrApiGalleryGetInfoException;
 use App\Facades\FlickrClient;
 use App\Facades\UserActivity;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class FlickrGallery
+ * Class FlickrProfile
  * @package App\Services\Flickr\Objects
  */
-class FlickrGallery extends FlickrDownload
+class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
 {
-    private ?object $gallery;
+    private ?object $profile;
 
     /**
      * @return bool
      */
     public function load(): bool
     {
-        try {
-            $this->gallery = FlickrClient::getGalleryInformation($this->id);
-        } catch (FlickrApiGalleryGetInfoException $exception) {
-            $this->gallery = null;
-        }
-
+        $this->profile = $userInfo = FlickrClient::getPeopleInfo($this->id);
         return $this->isValid();
     }
 
@@ -35,7 +29,7 @@ class FlickrGallery extends FlickrDownload
      */
     public function getPhotosCount(): int
     {
-        return (int) $this->gallery->gallery->count_photos;
+        return (int) $this->profile->photos->count;
     }
 
     /**
@@ -50,7 +44,7 @@ class FlickrGallery extends FlickrDownload
         $page = 1;
 
         do {
-            $photos = FlickrClient::getGalleryPhotos($this->getId(), $page);
+            $photos = FlickrClient::getPeoplePhotos($this->id, $page);
             $this->photos = $this->photos->merge($photos->photos->photo);
             $page++;
         } while ($page <= $photos->photos->pages);
@@ -63,7 +57,7 @@ class FlickrGallery extends FlickrDownload
      */
     public function getTitle(): string
     {
-        return $this->gallery->gallery->title;
+        return $this->profile->realname ?? $this->profile->username;
     }
 
     /**
@@ -71,15 +65,7 @@ class FlickrGallery extends FlickrDownload
      */
     public function getOwner(): string
     {
-        return $this->gallery->gallery->owner;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->gallery->gallery->description ?? null;
+        return $this->id;
     }
 
     /**
@@ -87,14 +73,19 @@ class FlickrGallery extends FlickrDownload
      */
     public function isValid(): bool
     {
-        return $this->gallery !== null;
+        return $this->profile !== null;
     }
 
-    protected function notification()
+    public function getDescription(): ?string
+    {
+        return null;
+    }
+
+    public function notification()
     {
         // @todo Notification in even not job
         UserActivity::notify(
-            '%s request %s gallery',
+            '%s request %s profile',
             Auth::user(),
             'download',
             [
@@ -108,7 +99,6 @@ class FlickrGallery extends FlickrDownload
                         'Owner' => $this->getOwner(),
                         'Sync to Google' => $this->getTitle().' ['.$this->googleAlbum->id.']'
                     ],
-                    'footer' => $this->getDescription(),
                 ],
             ]
         );
