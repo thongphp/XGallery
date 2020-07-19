@@ -39,7 +39,7 @@
                         <li class="list-group-item tag">
                             <i class="fas fa-tags"></i>
                             @foreach ($item->genres as $genre)
-                                {{$genre->name}}
+                                <span class="badge badge-pill badge-dark">{{$genre->name}}</span>
                             @endforeach
                         </li>
                     @endif
