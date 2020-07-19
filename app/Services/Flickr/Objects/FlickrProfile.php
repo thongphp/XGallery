@@ -3,35 +3,17 @@
 namespace App\Services\Flickr\Objects;
 
 use App\Facades\FlickrClient;
-use App\Facades\GooglePhotoClient;
 use App\Facades\UserActivity;
-use App\Jobs\Flickr\FlickrContact;
-use App\Models\Flickr\FlickrDownload;
-use App\Models\Flickr\FlickrPhotoModel;
-use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * Class FlickrProfile
- * @todo Reduce duplicate code
  * @package App\Services\Flickr\Objects
  */
-class FlickrProfile
+class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
 {
-    private string $id;
     private ?object $profile;
-    private Collection $photos;
-
-    /**
-     * FlickrProfile constructor.
-     * @param  string  $id
-     */
-    public function __construct(string $id)
-    {
-        $this->id = $id;
-        $this->photos = collect([]);
-    }
 
     /**
      * @return bool
@@ -40,14 +22,6 @@ class FlickrProfile
     {
         $this->profile = $userInfo = FlickrClient::getPeopleInfo($this->id);
         return $this->isValid();
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     /**
@@ -102,31 +76,13 @@ class FlickrProfile
         return $this->profile !== null;
     }
 
-    /**
-     * @throws \JsonException
-     */
-    public function download(): void
+    public function getDescription(): ?string
     {
-        $googleAlbum = GooglePhotoClient::createAlbum($this->getTitle());
-        $googleAlbumId = $googleAlbum->id;
+        return null;
+    }
 
-        // If owner is not exist, start new queue for getting this contact information.
-        if (!app(ContactRepository::class)->isExist($this->getOwner())) {
-            FlickrContact::dispatch($this->getOwner());
-        }
-
-        $this->getPhotos()->each(function ($photo) use ($googleAlbumId) {
-            // Store photo
-            $photo = FlickrPhotoModel::updateOrCreate(
-                ['id' => $photo->id],
-                array_merge(get_object_vars($photo), [FlickrPhotoModel::KEY_OWNER => $this->getOwner()])
-            );
-
-            FlickrDownload::firstOrCreate(
-                array_merge(['user_id' => Auth::id()], ['photo_id' => $photo->id, 'google_album_id' => $googleAlbumId])
-            );
-        });
-
+    public function notification()
+    {
         // @todo Notification in even not job
         UserActivity::notify(
             '%s request %s profile',
@@ -141,7 +97,7 @@ class FlickrProfile
                         'ID' => $this->getId(),
                         'Photos' => $this->getPhotosCount(),
                         'Owner' => $this->getOwner(),
-                        'Sync to Google' => $this->getTitle().' ['.$googleAlbumId.']'
+                        'Sync to Google' => $this->getTitle().' ['.$this->googleAlbum->id.']'
                     ],
                 ],
             ]
