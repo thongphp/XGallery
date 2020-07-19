@@ -8,8 +8,8 @@ use App\Facades\FlickrClient;
 use App\Jobs\Google\SyncPhotoToGooglePhoto;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Flickr\FlickrDownload;
 use App\Models\Flickr\FlickrPhotoModel;
-use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,17 +25,18 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $id;
-    private string $googleAlbumId;
+    /**
+     * @var FlickrDownload
+     */
+    private FlickrDownload $download;
 
     /**
-     * @param  string  $id
-     * @param  string  $googleAlbumId
+     * FlickrDownloadPhotoToLocal constructor.
+     * @param  FlickrDownload  $download
      */
-    public function __construct(string $id, string $googleAlbumId)
+    public function __construct(FlickrDownload $download)
     {
-        $this->id = $id;
-        $this->googleAlbumId = $googleAlbumId;
+        $this->download = $download;
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
@@ -44,7 +45,7 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
      */
     public function handle(): void
     {
-        $photo = app(PhotoRepository::class)->findOrCreateById($this->id);
+        $photo = FlickrPhotoModel::firstOrCreate(['id' => $this->download->photo_id]);
 
         if (!$photo->hasSizes()) {
             $sizes = FlickrClient::getPhotoSizes($photo->id);
@@ -61,9 +62,8 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
 
         SyncPhotoToGooglePhoto::dispatch(
             $this->downloadPhoto($photo),
-            // @todo Title sometime be null
             $photo->title,
-            $this->googleAlbumId
+            $this->download->google_album_id
         );
     }
 
@@ -85,6 +85,6 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
             return $filePath;
         }
 
-        throw new CurlDownloadFileException('Can not download photo '.$this->id.' '.$source);
+        throw new CurlDownloadFileException('Can not download photo '.$this->download->photo_id.' '.$source);
     }
 }

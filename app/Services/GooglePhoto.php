@@ -9,7 +9,6 @@ use App\Oauth\GoogleOauthClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Storage;
-use Psr\SimpleCache\InvalidArgumentException;
 
 class GooglePhoto extends GoogleOauthClient
 {
@@ -22,8 +21,8 @@ class GooglePhoto extends GoogleOauthClient
      * @return object
      * @throws GooglePhotoApiAlbumCreateException
      * @throws GuzzleException
+     * @throws \App\Exceptions\OAuthClientException
      * @throws \JsonException
-     * @throws InvalidArgumentException
      */
     public function createAlbum(string $title): object
     {
@@ -52,18 +51,14 @@ class GooglePhoto extends GoogleOauthClient
     }
 
     /**
-     * https://developers.google.com/photos/library/reference/rest/v1/mediaItems/batchCreate¬
      * @param  string  $file
-     * @param  string  $title
-     * @param  string  $googleAlbumId
-     * @throws GooglePhotoApiMediaCreateException
+     * @return mixed|string
+     * @throws FileNotFoundException
      * @throws GooglePhotoApiUploadException
      * @throws GuzzleException
-     * @throws InvalidArgumentException
-     * @throws FileNotFoundException
-     * @throws \JsonException
+     * @throws \App\Exceptions\OAuthClientException
      */
-    public function uploadAndCreateMedia(string $file, string $title, string $googleAlbumId): void
+    public function uploadMedia(string $file)
     {
         // @todo Verify supported format https://developers.google.com/photos/library/guides/upload-media
         $uploadToken = $this->request(
@@ -83,6 +78,24 @@ class GooglePhoto extends GoogleOauthClient
             throw new GooglePhotoApiUploadException($file, $uploadToken);
         }
 
+        return $uploadToken;
+    }
+
+    /**
+     * https://developers.google.com/photos/library/reference/rest/v1/mediaItems/batchCreate
+     * @param  string  $file
+     * @param  string  $title
+     * @param  string  $googleAlbumId
+     * @throws FileNotFoundException
+     * @throws GooglePhotoApiMediaCreateException
+     * @throws GooglePhotoApiUploadException
+     * @throws GuzzleException
+     * @throws \App\Exceptions\OAuthClientException
+     * @throws \JsonException
+     */
+    public function uploadAndCreateMedia(string $file, string $title, string $googleAlbumId): void
+    {
+        $uploadToken = $this->uploadMedia($file);
         $response = $this->request(
             'post',
             'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',

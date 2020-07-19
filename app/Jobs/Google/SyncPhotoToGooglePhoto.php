@@ -58,7 +58,7 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
             throw new FileNotFoundException('File not found '.$this->filePath);
         }
 
-        GooglePhotoClient::uploadAndCreateMedia($this->filePath, $this->description, $this->googleAlbumId);
+        GooglePhotoClient::uploadMedia($this->filePath, $this->description, $this->googleAlbumId);
         Storage::delete($this->filePath);
     }
 }

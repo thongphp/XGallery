@@ -110,6 +110,7 @@ class FlickrController extends BaseController
             case FlickrUrlInterface::TYPE_PROFILE:
                 $flickr = new FlickrProfile($result->getOwner());
                 break;
+
             default:
                 throw new Exception();
         }

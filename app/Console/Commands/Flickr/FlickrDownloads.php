@@ -38,7 +38,7 @@ final class FlickrDownloads extends BaseCommand
      */
     public function fully(): bool
     {
-        $photos = FlickrDownload::limit(20)->get();
+        $photos = FlickrDownload::limit(100)->get();
         $photos->each(function ($photo) {
             FlickrDownloadPhotoToLocal::dispatch($photo->photo_id, $photo->google_album_id);
             $photo->delete();

@@ -58,6 +58,7 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
     }
 
     /**
+     * @todo Provide method getSizes with check hasSizes and request getSizes if needed
      * @return bool
      */
     public function hasSizes(): bool
