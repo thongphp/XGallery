@@ -12,12 +12,29 @@
                                    style="width: 100%"
                             />
                         </div>
-                        <div class="col-6">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input
+                                        class="custom-control-input"
+                                        type="checkbox"
+                                        id="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE}}"
+                                        name="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE}}"
+                                        @if($downloadable) checked @endif
+                                        value="1"
+                                    />
+                                    <label for="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE}}" class="custom-control-label">
+                                        Only Downloadable
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col text-right">
                             @include('includes.form.sort',['default'=> 'id','sorts' => [ ['id','ID'],['release_date','Release date']]])
                             @include('includes.form.pagination')
                             <input type="hidden" name="genre" value="{{request()->request->get('genre')}}">
                             <input type="hidden" name="idol" value="{{request()->request->get('idol')}}">
-                            <button class="btn btn-primary btn-sm my-2 my-sm-0" type="submit">
+                            <button class="btn btn-primary" type="submit">
                                 <em class="fas fa-search"></em> Search
                             </button>
                         </div>
@@ -107,22 +124,53 @@
                                 />
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <div class="custom-control custom-checkbox">
-                                    <input
-                                        class="custom-control-input"
-                                        type="checkbox"
-                                        id="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE}}"
-                                        name="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE}}"
-                                        @if($downloadable) checked @endif
-                                        value="1"
-                                    />
-                                    <label for="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE}}" class="custom-control-label">
-                                        Only Downloadable
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="col">
+                            @include('includes.form.filterNumber',
+                                [
+                                    'name' => \App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HEIGHT,
+                                    'min' => 100,
+                                    'max' => 210,
+                                    'value' => $idolHeight,
+                                    'text' => 'cm',
+                                    'placeholder' => 'Idol height',
+                                ]
+                            )
+                        </div>
+                        <div class="col">
+                            @include('includes.form.filterNumber',
+                                [
+                                    'name' => \App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_BREAST,
+                                    'min' => 0,
+                                    'max' => 999,
+                                    'value' => $idolBreast,
+                                    'text' => 'cm',
+                                    'placeholder' => 'Idol breast',
+                                ]
+                            )
+                        </div>
+                        <div class="col">
+                            @include('includes.form.filterNumber',
+                                [
+                                    'name' => \App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_WAIST,
+                                    'min' => 0,
+                                    'max' => 999,
+                                    'value' => $idolWaist,
+                                    'text' => 'cm',
+                                    'placeholder' => 'Idol waist',
+                                ]
+                            )
+                        </div>
+                        <div class="col">
+                            @include('includes.form.filterNumber',
+                                [
+                                    'name' => \App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HIPS,
+                                    'min' => 0,
+                                    'max' => 999,
+                                    'value' => $idolHips,
+                                    'text' => 'cm',
+                                    'placeholder' => 'Idol hips',
+                                ]
+                            )
                         </div>
                     </div>
                 </div>

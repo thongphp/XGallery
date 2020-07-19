@@ -22,4 +22,8 @@ final class ConfigRepository
     public const KEY_JAV_MOVIES_FILTER_FROM = 'filter_from';
     public const KEY_JAV_MOVIES_FILTER_TO = 'filter_to';
     public const KEY_JAV_MOVIES_FILTER_DOWNLOADABLE = 'filter_downloadable';
+    public const KEY_JAV_MOVIES_FILTER_IDOL_HEIGHT = 'filter_idol_height';
+    public const KEY_JAV_MOVIES_FILTER_IDOL_BREAST = 'filter_idol_breast';
+    public const KEY_JAV_MOVIES_FILTER_IDOL_WAIST = 'filter_idol_waist';
+    public const KEY_JAV_MOVIES_FILTER_IDOL_HIPS = 'filter_idol_hips';
 }
