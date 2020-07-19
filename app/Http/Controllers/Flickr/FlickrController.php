@@ -118,7 +118,7 @@ class FlickrController extends BaseController
             return response()->json([
                 'html' => Toast::warning(
                     'Download',
-                    'Can not get '.ucfirst(FlickrUrlInterface::TYPE_PROFILE).' information'
+                    'Can not get '.ucfirst($result->getType()).' information'
                 )
             ]);
         }
@@ -127,7 +127,7 @@ class FlickrController extends BaseController
             return response()->json([
                 'html' => Toast::warning(
                     'Download',
-                    ucfirst(FlickrUrlInterface::TYPE_PROFILE).' has no photos'
+                    ucfirst($result->getType()).' has no photos'
                 )
             ]);
         }
@@ -140,7 +140,7 @@ class FlickrController extends BaseController
                 sprintf(
                     $flashMessage,
                     $flickr->getPhotosCount(),
-                    ucfirst(FlickrUrlInterface::TYPE_PROFILE),
+                    ucfirst($result->getType()),
                     $flickr->getTitle()
                 )
             )
