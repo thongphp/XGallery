@@ -2,7 +2,6 @@
 
 namespace App\Services\Flickr\Objects;
 
-use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Facades\FlickrClient;
 use App\Facades\GooglePhotoClient;
 use App\Facades\UserActivity;
@@ -14,18 +13,18 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class FlickrAlbum
+ * Class FlickrProfile
  * @todo Reduce duplicate code
  * @package App\Services\Flickr\Objects
  */
-class FlickrAlbum
+class FlickrProfile
 {
     private string $id;
-    private ?object $album;
+    private ?object $profile;
     private Collection $photos;
 
     /**
-     * FlickrAlbum constructor.
+     * FlickrProfile constructor.
      * @param  string  $id
      */
     public function __construct(string $id)
@@ -39,12 +38,7 @@ class FlickrAlbum
      */
     public function load(): bool
     {
-        try {
-            $this->album = FlickrClient::getPhotoSetInfo($this->id);
-        } catch (FlickrApiPhotoSetsGetInfoException $exception) {
-            $this->album = null;
-        }
-
+        $this->profile = $userInfo = FlickrClient::getPeopleInfo($this->id);
         return $this->isValid();
     }
 
@@ -61,7 +55,7 @@ class FlickrAlbum
      */
     public function getPhotosCount(): int
     {
-        return (int) $this->album->photoset->count_photos;
+        return (int) $this->profile->photos->count;
     }
 
     /**
@@ -76,11 +70,10 @@ class FlickrAlbum
         $page = 1;
 
         do {
-            $photos = FlickrClient::getPhotoSetPhotos($this->getId(), $page);
-
-            $this->photos = $this->photos->merge($photos->photoset->photo);
+            $photos = FlickrClient::getPeoplePhotos($this->id, $page);
+            $this->photos = $this->photos->merge($photos->photos->photo);
             $page++;
-        } while ($page <= $photos->photoset->pages);
+        } while ($page <= $photos->photos->pages);
 
         return $this->photos;
     }
@@ -90,7 +83,7 @@ class FlickrAlbum
      */
     public function getTitle(): string
     {
-        return $this->album->photoset->title;
+        return $this->profile->realname ?? $this->profile->username;
     }
 
     /**
@@ -98,15 +91,7 @@ class FlickrAlbum
      */
     public function getOwner(): string
     {
-        return $this->album->photoset->owner;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->album->photoset->description ?? null;
+        return $this->id;
     }
 
     /**
@@ -114,9 +99,12 @@ class FlickrAlbum
      */
     public function isValid(): bool
     {
-        return $this->album !== null;
+        return $this->profile !== null;
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function download(): void
     {
         $googleAlbum = GooglePhotoClient::createAlbum($this->getTitle());
@@ -141,14 +129,13 @@ class FlickrAlbum
 
         // @todo Notification in even not job
         UserActivity::notify(
-            '%s request %s album',
+            '%s request %s profile',
             Auth::user(),
             'download',
             [
                 'object_id' => $this->getId(),
                 'extra' => [
                     'title' => $this->getTitle(),
-                    'title_link' => 'https://www.flickr.com/photos/'.$this->getOwner().'/albums/'.$this->getId(),
                     // Fields are displayed in a table on the message
                     'fields' => [
                         'ID' => $this->getId(),
@@ -156,7 +143,6 @@ class FlickrAlbum
                         'Owner' => $this->getOwner(),
                         'Sync to Google' => $this->getTitle().' ['.$googleAlbumId.']'
                     ],
-                    'footer' => $this->getDescription(),
                 ],
             ]
         );
