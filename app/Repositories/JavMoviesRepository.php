@@ -30,7 +30,7 @@ class JavMoviesRepository
 {
     use HasOrdering, HasSortOptions, HasFilterValues;
 
-    public const ID = 'jav_movies.id';
+    private const ID = 'jav_movies.id';
 
     private array $filterFields = [
         'name', 'content_id', 'dvd_id', 'description', 'director', 'studio', 'label', 'channel', 'series',
@@ -109,6 +109,7 @@ class JavMoviesRepository
         $this->processOrdering($builder, $request);
 
         return $builder->select('jav_movies.*')
+            ->groupBy(self::ID)
             ->paginate($request->get('perPage', ConfigRepository::DEFAULT_PER_PAGE))
             ->appends(request()->except('page', '_token'));
     }
