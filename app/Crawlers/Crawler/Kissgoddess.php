@@ -10,7 +10,7 @@
 namespace App\Crawlers\Crawler;
 
 use App\Crawlers\HttpClient;
-use App\Models\KissgoddessModel;
+use App\Models\KissGoddessModel;
 use Exception;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
@@ -47,12 +47,13 @@ final class Kissgoddess
 
     /**
      * @param  string  $itemUri
-     * @return KissgoddessModel|null
+     *
+     * @return KissGoddessModel|null
      */
-    public function getItem(string $itemUri): ?KissgoddessModel
+    public function getItem(string $itemUri): ?KissGoddessModel
     {
         $pages = $this->getIndexPagesCount($itemUri);
-        $item = new KissgoddessModel;
+        $item = new KissGoddessModel;
         $item->url = $itemUri;
         $images = collect([]);
 
@@ -124,7 +125,7 @@ final class Kissgoddess
         }
     }
 
-    public function download(KissgoddessModel $item)
+    public function download(KissGoddessModel $item)
     {
         foreach ($item->images as $image) {
             $this->getClient()->download($image, 'kissgoddess' . DIRECTORY_SEPARATOR . $item->title);

@@ -6,7 +6,6 @@ use App\Models\Jav\JavIdolModel;
 use App\Traits\Jav\HasFilterValues;
 use App\Traits\Jav\HasOrdering;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Request;
 

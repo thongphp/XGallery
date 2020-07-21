@@ -20,11 +20,13 @@ use App\Models\Traits\HasCover;
  * @property array $images
  * @package App\Models
  */
-class KissgoddessModel extends Mongodb
+class KissGoddessModel extends Mongodb
 {
     use HasCover;
 
     public $collection = 'kissgoddess';
 
     protected $fillable = ['url', 'title', 'cover', 'images'];
+
+    public const TITLE = 'title';
 }

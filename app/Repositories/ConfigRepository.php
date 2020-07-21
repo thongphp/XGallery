@@ -11,6 +11,7 @@ final class ConfigRepository
     public const KEY_SORT_BY = 'sortBy';
     public const KEY_SORT_DIRECTION = 'sortDir';
     public const KEY_PER_PAGE = 'perPage';
+    public const KEY_PAGE = 'page';
     public const KEY_KEYWORD = 'keyword';
 
     /* JAV Idols */
