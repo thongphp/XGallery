@@ -68,7 +68,8 @@
                 })
         },
         init: function () {
-            jQuery('body').on('click', '.ajax-pool', function () {
+            jQuery('body').on('click', '.ajax-pool', function (e) {
+                e.preventDefault();
                 xgallery.ajax.request(jQuery(this).data());
             });
 
