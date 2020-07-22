@@ -40,6 +40,6 @@ class XiurenTest extends TestCase
 
     public function testGetPagesCount(): void
     {
-        $this->assertEquals(358, $this->crawler->getIndexPagesCount('http://www.xiuren.org/'));
+        $this->assertEquals(360, $this->crawler->getIndexPagesCount('http://www.xiuren.org/'));
     }
 }

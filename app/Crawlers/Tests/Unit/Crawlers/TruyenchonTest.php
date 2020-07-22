@@ -28,14 +28,14 @@ class TruyenchonTest extends TestCase
     {
         $item = $this->crawler->getItem('http://truyenchon.com/truyen/kinh-di-khong-loi/chap-211/599759');
         $this->assertInstanceOf(TruyenchonChapterModel::class, $item);
-        $this->assertModelProperties(['url', 'images'], $item);
+        $this->assertModelProperties(['chapterUrl', 'images', 'title'], $item);
     }
 
     public function testGetChapters()
     {
-        $items = $this->crawler->getChapters('http://truyenchon.com/truyen/kinh-di-khong-loi');
+        $items = $this->crawler->getChapters('http://truyenchon.com/truyen/maohritsu-chu-boss-yousei-academia-20016');
         $this->assertInstanceOf(Collection::class, $items);
-        $this->assertEquals(218, $items->count());
+        $this->assertEquals(6, $items->count());
     }
 
     public function testGetStories()

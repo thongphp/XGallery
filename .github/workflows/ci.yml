@@ -3,8 +3,20 @@ name: CI
 on: [pull_request]
 
 jobs:
-  phplint:
-    name: PHP Syntax Checker (Lint)
-    runs-on: ubuntu-latest
+  build:
+    runs-on: [self-hosted]
     steps:
-      - uses: StephaneBour/actions-php-lint@7.4
+      - name: Checkout out
+        uses: actions/checkout@v2
+        if: success()
+      - name: PHP Syntax Checker (Lint)
+        uses: StephaneBour/actions-php-lint@7.4
+        if: success()
+      - name: Composer
+        run: composer install --no-interaction && composer update
+        if: success()
+      - name: PHP Security Checker
+        uses: StephaneBour/actions-php-security-checker@1.0
+        if: success()
+      - name: PHPStan
+        run: php -d memory_limit=-1 vendor/bin/phpstan analyse app
