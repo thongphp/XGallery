@@ -43,7 +43,7 @@ class KissGoddessDownload implements ShouldQueue
         }
 
         UserActivity::notify(
-            'System process for %s request [%s] an [KissGoddess] gallery',
+            '[KissGoddess] System process for %s action [%s] a gallery',
             Auth::user(),
             'download',
             [

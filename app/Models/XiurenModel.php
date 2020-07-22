@@ -26,6 +26,9 @@ class XiurenModel extends Mongodb
 
     public $collection = 'xiuren';
 
+    public const URL = 'url';
+    public const IMAGES = 'images';
+
     protected $fillable = ['url', 'cover', 'images'];
 
     public function getTitle()

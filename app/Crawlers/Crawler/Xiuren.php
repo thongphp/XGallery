@@ -23,7 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
 final class Xiuren
 {
     /**
-     * @param  array  $options
+     * @param array $options
+     *
      * @return HttpClient
      */
     public function getClient(array $options = []): HttpClient
@@ -32,8 +33,9 @@ final class Xiuren
     }
 
     /**
-     * @param  string  $uri
-     * @param  array  $options
+     * @param string $uri
+     * @param array $options
+     *
      * @return Crawler
      */
     public function crawl(string $uri, array $options = []): ?Crawler
@@ -46,7 +48,8 @@ final class Xiuren
     }
 
     /**
-     * @param  string  $itemUri
+     * @param string $itemUri
+     *
      * @return XiurenModel|null
      */
     public function getItem(string $itemUri): ?XiurenModel
@@ -57,19 +60,24 @@ final class Xiuren
 
         $item = new XiurenModel;
         $item->url = $itemUri;
-        $item->images = collect($crawler->filter('#main .post .photoThum a')->each(
-            function ($a) {
-                return $a->attr('href');
+        $item->images = collect(
+            $crawler->filter('#main .post .photoThum a')->each(
+                static function ($a) {
+                    return $a->attr('href');
+                }
+            )
+        )->reject(
+            static function ($value) {
+                return null === $value;
             }
-        ))->reject(function ($value) {
-            return null === $value;
-        })->toArray();
+        )->toArray();
 
         return $item;
     }
 
     /**
-     * @param  string|null  $indexUri
+     * @param string|null $indexUri
+     *
      * @return Collection
      */
     public function getItemLinks(string $indexUri = null): ?Collection
@@ -78,18 +86,21 @@ final class Xiuren
             return null;
         }
 
-        return collect($crawler->filter('#main .loop .content a')->each(
-            function ($el) {
-                return [
-                    'url' => $el->attr('href'),
-                    'cover' => $el->filter('img')->attr('src'),
-                ];
-            }
-        ));
+        return collect(
+            $crawler->filter('#main .loop .content a')->each(
+                function ($el) {
+                    return [
+                        'url' => $el->attr('href'),
+                        'cover' => $el->filter('img')->attr('src'),
+                    ];
+                }
+            )
+        );
     }
 
     /**
-     * @param  string|null  $indexUri
+     * @param string|null $indexUri
+     *
      * @return int
      */
     public function getIndexPagesCount(string $indexUri = null): int
@@ -108,12 +119,12 @@ final class Xiuren
     }
 
     /**
-     * @param  XiurenModel  $item
+     * @param XiurenModel $item
      */
-    public function download(XiurenModel $item)
+    public function download(XiurenModel $item): void
     {
         foreach ($item->images as $image) {
-            $this->getClient()->download($image, 'xiuren' . DIRECTORY_SEPARATOR . $item->getTitle());
+            $this->getClient()->download($image, 'xiuren'.DIRECTORY_SEPARATOR.$item->getTitle());
         }
     }
 }
