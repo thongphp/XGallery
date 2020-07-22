@@ -11,7 +11,6 @@ namespace App\Jobs\Truyenchon;
 
 use App\Exceptions\Truyenchon\TruyenchonChapterDownloadException;
 use App\Exceptions\Truyenchon\TruyenchonChapterDownloadWritePDFException;
-use App\Facades\UserActivity;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Mail\TruyenchonDownloadChapterMail;
@@ -25,7 +24,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Imagick;
@@ -67,25 +65,6 @@ class TruyenchonChapterDownload implements ShouldQueue
         if (!$chapterModel) {
             return;
         }
-
-        UserActivity::notify(
-            '%s request %s in Comic [Truyenchon] - Chapter',
-            Auth::user(),
-            'download',
-            [
-                'object_id' => $chapterModel->getAttribute('_id'),
-                'extra' => [
-                    'title' => $chapterModel->chapter,
-                    // Fields are displayed in a table on the message
-                    'fields' => [
-                        'ID' => $chapterModel->getAttribute('_id'),
-                        'Chapter' => $chapterModel->chapter,
-                        'Chapter URL' => $chapterModel->chapterUrl,
-                    ],
-                    'footer' => $chapterModel->storyUrl,
-                ],
-            ]
-        );
 
         // We are using GuzzleHttp instead our Client because it's required for custom header
         $client = new Client();
