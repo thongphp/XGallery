@@ -9,4 +9,4 @@ jobs:
       - name: Checkout out
         uses: actions/checkout@v2
       - name: Composer
-        uses: composer install
+        run: composer install
