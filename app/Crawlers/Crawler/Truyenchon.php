@@ -35,7 +35,7 @@ final class Truyenchon
         $stack = HandlerStack::create();
         $stack->push(RateLimiterMiddleware::perSecond(10, new TruyenchonRateLimitStore()));
         $options['handler'] = $stack;
-        $options = array_merge($options, config('httpclient'));
+        $options = array_merge($options, config('services.httpclient'));
 
         return app(HttpClient::class, $options);
     }

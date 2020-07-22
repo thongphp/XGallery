@@ -32,7 +32,7 @@ final class Onejav
      */
     public function getClient(array $options = []): HttpClient
     {
-        return new HttpClient(array_merge($options, config('httpclient')));
+        return new HttpClient(array_merge($options, config('services.httpclient')));
     }
 
     /**

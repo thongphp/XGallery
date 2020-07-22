@@ -12,7 +12,7 @@
                     <small class="text-muted">
                         <span class="badge badge-primary">{{count($item->images)}}</span>
                     </small>
-                    @if(config('adult.download'))
+                    @if(config('services.adult.download'))
                         <span class="float-right">
                          <button type="button" class="btn btn-primary btn-sm ajax-pool"
                                  data-ajax-url="{{route('xiuren.download.request', $item->id)}}"

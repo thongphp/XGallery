@@ -21,7 +21,7 @@ trait HasCover
      */
     public function getCover(int $holderSize = 350): string
     {
-        if (empty($this->cover) || !config('adult.cover')) {
+        if (empty($this->cover) || !config('services.adult.cover')) {
             return 'https://via.placeholder.com/'.$holderSize;
         }
 
