@@ -37,7 +37,7 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     public function __construct(FlickrDownload $download)
     {
         $this->download = $download;
-        $this->onQueue(Queues::QUEUE_FLICKR);
+        $this->onQueue(Queues::QUEUE_DOWNLOADS);
     }
 
     /**
