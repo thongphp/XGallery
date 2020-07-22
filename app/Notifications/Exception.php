@@ -59,7 +59,10 @@ class Exception extends Notification
                  * @var SlackAttachment $attachment
                  */
                 $attachment
-                    ->title($this->exception->getFile(). '. Line ' . $this->exception->getLine())
+                    ->fields([
+                        'Exception type' => get_class($this->exception),
+                        'Trace' => $this->exception->getTrace()[0]['class'].'::'.$this->exception->getTrace()[0]['function']
+                    ])
                     ->footer(config('app.url'));
             });
     }
