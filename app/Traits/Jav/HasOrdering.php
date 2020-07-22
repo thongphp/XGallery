@@ -17,8 +17,8 @@ trait HasOrdering
     protected function processOrdering(
         Builder $builder,
         Request $request,
-        string $defaultColumn = 'id',
-        string $defaultDirection = 'desc'
+        string $defaultColumn = 'release_date',
+        string $defaultDirection = 'asc'
     ): void {
         $orderBy = $request->get(ConfigRepository::KEY_SORT_BY, $defaultColumn);
         $orderDirection = $request->get(ConfigRepository::KEY_SORT_DIRECTION, $defaultDirection);
