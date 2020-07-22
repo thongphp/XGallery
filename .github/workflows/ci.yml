@@ -15,8 +15,8 @@ jobs:
           tools: pecl
           extensions: imagick
   validate:
-    needs: [build]
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
       - name: Composer
         run: composer install --prefer-dist
