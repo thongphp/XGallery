@@ -3,15 +3,24 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\SlackAttachment;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
+/**
+ * Class Exception
+ * @package App\Notifications
+ */
 class Exception extends Notification
 {
     use Queueable;
 
     private \Exception $exception;
 
+    /**
+     * Exception constructor.
+     * @param  \Exception  $exception
+     */
     public function __construct(\Exception $exception)
     {
         $this->exception = $exception;
@@ -46,12 +55,11 @@ class Exception extends Notification
             ->error()
             ->content($this->exception->getMessage())
             ->attachment(function ($attachment) {
+                /**
+                 * @var SlackAttachment $attachment
+                 */
                 $attachment
-                    ->title($this->exception->getFile())
-                    ->fields([
-                        'File' => $this->exception->getFile(),
-                        'Line' => $this->exception->getLine(),
-                    ])
+                    ->title($this->exception->getFile(). '. Line ' . $this->exception->getLine())
                     ->footer(config('app.url'));
             });
     }
