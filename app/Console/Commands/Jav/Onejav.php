@@ -95,7 +95,8 @@ final class Onejav extends BaseCommand
                 [
                     'release_date' => $item->date,
                     'is_downloadable' => true,
-                    'description' => $item->description
+                    'description' => $item->description,
+                    'cover' => $item->cover
                 ]
             );
 
