@@ -3,8 +3,10 @@ name: CI
 on: [pull_request]
 
 jobs:
-  phplint:
-    name: PHP Syntax Checker (Lint)
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: StephaneBour/actions-php-lint@7.4
+      - name: Checkout out
+        uses: actions/checkout@v2
+      - name: PHP Syntax Checker (Lint)
+        uses: StephaneBour/actions-php-lint@7.4
