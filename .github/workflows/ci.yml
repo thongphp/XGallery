@@ -12,5 +12,7 @@ jobs:
         uses: StephaneBour/actions-php-lint@7.4
       - name: PHPStan
         uses: actions-x/phpstan@v1
+        with:
+          installComposer: 0
       - name: PHP Security Checker
         uses: StephaneBour/actions-php-security-checker@1.0
