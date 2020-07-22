@@ -51,7 +51,8 @@ class Exception extends Notification
                     ->fields([
                         'File' => $this->exception->getFile(),
                         'Line' => $this->exception->getLine(),
-                    ]);
+                    ])
+                    ->footer(config('app.url'));
             });
     }
 }
