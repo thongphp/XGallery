@@ -9,6 +9,8 @@ jobs:
       - name: Checkout out
         uses: actions/checkout@v2
         if: success()
+      - name: PHP Syntax Checker (Lint)
+        uses: StephaneBour/actions-php-lint@7.4
       - name: Composer
         run: composer install --no-interaction && composer update
       - name: PHP Security Checker
