@@ -4,11 +4,9 @@ on: [pull_request]
 
 jobs:
   build:
-    runs-on: [ubuntu-latest]
+    runs-on: [sel]
     steps:
       - name: Checkout out
         uses: actions/checkout@v2
-      - name: PHP Syntax Checker (Lint)
-        uses: StephaneBour/actions-php-lint@7.4
-      - name: PHP Security Checker
-        uses: StephaneBour/actions-php-security-checker@1.0
+      - name: Composer
+        uses: composer install
