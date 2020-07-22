@@ -14,12 +14,6 @@ jobs:
           php-version: '7.4'
           tools: pecl
           extensions: imagick
-  validate:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - name: Composer
-        run: cd ../ && composer install --prefer-dist
       - name: PHP Syntax Checker (Lint)
         uses: StephaneBour/actions-php-lint@7.4
       - name: PHPStan
