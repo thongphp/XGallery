@@ -8,5 +8,8 @@ jobs:
     steps:
       - name: Checkout out
         uses: actions/checkout@v2
+        if: success()
       - name: Composer
-        run: composer install
+        run: composer install && composer update
+      - name: PHP Security Checker
+        uses: StephaneBour/actions-php-security-checker@1.0
