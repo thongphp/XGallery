@@ -4,15 +4,11 @@ on: [pull_request]
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout out
         uses: actions/checkout@v2
       - name: PHP Syntax Checker (Lint)
         uses: StephaneBour/actions-php-lint@7.4
-      - name: PHPStan
-        uses: actions-x/phpstan@v1
-        with:
-          installComposer: 0
       - name: PHP Security Checker
         uses: StephaneBour/actions-php-security-checker@1.0
