@@ -19,7 +19,7 @@ jobs:
     needs: [build]
     steps:
       - name: Composer
-        run: composer install --prefer-dist
+        run: cd ../ && composer install --prefer-dist
       - name: PHP Syntax Checker (Lint)
         uses: StephaneBour/actions-php-lint@7.4
       - name: PHPStan
