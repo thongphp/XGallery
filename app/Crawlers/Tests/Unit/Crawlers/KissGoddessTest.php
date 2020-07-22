@@ -5,11 +5,11 @@ namespace App\Crawlers\Tests\Unit\Crawlers;
 use App\Crawlers\Crawler\Kissgoddess;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\KissgoddessModel;
+use App\Models\KissGoddessModel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 
-class KissgoddessTest extends TestCase
+class KissGoddessTest extends TestCase
 {
     use HasModelTests;
 
@@ -24,7 +24,7 @@ class KissgoddessTest extends TestCase
         $this->crawler = app(Kissgoddess::class);
     }
 
-    public function urlDataProvider()
+    public function urlDataProvider(): array
     {
         return [
             [
@@ -43,7 +43,7 @@ class KissgoddessTest extends TestCase
     public function testGetItem(string $url): void
     {
         $item = $this->crawler->getItem($url);
-        $this->assertInstanceOf(KissgoddessModel::class, $item);
+        $this->assertInstanceOf(KissGoddessModel::class, $item);
         $this->assertModelProperties(['url','images'], $item);
     }
 

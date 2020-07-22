@@ -10,7 +10,8 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseCommand;
-use App\Models\KissgoddessModel;
+use App\Models\KissGoddessModel;
+use Exception;
 
 /**
  * Class Kissgoddess
@@ -35,7 +36,7 @@ final class Kissgoddess extends BaseCommand
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function fully(): bool
     {
@@ -44,7 +45,7 @@ final class Kissgoddess extends BaseCommand
         }
 
         $crawler = app(\App\Crawlers\Crawler\Kissgoddess::class);
-        $items = app(\App\Crawlers\Crawler\Kissgoddess::class)->getItemLinks($endpoint->url.'/'.$endpoint->page.'.html');
+        $items = $crawler->getItemLinks($endpoint->url.'/'.$endpoint->page.'.html');
 
         if ($items->isEmpty()) {
             $endpoint->fail()->save();
@@ -52,12 +53,14 @@ final class Kissgoddess extends BaseCommand
         }
 
         $this->progressBarInit($items->count());
-        $items->each(function ($item) use ($crawler) {
-            $itemDetail = $crawler->getItem($item['url']);
-            KissgoddessModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
-            $this->progressBarSetStatus('QUEUED');
-            $this->progressBar->advance();
-        });
+        $items->each(
+            function ($item) use ($crawler) {
+                $itemDetail = $crawler->getItem($item['url']);
+                KissGoddessModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
+                $this->progressBarSetStatus('QUEUED');
+                $this->progressBar->advance();
+            }
+        );
 
         $endpoint->succeed()->save();
 

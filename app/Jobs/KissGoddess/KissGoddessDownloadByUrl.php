@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\KissGoddess;
 
 use App\Crawlers\Crawler\Kissgoddess;
+use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
  * Class KissGoddessDownload
  * @package App\Jobs
  */
-class KissGoddessDownload implements ShouldQueue
+class KissGoddessDownloadByUrl implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
@@ -22,8 +23,6 @@ class KissGoddessDownload implements ShouldQueue
     private string $url;
 
     /**
-     * Create a new job instance.
-     *
      * @param  string  $url
      */
     public function __construct(string $url)
@@ -32,12 +31,7 @@ class KissGoddessDownload implements ShouldQueue
         $this->onQueue(Queues::QUEUE_DOWNLOADS);
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
+    public function handle(): void
     {
         $crawler = app(Kissgoddess::class);
         $crawler->download($crawler->getItem($this->url));
