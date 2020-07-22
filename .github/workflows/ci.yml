@@ -16,7 +16,5 @@ jobs:
           extensions: imagick
       - name: PHP Syntax Checker (Lint)
         uses: StephaneBour/actions-php-lint@7.4
-      - name: PHPStan
-        uses: actions-x/phpstan@v1
       - name: PHP Security Checker
         uses: StephaneBour/actions-php-security-checker@1.0
