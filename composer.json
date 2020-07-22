@@ -106,7 +106,7 @@
         ],
         "test": [
             "@php vendor/bin/phpunit --testsuite=Crawlers",
-            "@php vendor/bin/phpunit --testsuite=Commands"
+            "@php vendor/bin/phpunit --testsuite=Tests"
         ],
         "security-check": "vendor/bin/security-checker --no-interaction security:check",
         "test-phpstan": "vendor/bin/phpstan analyze --memory-limit=-1",
