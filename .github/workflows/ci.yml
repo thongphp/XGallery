@@ -8,6 +8,12 @@ jobs:
     steps:
       - name: Checkout out
         uses: actions/checkout@v2
+      - name: Setup PHP Action
+        uses: shivammathur/setup-php@2.4.0
+        with:
+          php-version: '7.4'
+          tools: pecl
+          extensions: ext-imagick
       - name: Composer install
         run:  composer install
       - name: PHP Syntax Checker (Lint)
