@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\SlackAttachment;
 use Illuminate\Notifications\Messages\SlackMessage;
@@ -50,20 +51,23 @@ class Exception extends Notification
      */
     public function toSlack($notifiable): SlackMessage
     {
-        return (new SlackMessage)
-            ->from('Exception')
+        $message = (new SlackMessage)
+            ->from(get_class($this->exception))
             ->error()
-            ->content($this->exception->getMessage())
-            ->attachment(function ($attachment) {
-                /**
-                 * @var SlackAttachment $attachment
-                 */
-                $attachment
-                    ->fields([
-                        'Exception type' => get_class($this->exception),
-                        'Trace' => $this->exception->getTrace()[0]['class'].'::'.$this->exception->getTrace()[0]['function']
-                    ])
-                    ->footer(config('app.url'));
-            });
+            ->content($this->exception->getMessage());
+
+        $traces = $this->exception->getTrace();
+        $trace = reset($traces);
+        $message->attachment(function ($attachment) use ($trace) {
+            /**
+             * @var SlackAttachment $attachment
+             */
+            $attachment
+                ->fields($trace)
+                ->footer(config('app.url'))
+                ->timestamp(Carbon::now()->getTimestamp());
+        });
+
+        return $message;
     }
 }
