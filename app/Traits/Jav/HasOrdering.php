@@ -18,7 +18,7 @@ trait HasOrdering
         Builder $builder,
         Request $request,
         string $defaultColumn = 'release_date',
-        string $defaultDirection = 'asc'
+        string $defaultDirection = 'desc'
     ): void {
         $orderBy = $request->get(ConfigRepository::KEY_SORT_BY, $defaultColumn);
         $orderDirection = $request->get(ConfigRepository::KEY_SORT_DIRECTION, $defaultDirection);
