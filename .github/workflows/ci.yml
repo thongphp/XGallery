@@ -8,5 +8,9 @@ jobs:
     steps:
       - name: Checkout out
         uses: actions/checkout@v2
+      - name: Composer install
+        run:  composer install
       - name: PHP Syntax Checker (Lint)
         uses: StephaneBour/actions-php-lint@7.4
+      - name: PHPStan
+        uses: actions-x/phpstan@v1
