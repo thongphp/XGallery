@@ -107,7 +107,8 @@ final class XCityVideo
 
                         return ['genres' => $genres];
                     case 'Director':
-                        return ['director' => trim($li->filter('#program_detail_director')->text())];
+                        $node = $li->filter('#program_detail_director');
+                        return ['director' => $node->count() > 0 ? $node->text() : null];
                     case 'Item Number':
                         return ['item_number' => trim($li->filter('#hinban')->text())];
                     case 'Running Time':
