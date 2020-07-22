@@ -16,6 +16,7 @@ jobs:
           extensions: imagick
   validate:
     needs: [build]
+    runs-on: ubuntu-latest
     steps:
       - name: Composer
         run: composer install --prefer-dist
