@@ -8,7 +8,7 @@ use App\Facades\FlickrClient;
 use App\Jobs\Google\SyncPhotoToGooglePhoto;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Flickr\FlickrDownload;
+use App\Models\Flickr\FlickrDownloadModel;
 use App\Models\Flickr\FlickrPhotoModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,15 +26,14 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
     use HasJob;
 
     /**
-     * @var FlickrDownload
+     * @var FlickrDownloadModel
      */
-    private FlickrDownload $download;
+    private FlickrDownloadModel $download;
 
     /**
-     * FlickrDownloadPhotoToLocal constructor.
-     * @param  FlickrDownload  $download
+     * @param FlickrDownloadModel $download
      */
-    public function __construct(FlickrDownload $download)
+    public function __construct(FlickrDownloadModel $download)
     {
         $this->download = $download;
         $this->onQueue(Queues::QUEUE_DOWNLOADS);
@@ -60,15 +59,15 @@ class FlickrDownloadPhotoToLocal implements ShouldQueue
             return;
         }
 
-        SyncPhotoToGooglePhoto::dispatch(
-            $this->downloadPhoto($photo),
-            $photo->title,
-            $this->download->google_album_id
-        );
+        $this->download->local_path = $this->downloadPhoto($photo);
+        $this->download->save();
+
+        SyncPhotoToGooglePhoto::dispatch($this->download, $photo->title);
     }
 
     /**
-     * @param  FlickrPhotoModel  $photo
+     * @param FlickrPhotoModel $photo
+     *
      * @return bool|string
      * @throws \Exception
      */

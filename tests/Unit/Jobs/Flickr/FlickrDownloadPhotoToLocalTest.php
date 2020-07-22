@@ -8,7 +8,7 @@ use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrDownloadPhotoToLocal;
 use App\Jobs\Google\SyncPhotoToGooglePhoto;
-use App\Models\Flickr\FlickrDownload;
+use App\Models\Flickr\FlickrDownloadModel;
 use App\Models\Flickr\FlickrPhotoModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,7 +29,7 @@ class FlickrDownloadPhotoToLocalTest extends TestCase
         FlickrClient::shouldReceive('getPhotoSizes')->andThrow(new FlickrApiPhotoGetSizesException(self::PHOTO_ID));
 
         $this->expectException(FlickrApiPhotoGetSizesException::class);
-        $flickrDownload = FlickrDownload::firstOrCreate(['photo_id' => self::PHOTO_ID, 'google_album_id' => 'foo']);
+        $flickrDownload = FlickrDownloadModel::firstOrCreate(['photo_id' => self::PHOTO_ID, 'google_album_id' => 'foo']);
 
         (new FlickrDownloadPhotoToLocal($flickrDownload))->handle();
     }
@@ -46,7 +46,7 @@ class FlickrDownloadPhotoToLocalTest extends TestCase
         $this->expectException(CurlDownloadFileException::class);
         $this->doesntExpectJobs(SyncPhotoToGooglePhoto::class);
 
-        $flickrDownload = FlickrDownload::firstOrCreate(['photo_id' => self::PHOTO_ID, 'google_album_id' => 'foo']);
+        $flickrDownload = FlickrDownloadModel::firstOrCreate(['photo_id' => self::PHOTO_ID, 'google_album_id' => 'foo']);
 
         (new FlickrDownloadPhotoToLocal($flickrDownload))->handle();
     }
@@ -60,7 +60,7 @@ class FlickrDownloadPhotoToLocalTest extends TestCase
             $mock->shouldReceive('download')->andReturn('foo-file.png');
         });
 
-        $flickrDownload = FlickrDownload::firstOrCreate(['photo_id' => self::PHOTO_ID, 'google_album_id' => 'foo']);
+        $flickrDownload = FlickrDownloadModel::firstOrCreate(['photo_id' => self::PHOTO_ID, 'google_album_id' => 'foo']);
 
         $this->expectsJobs(SyncPhotoToGooglePhoto::class);
 

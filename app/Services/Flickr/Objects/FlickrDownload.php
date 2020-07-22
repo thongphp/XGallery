@@ -4,6 +4,7 @@ namespace App\Services\Flickr\Objects;
 
 use App\Facades\GooglePhotoClient;
 use App\Jobs\Flickr\FlickrContact;
+use App\Models\Flickr\FlickrDownloadModel;
 use App\Models\Flickr\FlickrPhotoModel;
 use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Support\Collection;
@@ -33,7 +34,7 @@ abstract class FlickrDownload
         return $this->id;
     }
 
-    public function download()
+    public function download(): void
     {
         $this->googleAlbum = $this->createGoogleAlbum();
 
@@ -49,8 +50,14 @@ abstract class FlickrDownload
                 array_merge(get_object_vars($photo), [FlickrPhotoModel::KEY_OWNER => $this->getOwner()])
             );
 
-            \App\Models\Flickr\FlickrDownload::firstOrCreate(
-                array_merge(['user_id' => Auth::id()], ['photo_id' => $photo->id, 'google_album_id' => $this->googleAlbum->id])
+            FlickrDownloadModel::firstOrCreate(
+                array_merge(
+                    [FlickrDownloadModel::USER_ID => Auth::id()],
+                    [
+                        FlickrDownloadModel::PHOTO_ID => $photo->id,
+                        FlickrDownloadModel::GOOGLE_ALBUM_ID => $this->googleAlbum->id
+                    ]
+                )
             );
         });
 

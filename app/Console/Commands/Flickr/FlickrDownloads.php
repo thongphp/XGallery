@@ -11,7 +11,7 @@ namespace App\Console\Commands\Flickr;
 
 use App\Console\BaseCommand;
 use App\Jobs\Flickr\FlickrDownloadPhotoToLocal;
-use App\Models\Flickr\FlickrDownload;
+use App\Models\Flickr\FlickrDownloadModel;
 
 /**
  * Get and push a Flickr' contact to queue for getting detail
@@ -38,10 +38,12 @@ final class FlickrDownloads extends BaseCommand
      */
     public function fully(): bool
     {
-        $photos = FlickrDownload::limit(1)->get();
-        $photos->each(function ($photo) {
-            FlickrDownloadPhotoToLocal::dispatch($photo->photo_id, $photo->google_album_id);
-            $photo->delete();
+        $downloadModels = FlickrDownloadModel::where([FlickrDownloadModel::GOOGLE_PHOTO_TOKEN => null])
+            ->limit(1)
+            ->get();
+
+        $downloadModels->each(static function (FlickrDownloadModel $downloadModel) {
+            FlickrDownloadPhotoToLocal::dispatch($downloadModel);
         });
 
         return true;

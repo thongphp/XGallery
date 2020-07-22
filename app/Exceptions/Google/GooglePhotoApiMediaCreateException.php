@@ -3,23 +3,17 @@
 namespace App\Exceptions\Google;
 
 use Exception;
-use Illuminate\Support\Facades\Storage;
 
 class GooglePhotoApiMediaCreateException extends Exception
 {
     /**
-     * @param  string  $uploadToken
-     * @param  string  $albumId
-     * @param  mixed  $response
-     * @param  string  $file
+     * @param string $albumId
+     * @param mixed $response
      */
-    public function __construct(string $uploadToken, string $albumId, $response, string $file)
+    public function __construct(string $albumId, $response)
     {
-        Storage::delete($file);
-
         $message = sprintf(
-            'Can not create media with token [%s] in album [%s]. Response %s',
-            $uploadToken,
+            'Can not process batch assign media in album [%s]. Response %s',
             $albumId,
             json_encode($response)
         );

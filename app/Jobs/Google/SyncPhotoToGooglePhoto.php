@@ -5,6 +5,7 @@ namespace App\Jobs\Google;
 use App\Facades\GooglePhotoClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
+use App\Models\Flickr\FlickrDownloadModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,43 +23,36 @@ class SyncPhotoToGooglePhoto implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $filePath;
-    private string $description;
-    private string $googleAlbumId;
+    private FlickrDownloadModel $flickrDownload;
 
     /**
-     * @param  string  $filePath
-     * @param  string  $description
-     * @param  string  $googleAlbumId
+     * @param FlickrDownloadModel $flickrDownload
      */
-    public function __construct(string $filePath, string $description, string $googleAlbumId)
+    public function __construct(FlickrDownloadModel $flickrDownload)
     {
-        $this->filePath = $filePath;
-        // @todo variable name does not make sense
-        $this->description = $description;
-        $this->googleAlbumId = $googleAlbumId;
+        $this->flickrDownload = $flickrDownload;
         $this->onQueue(Queues::QUEUE_GOOGLE);
     }
 
-    public function middleware()
+    public function middleware(): array
     {
-        return [(new RateLimited())
-            ->allow(5)
-            ->everySeconds(1)
-            ->releaseAfterSeconds(30)];
+        return [
+            (new RateLimited())
+                ->allow(5)
+                ->everySeconds(1)
+                ->releaseAfterSeconds(30),
+        ];
     }
 
     /**
      * @throws FileNotFoundException
-     * @throws \JsonException
      */
     public function handle(): void
     {
-        if (!Storage::exists($this->filePath)) {
-            throw new FileNotFoundException('File not found '.$this->filePath);
+        if (!Storage::exists($this->flickrDownload->local_path)) {
+            throw new FileNotFoundException('File not found '.$this->flickrDownload);
         }
 
-        GooglePhotoClient::uploadAndCreateMedia($this->filePath, $this->description, $this->googleAlbumId);
-        Storage::delete($this->filePath);
+        GooglePhotoClient::uploadMedia($this->flickrDownload);
     }
 }

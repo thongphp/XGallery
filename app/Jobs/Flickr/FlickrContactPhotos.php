@@ -57,7 +57,7 @@ class FlickrContactPhotos implements ShouldQueue
     /**
      * @param array $photos
      */
-    private function storePhotos(array $photos)
+    private function storePhotos(array $photos): void
     {
         $repository = app(PhotoRepository::class);
         foreach ($photos as $photo) {
