@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Apis\Controllers\Batdaongsan\BatdongsanController;
+use App\Http\Apis\Controllers\Batdongsan\BatdongsanController;
 use App\Http\Apis\Controllers\Jav\JavController;
 use App\Http\Apis\Controllers\Nhaccuatui\NhaccuatuiController;
 use Illuminate\Support\Facades\Route;

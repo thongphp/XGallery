@@ -90,6 +90,8 @@ class JavMoviesRepository
                 ->whereIn('jav_genres_xref.genre_id', $genres);
         }
 
+        $select = ['jav_movies.*'];
+
         $dateFrom = $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_FROM);
         $dateTo = $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_TO);
 
@@ -105,10 +107,10 @@ class JavMoviesRepository
             $builder->orWhere('jav_movies.release_date', '<=', $dateTo->endOfDay());
         }
 
-        $this->processIdolFilter($builder, $request);
+        $this->processIdolFilter($builder, $request, $select);
         $this->processOrdering($builder, $request);
 
-        return $builder->select('jav_movies.*')
+        return $builder->select($select)
             ->groupBy(self::ID)
             ->paginate($request->get('perPage', ConfigRepository::DEFAULT_PER_PAGE))
             ->appends(request()->except('page', '_token'));
@@ -230,8 +232,9 @@ class JavMoviesRepository
     /**
      * @param Builder $builder
      * @param Request $request
+     * @param array $select
      */
-    private function processIdolFilter(Builder $builder, Request $request): void
+    private function processIdolFilter(Builder $builder, Request $request, array &$select): void
     {
         $builder->leftJoin('jav_idols_xref', self::ID, 'jav_idols_xref.movie_id')
             ->leftJoin('jav_idols', 'jav_idols.id', 'jav_idols_xref.idol_id');
@@ -266,5 +269,19 @@ class JavMoviesRepository
             (int) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HIPS),
             '>='
         );
+
+        $idolAgeFrom = (int) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_AGE_FROM);
+        $idolAgeTo = (int) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_AGE_TO);
+
+        if ($idolAgeFrom && $idolAgeTo) {
+            $select[] = DB::raw('TIMESTAMPDIFF(YEAR, jav_idols.birthday, jav_movies.release_date) AS movieIdolAge');
+            $builder->havingRaw(DB::raw('(movieIdolAge >= '.$idolAgeFrom.' AND movieIdolAge <= '.$idolAgeTo.')'));
+        } elseif (!$idolAgeFrom && $idolAgeTo) {
+            $select[] = DB::raw('TIMESTAMPDIFF(YEAR, jav_idols.birthday, jav_movies.release_date) AS movieIdolAge');
+            $builder->havingRaw(DB::raw('(movieIdolAge IS NOT NULL AND movieIdolAge <= '.$idolAgeTo.')'));
+        } elseif ($idolAgeFrom && !$idolAgeTo) {
+            $select[] = DB::raw('TIMESTAMPDIFF(YEAR, jav_idols.birthday, jav_movies.release_date) AS movieIdolAge');
+            $builder->havingRaw(DB::raw('(movieIdolAge IS NOT NULL AND movieIdolAge >= '.$idolAgeFrom.')'));
+        }
     }
 }

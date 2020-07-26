@@ -102,7 +102,7 @@
                             <div class="input-daterange input-group">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
-                                        From
+                                        <strong>Release date</strong>&nbsp;from
                                     </div>
                                 </div>
                                 <input
@@ -113,7 +113,7 @@
                                 />
                                 <div class="input-group-append">
                                     <div class="input-group-text">
-                                        To
+                                        to
                                     </div>
                                 </div>
                                 <input
@@ -171,6 +171,35 @@
                                     'placeholder' => 'Idol hips',
                                 ]
                             )
+                        </div>
+                    </div>
+                    <div class="w-100 mt-2"></div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <strong>Idol's age</strong>&nbsp;from
+                                    </div>
+                                </div>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    value="{{request()->request->get(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_AGE_FROM)}}"
+                                    name="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_AGE_FROM}}"
+                                />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        To
+                                    </div>
+                                </div>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    value="{{request()->request->get(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_AGE_TO)}}"
+                                    name="{{\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_AGE_TO}}"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

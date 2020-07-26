@@ -36,4 +36,6 @@ final class ConfigRepository
     public const KEY_JAV_MOVIES_FILTER_IDOL_BREAST = 'filter_idol_breast';
     public const KEY_JAV_MOVIES_FILTER_IDOL_WAIST = 'filter_idol_waist';
     public const KEY_JAV_MOVIES_FILTER_IDOL_HIPS = 'filter_idol_hips';
+    public const KEY_JAV_MOVIES_FILTER_IDOL_AGE_FROM = 'filter_idol_age_from';
+    public const KEY_JAV_MOVIES_FILTER_IDOL_AGE_TO = 'filter_idol_age_to';
 }

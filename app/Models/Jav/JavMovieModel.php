@@ -12,6 +12,7 @@ namespace App\Models\Jav;
 use App\Models\Traits\HasCover;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use JustBetter\PaginationWithHavings\PaginationWithHavings;
 
 /**
  * Class JavMovieModel
@@ -34,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class JavMovieModel extends Model
 {
-    use HasCover;
+    use HasCover, PaginationWithHavings;
 
     protected $table = 'jav_movies';
 
