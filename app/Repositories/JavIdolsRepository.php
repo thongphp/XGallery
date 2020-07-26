@@ -77,7 +77,7 @@ class JavIdolsRepository
             $builder->havingRaw(DB::raw('(age IS NOT NULL AND age >= ' . $ageFrom . ')'));
         }
 
-        $this->processOrdering($builder, $request);
+        $this->processOrdering($builder, $request, 'id');
 
         return $builder->select($select)
             ->paginate($request->get(ConfigRepository::KEY_PER_PAGE, ConfigRepository::DEFAULT_PER_PAGE))
