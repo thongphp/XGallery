@@ -55,5 +55,9 @@ return [
         'debug' => false,
         'decode_content' => true,
         'delay' => 1000
+    ],
+
+    'authenticated' => [
+        'emails' => explode(',', env('AUTHENTICATED_EMAILS', 'soulevilx@gmail.com'))
     ]
 ];
