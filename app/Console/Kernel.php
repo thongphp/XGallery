@@ -11,7 +11,6 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class Kernel
@@ -36,17 +35,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $commands = DB::table('schedules')->select('*')->get()->toArray();
-
-        foreach ($commands as $command) {
-            if ($command->every === null) {
-                continue;
-            }
-            $schedule->command($command->command)
-                ->{$command->every}()
-                ->withoutOverlapping()
-                ->runInBackground();
-        }
     }
 
     /**

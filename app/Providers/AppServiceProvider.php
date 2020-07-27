@@ -18,6 +18,7 @@ use App\Services\GooglePhoto;
 use App\Services\UserActivity;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
+use Studio\Totem\Totem;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -64,5 +65,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Totem::auth(function ($request) {
+            $user = $request->user();
+            $authenticatedUsers = config('services.authenticated.emails');
+            return in_array($user->email, $authenticatedUsers);
+        });
     }
 }

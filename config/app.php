@@ -191,6 +191,7 @@ return [
         App\Providers\GoogleServiceProvider::class,
 
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        Studio\Totem\Providers\TotemServiceProvider::class,
     ],
 
     /*
@@ -244,7 +245,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
-        'Es' => Elasticquent\ElasticquentElasticsearchFacade::class,
         'GoogleDrive' => GoogleDriveFacade::class,
         'GooglePhotoClient' => App\Facades\GooglePhotoClient::class,
         'FlickrClient' => App\Facades\FlickrClient::class,
