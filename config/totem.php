@@ -18,6 +18,11 @@ return [
             'parameters'        => false,
         ],
         [
+            'label'             => 'Every Fifteen Minutes',
+            'interval'          => 'everyFifteenMinutes',
+            'parameters'        => false,
+        ],
+        [
             'label'             => 'Every Thirty Minutes',
             'interval'          => 'everyThirtyMinutes',
             'parameters'        => false,
