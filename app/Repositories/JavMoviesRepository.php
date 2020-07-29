@@ -11,7 +11,7 @@ namespace App\Repositories;
 
 use App\Models\Jav\JavGenreModel;
 use App\Models\Jav\JavIdolModel;
-use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\JavMovie;
 use App\Objects\Option;
 use App\Traits\Jav\HasFilterValues;
 use App\Traits\Jav\HasOrdering;
@@ -43,7 +43,7 @@ class JavMoviesRepository
      */
     public function getItems(Request $request): LengthAwarePaginator
     {
-        $builder = app(JavMovieModel::class)->query();
+        $builder = app(JavMovie::class)->query();
 
         if ($keyword = $request->get(ConfigRepository::KEY_KEYWORD)) {
             $builder->where(

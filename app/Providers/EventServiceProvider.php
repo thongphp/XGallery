@@ -9,11 +9,14 @@
 
 namespace App\Providers;
 
+use App\Listeners\Jav\MovieEventSubscriber;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class EventServiceProvider extends ServiceProvider
 {
+    protected $subscribe = [MovieEventSubscriber::class];
+
     /**
      * The event listener mappings for the application.
      *

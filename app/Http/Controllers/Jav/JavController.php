@@ -11,11 +11,9 @@ namespace App\Http\Controllers\Jav;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
-use App\Models\Jav\JavIdolModel;
-use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\JavMovie;
 use App\Models\JavDownload;
 use App\Repositories\ConfigRepository;
-use App\Repositories\JavIdolsRepository;
 use App\Repositories\JavMoviesRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -86,7 +84,7 @@ class JavController extends BaseController
      */
     public function movie(int $id)
     {
-        $movie = JavMovieModel::find($id);
+        $movie = JavMovie::find($id);
 
         return view(
             'jav.movie',

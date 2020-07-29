@@ -10,6 +10,8 @@
 namespace App\Providers;
 
 use App\Facades\UserActivity as UserActivityFacade;
+use App\Models\Jav\JavMovie;
+use App\Observers\JavMovieObserver;
 use App\Services\Flickr\UrlExtractor;
 use App\Services\FlickrClient;
 use App\Services\FlickrValidate;
@@ -70,5 +72,7 @@ class AppServiceProvider extends ServiceProvider
             $authenticatedUsers = config('services.authenticated.emails');
             return in_array($user->email, $authenticatedUsers);
         });
+
+        JavMovie::observe(JavMovieObserver::class);
     }
 }
