@@ -6,11 +6,11 @@ use App\Models\Jav\JavGenreModel;
 use App\Models\Jav\JavGenreXrefModel;
 use App\Models\Jav\JavIdolModel;
 use App\Models\Jav\JavIdolXrefModel;
-use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\JavMovie;
 
 trait HasXref
 {
-    protected function updateGenres(array $genres, JavMovieModel $movie)
+    protected function updateGenres(array $genres, JavMovie $movie)
     {
         foreach ($genres as $tag) {
             $model = JavGenreModel::firstOrCreate(['name' => $tag], ['name' => $tag]);
@@ -18,7 +18,7 @@ trait HasXref
         }
     }
 
-    protected function updateIdols(array $idols, JavMovieModel $movie)
+    protected function updateIdols(array $idols, JavMovie $movie)
     {
         foreach ($idols as $actress) {
             $model = JavIdolModel::firstOrCreate(['name' => $actress]);

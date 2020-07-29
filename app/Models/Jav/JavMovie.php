@@ -33,11 +33,9 @@ use JustBetter\PaginationWithHavings\PaginationWithHavings;
  * @property int $is_downloadable
  * @package App\Models\Jav
  */
-class JavMovieModel extends Model
+class JavMovie extends Model
 {
     use HasCover, PaginationWithHavings;
-
-    protected $table = 'jav_movies';
 
     protected $fillable = [
         'name',

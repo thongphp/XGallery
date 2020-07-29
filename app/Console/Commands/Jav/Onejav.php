@@ -10,7 +10,7 @@
 namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCommand;
-use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\JavMovie;
 use App\Models\Jav\OnejavModel;
 use App\Traits\Jav\HasXref;
 use Exception;
@@ -90,7 +90,7 @@ final class Onejav extends BaseCommand
              * @var OnejavModel $item
              */
             $item = OnejavModel::updateOrCreate(['url' => $attributes['url']], $attributes);
-            $movie = JavMovieModel::updateOrCreate(
+            $movie = JavMovie::updateOrCreate(
                 ['dvd_id' => $item->title],
                 [
                     'release_date' => $item->date,

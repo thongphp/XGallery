@@ -41,7 +41,7 @@ class JavIdolModel extends Model
      */
     public function movies(): BelongsToMany
     {
-        return $this->belongsToMany(JavMovieModel::class, 'jav_idols_xref', 'idol_id', 'movie_id');
+        return $this->belongsToMany(JavMovie::class, 'jav_idols_xref', 'idol_id', 'movie_id');
     }
 
     /**

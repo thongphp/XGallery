@@ -3,7 +3,7 @@
 namespace Tests\Feature\Console\Command\Jav;
 
 use App\Models\CrawlerEndpoints;
-use App\Models\Jav\JavMovieModel;
+use App\Models\Jav\JavMovie;
 use App\Models\Jav\OnejavModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,7 +25,7 @@ class OnejavTest extends TestCase
         $this->assertIsInt(OnejavModel::all()->count());
         $this->assertGreaterThan(1, OnejavModel::all()->count());
 
-        $movies = JavMovieModel::all();
+        $movies = JavMovie::all();
         $this->assertGreaterThan(1, $movies->count());
         $this->assertNotNull($movies->first()->release_date);
         $this->assertNotNull($movies->first()->dvd_id);
