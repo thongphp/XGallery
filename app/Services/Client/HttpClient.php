@@ -7,6 +7,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class HttpClient
@@ -15,6 +17,7 @@ class HttpClient
      * @var Client
      */
     private Client $client;
+    private ResponseInterface $response;
 
     public function __construct(array $options = [], array $middlewares = [])
     {
@@ -32,8 +35,7 @@ class HttpClient
     {
         $useCache = false;
 
-        if (strtoupper($method) === \Symfony\Component\HttpFoundation\Request::METHOD_POST)
-        {
+        if (strtoupper($method) === Request::METHOD_POST) {
             $useCache = true;
         }
 
