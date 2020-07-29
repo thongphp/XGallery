@@ -9,8 +9,8 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Crawlers\HttpClient;
 use App\Models\BatdongsanModel;
+use App\Services\Client\HttpClient;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\Url\Url;
@@ -26,12 +26,11 @@ final class Batdongsan
     const CRAWLER_ENDPOINT = 'https://batdongsan.com.vn';
 
     /**
-     * @param  array  $options
      * @return HttpClient
      */
-    public function getClient(array $options = []): HttpClient
+    public function getClient(): HttpClient
     {
-        return new HttpClient(array_merge($options, config('services.httpclient')));
+        return new HttpClient();
     }
 
     /**
@@ -41,7 +40,7 @@ final class Batdongsan
      */
     public function crawl(string $uri, array $options = []): ?Crawler
     {
-        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
             return null;
         }
 

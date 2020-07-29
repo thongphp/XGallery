@@ -2,7 +2,6 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Crawlers\HttpClient;
 use App\Exceptions\CurlDownloadFileException;
 use App\Facades\FlickrClient;
 use App\Jobs\Google\SyncPhotoToGooglePhoto;
@@ -10,6 +9,7 @@ use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Flickr\FlickrDownload;
 use App\Models\Flickr\FlickrPhotoModel;
+use App\Services\Client\HttpClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
