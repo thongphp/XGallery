@@ -16,7 +16,8 @@ class MovieEventSubscriber
     public function handleJavMovie(JavMovieEventInterface $event)
     {
         $movie = $event->getMovie();
-        if (!$event->getMovie()->is_downloadable) {
+
+        if (!$movie->is_downloadable) {
             return;
         }
 
