@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 use Symfony\Component\HttpFoundation\Response;
 
 class HttpClient
@@ -17,23 +16,31 @@ class HttpClient
      */
     private Client $client;
 
-    public function __construct(?RateLimiterMiddleware $rateLimit = null)
+    public function __construct(array $options = [], array $middlewares = [])
     {
         $stack = HandlerStack::create();
         $stack->push(Middleware::prepareBody(), 'prepare_body');
-        if ($rateLimit) {
-            $stack->push($rateLimit);
+
+        foreach ($middlewares as $middleware) {
+            $stack->push($middleware);
         }
 
-        $this->client = new Client(array_merge(['handler' => $stack], config('services.httpclient', [])));
+        $this->client = new Client(array_merge(['handler' => $stack], $options, config('services.httpclient', [])));
     }
 
     public function request($method, $uri = '', array $options = [])
     {
+        $useCache = false;
+
+        if (strtoupper($method) === \Symfony\Component\HttpFoundation\Request::METHOD_POST)
+        {
+            $useCache = true;
+        }
+
         $key = md5(serialize([$method, $uri]));
         $isCached = Cache::has($key);
 
-        if ($isCached) {
+        if ($useCache && $isCached) {
             return Cache::get($key);
         }
 
@@ -41,7 +48,14 @@ class HttpClient
 
         switch ($this->response->getStatusCode()) {
             case Response::HTTP_OK:
-                Cache::put($key, $this->response->getBody()->getContents(), 1800);
+                $content = $this->response->getBody()->getContents();
+                $contentType = $this->response->getHeader('Content-Type');
+                $contentType = $contentType ? $contentType[0] : null;
+
+                if ($contentType && $contentType === 'application/json') {
+                    $content = json_decode($content);
+                }
+                Cache::put($key, $content, 1800);
                 break;
             default:
                 return null;

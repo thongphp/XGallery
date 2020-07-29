@@ -2,6 +2,7 @@
 
 namespace App\Oauth;
 
+use App\Exceptions\OAuthClientException;
 use App\Models\Oauth;
 use App\Repositories\OAuthRepository;
 use DateInterval;
@@ -9,6 +10,7 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use JsonException;
 use kamermans\OAuth2\GrantType\NullGrantType;
@@ -18,8 +20,51 @@ use kamermans\OAuth2\OAuth2Middleware;
  * Used to communicate with Google
  * @package App\Oauth
  */
-class GoogleOauthClient extends OauthClient
+class GoogleOauthClient
 {
+    /**
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $parameters
+     *
+     * @return mixed|string|null
+     * @throws GuzzleException|OAuthClientException
+     */
+    public function request(string $method, string $uri, array $parameters = [])
+    {
+        $key = md5(serialize([$method, $uri, $parameters]));
+        $isCached = Cache::has($key);
+
+        if ($isCached) {
+            return Cache::get($key);
+        }
+
+        if (!$client = $this->getClient()) {
+            return null;
+        }
+
+        $response = $client->request($method, $uri, $parameters);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new OAuthClientException((string) $response->getBody(), $response->getStatusCode());
+        }
+
+        /**
+         * @TODO Support decode content via event
+         */
+        $header = $response->getHeader('Content-Type')[0] ?? '';
+        $content = (string) $response->getBody();
+
+        if (strpos($header, 'application/json') === false) {
+            return $content;
+        }
+
+        $content = json_decode($content);
+
+        Cache::put($key, $content, 86400); // Day
+        return Cache::get($key);
+    }
+
     /**
      * @return Client|null
      */
@@ -46,7 +91,7 @@ class GoogleOauthClient extends OauthClient
     }
 
     /**
-     * @param Oauth $oauth
+     * @param  Oauth  $oauth
      *
      * @return string|null
      */

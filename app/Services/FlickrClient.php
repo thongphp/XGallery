@@ -16,16 +16,18 @@ use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
 use App\Exceptions\OAuthClientException;
 use App\Oauth\OauthClient;
+use App\Repositories\OAuthRepository;
+use App\Services\Client\HttpClient;
 use App\Services\Flickr\Response\PeopleResponseInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use Illuminate\Support\Facades\Log;
-use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Class FlickrClient
  * @package App\Services
  */
-class FlickrClient extends OauthClient
+class FlickrClient
 {
     public const REST_ENDPOINT = 'https://api.flickr.com/services/rest';
 
@@ -42,9 +44,27 @@ class FlickrClient extends OauthClient
     private const PEOPLE_GET_PHOTOS = 'people.getPhotos';
     private const URL_LOOKUP_USER = 'urls.lookupUser';
 
+    protected function request(string $method, string $uri, array $parameters = [])
+    {
+        if (!$client = app(OAuthRepository::class)->findBy(['name' => 'flickr'])) {
+            return null;
+        }
+
+        $middleware = new Oauth1([
+            'consumer_key' => config('auth.flickr.token'),
+            'consumer_secret' => config('auth.flickr.token_secret'),
+            'token' => $client->token,
+            'token_secret' => $client->tokenSecret,
+        ]);
+
+        $client = new HttpClient(['auth' => 'oauth'], [$middleware]);
+
+        return $client->request($method, $uri, $parameters);
+    }
+
     /**
-     * @param string $photoSetId
-     * @param int|null $page
+     * @param  string  $photoSetId
+     * @param  int|null  $page
      *
      * @return object|null
      * @throws FlickrApiPhotoSetGetPhotosException
@@ -84,7 +104,7 @@ class FlickrClient extends OauthClient
 
         if (!$content) {
             Log::stack(['oauth'])->warning('Request responded with no content');
-            return (object)['stat' => 'fail'];
+            return (object) ['stat' => 'fail'];
         }
 
         if ($content->stat !== self::RESPONSE_STAT_OK) {
@@ -105,7 +125,7 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param object $content
+     * @param  object  $content
      *
      * @return object
      */
@@ -124,8 +144,8 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $id
-     * @param int|null $page
+     * @param  string  $id
+     * @param  int|null  $page
      *
      * @return object|null
      * @throws FlickrApiGalleryGetPhotosException
@@ -142,7 +162,7 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $photoId
+     * @param  string  $photoId
      *
      * @return object|null
      * @throws FlickrApiPhotoGetSizesException
@@ -159,7 +179,7 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param int|null $page
+     * @param  int|null  $page
      *
      * @return object
      * @throws FlickrApiAuthorizedUserGetContactsException
@@ -176,8 +196,8 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $userId
-     * @param int|null $page
+     * @param  string  $userId
+     * @param  int|null  $page
      *
      * @return object|null
      * @throws FlickrApiAuthorizedUserGetFavouritePhotosException
@@ -194,7 +214,7 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $albumId
+     * @param  string  $albumId
      *
      * @return object|null
      * @throws FlickrApiPhotoSetsGetInfoException
@@ -211,7 +231,7 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $id
+     * @param  string  $id
      *
      * @return object|null
      * @throws FlickrApiGalleryGetInfoException
@@ -228,7 +248,7 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $nsid
+     * @param  string  $nsid
      *
      * @return PeopleResponseInterface|object
      * @throws FlickrApiPeopleGetInfoException
@@ -255,8 +275,8 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $userId
-     * @param int|null $page
+     * @param  string  $userId
+     * @param  int|null  $page
      *
      * @return object|null
      * @throws FlickrApiPeopleGetPhotosException
@@ -273,7 +293,7 @@ class FlickrClient extends OauthClient
     }
 
     /**
-     * @param string $url
+     * @param  string  $url
      *
      * @return object|null
      * @throws FlickrApiUrlLookupUserException
