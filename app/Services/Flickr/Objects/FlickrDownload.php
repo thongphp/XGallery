@@ -61,7 +61,15 @@ abstract class FlickrDownload implements FlickrObjectInterface
         $photos = $this->getPhotos();
         $client = app(HttpClient::class);
         $photos->each(function ($photo) use ($download, $client) {
-            // Try to save photos if possible
+            /**
+             * Send to queue FlickrDownload__construct($download, $photo)
+             * Note:// It would be many queues if we have too many photos
+             */
+
+            /**
+             * Try to save photo
+             * Actually this step also used to "get" photo from database and use sizes if possible
+             */
             $photo = FlickrPhotoModel::firstOrCreate([
                 'id' => $photo->id,
                 'secret' => $photo->secret,
@@ -73,6 +81,7 @@ abstract class FlickrDownload implements FlickrObjectInterface
             /**
              * Use _id instead id because we are not use photo_id in Flickr is unique or not
              * Each _id must be linked with a download request
+             * Purpose of this table for storing google_photo_token
              */
             $downloadXref = FlickrDownloadXref::firstOrCreate([
                 'photo_id' => $photo->_id, // ObjectId
@@ -80,21 +89,18 @@ abstract class FlickrDownload implements FlickrObjectInterface
             ]);
 
             /**
-             * Send to queue ($downloadXref) to download photos
-             * Emulating queue here __construct($download, $downloadXref)
-             * Note:// It would be many queues if we have too many photos
              * We'll use observer to catch download update event
              * - if processed === photos_count . It's mean all photos already process ( no matter succeed or failed ) then trigger batchMedia
-             * Note:// Trigger event FlickrDownloadCompleteEvent and use listener to process
+             * Note:// Trigger event FlickrDownloadCompleteEvent and use listener to process.
+             * Use batchMedia via queue where download_xrefs.google_photo_token IS NOT NULL && download_id=$download.id. Sent notification like "Synced x/y photos of Album XXX to Google Album XXX
+             * Clean up these records
+             * If batchMedia failed we'll send notification too
              * - if processed !== photos count . Do nothing
              */
 
-            // Get photo from _id
-            $photo = FlickrPhotoModel::find($downloadXref->photo_id);
-
             /**
              * Get size
-             * Note:// This method used to make easier to get sizes dirctly via model. It's not related another thing
+             * Note:// This method used to make easier to get sizes directly via model. It's not related another thing
              */
             $size = $photo->getBestSize();
 
@@ -109,15 +115,22 @@ abstract class FlickrDownload implements FlickrObjectInterface
                 /**
                  * Execute upload to Google
                  * Note:// We need catch exception here to update processed state
+                 * Note:// Download always return related path. Please make sure it'll not break any exists download process
                  */
                 try {
                     $downloadXref->google_photo_token = GooglePhotoClient::uploadMedia($filePath);
                 } catch (\Exception $exception) {
-                    $download->processed++;
+                    $download->processed++; // Even it's failed but we already processed
+                    /**
+                     * @TODO Actually we can use job failed ( completely failed not retry ) event instead catch exception here
+                     * Exception in this case also can use to make job fail and retry ( before completely fail )
+                     */
                     $downloadXref->state = -2; // Upload failed
                     $downloadXref->save();
                     $download->save(); // Always save download after download xref
-
+                    /**
+                     * @TODO We save download after downloadXref to make sure everything completely processed
+                     */
                     return;
                 }
 
