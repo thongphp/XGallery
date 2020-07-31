@@ -14,7 +14,7 @@ namespace App\Models\Flickr;
  * @property int|null $isfamily
  * @property array|null $sizes
  *
- * @property \App\Models\Flickr\FlickrContactModel|null $flickrcontact;
+ * @property \App\Models\Flickr\FlickrContact|null $flickrcontact;
  */
 interface FlickrPhotoInterface
 {

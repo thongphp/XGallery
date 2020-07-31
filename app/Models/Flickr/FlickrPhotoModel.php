@@ -43,7 +43,7 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
      */
     public function flickrContact()
     {
-        return $this->belongsTo(FlickrContactModel::class, self::KEY_OWNER, FlickrContactModel::KEY_NSID);
+        return $this->belongsTo(FlickrContact::class, self::KEY_OWNER, FlickrContact::KEY_NSID);
     }
 
     /**
@@ -79,12 +79,18 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
             return null;
         }
 
-        return end($sizes);
+        $sizes = end($sizes);
+
+        if (is_object($sizes)) {
+            return get_object_vars($sizes);
+        }
+
+        return $sizes;
     }
 
     /**
-     * @todo Provide method getSizes with check hasSizes and request getSizes if needed
      * @return bool
+     * @todo Provide method getSizes with check hasSizes and request getSizes if needed
      */
     public function hasSizes(): bool
     {

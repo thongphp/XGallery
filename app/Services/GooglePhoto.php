@@ -9,6 +9,7 @@ use App\Exceptions\OAuthClientException;
 use App\Oauth\GoogleOauthClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use JsonException;
 
@@ -22,9 +23,8 @@ class GooglePhoto extends GoogleOauthClient
      * @param  string  $title
      * @return object
      * @throws GooglePhotoApiAlbumCreateException
-     * @throws GuzzleException
+     * @throws JsonException
      * @throws OAuthClientException
-     * @throws \JsonException
      */
     public function createAlbum(string $title): object
     {
@@ -120,6 +120,45 @@ class GooglePhoto extends GoogleOauthClient
 
         if (!$response) {
             throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId, $response, $file);
+        }
+    }
+
+    /**
+     * https://developers.google.com/photos/library/reference/rest/v1/mediaItems/batchCreate
+     * @param  Collection  $files
+     * @param  object  $googleAlbum
+     * @throws JsonException
+     * @throws OAuthClientException
+     */
+    public function uploadAndCreateMedias(Collection $files, object $googleAlbum): void
+    {
+        $medias = [];
+        $files = $files->toArray();
+
+        foreach ($files as $file) {
+            $medias[] = [
+                'description' => $file['title'],
+                'simpleMediaItem' => [
+                    'fileName' => basename($file['file']),
+                    'uploadToken' => $file['google_photo_token']
+                ],
+            ];
+        }
+
+        $response = $this->request(
+            'post',
+            'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
+            [
+                'headers' => ['Content-type' => 'application/json'],
+                'body' => json_encode([
+                    'albumId' => $googleAlbum->id,
+                    'newMediaItems' => $medias
+                ], JSON_THROW_ON_ERROR)
+            ],
+        );
+
+        if (!$response) {
+            // throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId, $response, $file);
         }
     }
 }

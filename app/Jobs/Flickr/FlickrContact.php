@@ -8,7 +8,6 @@ use App\Facades\FlickrClient;
 use App\Facades\FlickrValidate;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Flickr\FlickrContactModel;
 use App\Repositories\Flickr\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -47,14 +46,14 @@ class FlickrContact implements ShouldQueue
             $userInfo = FlickrClient::getPeopleInfo($this->nsid);
             $contactModel = app(ContactRepository::class)->findOrCreateByNsId($this->nsid);
             $contactModel->fill((new ObjectPropertyHydrator())->extract($userInfo))->save();
-            $contactModel->{FlickrContactModel::KEY_STATE} = FlickrContactModel::STATE_CONTACT_DETAIL;
+            $contactModel->{\App\Models\Flickr\FlickrContact::KEY_STATE} = \App\Models\Flickr\FlickrContact::STATE_CONTACT_DETAIL;
             $contactModel->save();
         } catch (FlickrApiPeopleGetInfoInvalidUserException $exception) {
             // This user is not valid than do nothing
             return;
         } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
             // Do delete deleted user
-            if ($model = FlickrContactModel::where([FlickrContactModel::KEY_NSID => $this->nsid])->first()) {
+            if ($model = \App\Models\Flickr\FlickrContact::where([\App\Models\Flickr\FlickrContact::KEY_NSID => $this->nsid])->first()) {
                 $model->delete();
             }
             return;

@@ -10,13 +10,15 @@
 namespace App\Models\Flickr;
 
 use App\Database\Mongodb;
+use App\Facades\FlickrClient;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 /**
  * @package App\Models
  */
-class FlickrContactModel extends Mongodb implements FlickrContactInterface
+class FlickrContact extends Mongodb implements FlickrContactInterface
 {
     use SoftDeletes;
 
@@ -25,7 +27,6 @@ class FlickrContactModel extends Mongodb implements FlickrContactInterface
     public const KEY_PHOTO_STATE = 'photo_state';
     public const STATE_CONTACT_DETAIL = 1;
 
-    protected $collection = 'flickr_contacts';
     protected $fillable = [
         'nsid',
         'ispro',
@@ -66,5 +67,37 @@ class FlickrContactModel extends Mongodb implements FlickrContactInterface
     public function flickrPhotos()
     {
         return $this->hasMany(FlickrPhotoModel::class, FlickrPhotoModel::KEY_OWNER, self::KEY_NSID);
+    }
+
+    public function fetchPhotos(): Collection
+    {
+        $photos = FlickrClient::getPeoplePhotos($this->nsid);
+        $totalPhotos = collect($photos->photos->photo);
+
+        if ($photos->photos->pages === 1) {
+            return $totalPhotos;
+        }
+
+        for ($page = 2; $page <= $photos->photos->pages; $page++) {
+            $totalPhotos->merge(FlickrClient::getPeoplePhotos($this->nsid, $page)->photos->photo);
+        }
+
+        return $totalPhotos;
+    }
+
+    public function fetchFavoritePhotos(): Collection
+    {
+        $photos = FlickrClient::getFavouritePhotosOfUser($this->nsid);
+        $totalPhotos = collect($photos->photos->photo);
+
+        if ($photos->photos->pages === 1) {
+            return $totalPhotos;
+        }
+
+        for ($page = 2; $page <= $photos->photos->pages; $page++) {
+            $totalPhotos->merge(FlickrClient::getFavouritePhotosOfUser($this->nsid, $page)->photos->photo);
+        }
+
+        return $totalPhotos;
     }
 }

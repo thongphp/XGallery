@@ -82,6 +82,7 @@ trait HasProgressBar
             case 'QUEUED':
                 $value = '<fg=yellow;options=bold>'.$value.'</>';
                 break;
+            case 'FINISHED':
             case 'COMPLETED':
                 $value = '<fg=green;options=bold>'.$value.'</>';
                 break;

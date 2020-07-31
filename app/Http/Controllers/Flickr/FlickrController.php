@@ -95,11 +95,12 @@ class FlickrController extends BaseController
             ]);
         }
 
+        // @TODO Move to layout
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos of %s <strong>%s</strong>';
 
         switch ($result->getType()) {
             case FlickrUrlInterface::TYPE_ALBUM:
-                // @todo Actually it should be model instead
+                // @TODO Actually it should be model instead
                 $flickr = new FlickrAlbum($result);
                 break;
 

@@ -4,7 +4,6 @@ namespace Tests\Unit\Jobs\Flickr;
 
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrContact;
-use App\Models\Flickr\FlickrContactModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -42,11 +41,11 @@ class FlickrContactTest extends TestCase
     {
         $this->createJob('26440281@N02')->handle();
 
-        $contact = FlickrContactModel::where([FlickrContactModel::KEY_NSID => '26440281@N02'])->first();
+        $contact = FlickrContact::where([FlickrContact::KEY_NSID => '26440281@N02'])->first();
 
         $this->assertNotNull($contact);
         $this->assertSame('-- Joe\'s photos --', $contact->username);
-        $this->assertSame(FlickrContactModel::STATE_CONTACT_DETAIL, $contact->{FlickrContactModel::KEY_STATE});
+        $this->assertSame(FlickrContact::STATE_CONTACT_DETAIL, $contact->{FlickrContact::KEY_STATE});
     }
 
     protected function tearDown(): void

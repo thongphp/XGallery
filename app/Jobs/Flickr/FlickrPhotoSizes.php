@@ -2,7 +2,6 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Facades\FlickrClient;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Flickr\FlickrPhotoModel;
@@ -21,30 +20,28 @@ class FlickrPhotoSizes implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $id;
+    /**
+     * @var FlickrPhotoModel
+     */
+    private FlickrPhotoModel $flickrPhotoModel;
 
     /**
-     * @param string $id
+     * FlickrPhotoSizes constructor.
+     * @param  FlickrPhotoModel  $flickrPhotoModel
      */
-    public function __construct(string $id)
+    public function __construct(FlickrPhotoModel $flickrPhotoModel)
     {
-        $this->id = $id;
+        $this->flickrPhotoModel = $flickrPhotoModel;
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
     public function handle(): void
     {
-        $photo = FlickrPhotoModel::where(['id' => $this->id])->first();
-
-        if (!$photo) {
-            return;
-        }
-
         try {
-            $photo->{FlickrPhotoModel::KEY_SIZES} = FlickrClient::getPhotoSizes($this->id)->sizes->size;
-            $photo->save();
+            $this->flickrPhotoModel->getSizes();
         } catch (\Exception $exception) {
-            $photo->delete();
+            // @TODO Depend on right exception we'll delete but not all exceptions
+            // $photo->delete();
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Client;
 
 use App\Exceptions\Flickr\FlickrApiAuthorizedUserGetContactsException;
 use App\Exceptions\Flickr\FlickrApiAuthorizedUserGetFavouritePhotosException;
@@ -14,13 +14,8 @@ use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
-use App\Exceptions\OAuthClientException;
 use App\Repositories\OAuthRepository;
-use App\Services\Client\HttpClient;
-use App\Services\Flickr\Response\PeopleResponseInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class FlickrClient
@@ -65,30 +60,9 @@ class FlickrClient
     }
 
     /**
-     * @param  string  $photoSetId
-     * @param  int|null  $page
-     *
-     * @return object|null
-     * @throws FlickrApiPhotoSetGetPhotosException
-     */
-    public function getPhotoSetPhotos(string $photoSetId, ?int $page = 1): ?object
-    {
-        $result = $this->get(self::PHOTOSETS_GET_PHOTOS, ['photoset_id' => $photoSetId, 'page' => (int) $page]);
-
-        if ($result->stat === self::RESPONSE_STAT_OK) {
-            return $result;
-        }
-
-        throw new FlickrApiPhotoSetGetPhotosException($photoSetId);
-    }
-
-    /**
      * @param  string  $method
      * @param  array  $parameters
-     *
      * @return object|null
-     * @throws GuzzleException
-     * @throws OAuthClientException
      */
     public function get(string $method, array $parameters = []): ?object
     {
@@ -105,12 +79,7 @@ class FlickrClient
         );
 
         if (!$content) {
-            Log::stack(['oauth'])->warning('Request responded with no content');
             return (object) ['stat' => 'fail'];
-        }
-
-        if ($content->stat !== self::RESPONSE_STAT_OK) {
-            Log::stack(['oauth'])->warning('FlickrClient request failed');
         }
 
         return $this->removeContentObject($content);
@@ -146,9 +115,25 @@ class FlickrClient
     }
 
     /**
+     * @param  string  $photoSetId
+     * @param  int|null  $page
+     * @return object|null
+     * @throws FlickrApiPhotoSetGetPhotosException
+     */
+    public function getPhotoSetPhotos(string $photoSetId, ?int $page = 1): ?object
+    {
+        $result = $this->get(self::PHOTOSETS_GET_PHOTOS, ['photoset_id' => $photoSetId, 'page' => (int) $page]);
+
+        if ($result->stat === self::RESPONSE_STAT_OK) {
+            return $result;
+        }
+
+        throw new FlickrApiPhotoSetGetPhotosException($photoSetId);
+    }
+
+    /**
      * @param  string  $id
      * @param  int|null  $page
-     *
      * @return object|null
      * @throws FlickrApiGalleryGetPhotosException
      */
@@ -165,7 +150,6 @@ class FlickrClient
 
     /**
      * @param  string  $photoId
-     *
      * @return object|null
      * @throws FlickrApiPhotoGetSizesException
      */
@@ -184,8 +168,6 @@ class FlickrClient
      * @param  int|null  $page
      * @return object|null
      * @throws FlickrApiAuthorizedUserGetContactsException
-     * @throws GuzzleException
-     * @throws OAuthClientException
      */
     public function getContactsOfCurrentUser(?int $page = 1): ?object
     {
@@ -201,7 +183,6 @@ class FlickrClient
     /**
      * @param  string  $userId
      * @param  int|null  $page
-     *
      * @return object|null
      * @throws FlickrApiAuthorizedUserGetFavouritePhotosException
      */
@@ -218,7 +199,6 @@ class FlickrClient
 
     /**
      * @param  string  $albumId
-     *
      * @return object|null
      * @throws FlickrApiPhotoSetsGetInfoException
      */
@@ -235,7 +215,6 @@ class FlickrClient
 
     /**
      * @param  string  $id
-     *
      * @return object|null
      * @throws FlickrApiGalleryGetInfoException
      */
@@ -252,11 +231,10 @@ class FlickrClient
 
     /**
      * @param  string  $nsid
-     *
-     * @return PeopleResponseInterface|object
+     * @return mixed
      * @throws FlickrApiPeopleGetInfoException
-     * @throws FlickrApiPeopleGetInfoUserDeletedException
      * @throws FlickrApiPeopleGetInfoInvalidUserException
+     * @throws FlickrApiPeopleGetInfoUserDeletedException
      */
     public function getPeopleInfo(string $nsid)
     {
@@ -280,7 +258,6 @@ class FlickrClient
     /**
      * @param  string  $userId
      * @param  int|null  $page
-     *
      * @return object|null
      * @throws FlickrApiPeopleGetPhotosException
      */
@@ -297,7 +274,6 @@ class FlickrClient
 
     /**
      * @param  string  $url
-     *
      * @return object|null
      * @throws FlickrApiUrlLookupUserException
      */

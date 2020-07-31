@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models\Flickr;
 
-use App\Models\Flickr\FlickrContactModel;
+use App\Models\Flickr\FlickrContact;
 use App\Models\Flickr\FlickrPhotoModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -30,11 +30,11 @@ class FlickrPhotoModelTest extends TestCase
     /**
      * @param array $contact
      *
-     * @return FlickrContactModel
+     * @return FlickrContact
      */
-    private function createContact(array $contact): FlickrContactModel
+    private function createContact(array $contact): FlickrContact
     {
-        $model = app(FlickrContactModel::class);
+        $model = app(FlickrContact::class);
         $model->fill($contact)->save();
 
         return $model;
