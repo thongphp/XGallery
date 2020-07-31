@@ -134,28 +134,35 @@ class GooglePhoto extends GoogleOauthClient
     {
         $medias = [];
         $files = $files->toArray();
+        $files = array_chunk($files, 49) ;
 
-        foreach ($files as $file) {
-            $medias[] = [
-                'description' => $file['title'],
-                'simpleMediaItem' => [
-                    'fileName' => basename($file['file']),
-                    'uploadToken' => $file['google_photo_token']
+        foreach ($files as $subFiles) {
+            foreach ($subFiles as $file) {
+                $medias[] = [
+                    'description' => $file['title'],
+                    'simpleMediaItem' => [
+                        'fileName' => basename($file['file']),
+                        'uploadToken' => $file['google_photo_token']
+                    ],
+                ];
+            }
+
+            $response = $this->request(
+                'post',
+                'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
+                [
+                    'headers' => ['Content-type' => 'application/json'],
+                    'body' => json_encode([
+                        'albumId' => $googleAlbum->id,
+                        'newMediaItems' => $medias
+                    ], JSON_THROW_ON_ERROR)
                 ],
-            ];
+            );
+
+            $medias = [];
         }
 
-        $response = $this->request(
-            'post',
-            'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
-            [
-                'headers' => ['Content-type' => 'application/json'],
-                'body' => json_encode([
-                    'albumId' => $googleAlbum->id,
-                    'newMediaItems' => $medias
-                ], JSON_THROW_ON_ERROR)
-            ],
-        );
+
 
         if (!$response) {
             // throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId, $response, $file);
