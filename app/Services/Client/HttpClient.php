@@ -91,6 +91,7 @@ class HttpClient
         $response = $this->client->request(
             'GET',
             $url,
+            // @TODO Implement curl options to config
             array_merge(['sink' => $resource], [
                 'curl' => [
                     CURLOPT_NOBODY => false,
