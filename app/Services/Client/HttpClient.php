@@ -66,10 +66,25 @@ class HttpClient
         return Cache::get($key);
     }
 
+    /**
+     * @param  string  $url
+     * @param  string  $saveTo
+     * @param  array  $options
+     * @return false|string // False if not succeed and related path if succeed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function download(string $url, string $saveTo, array $options = [])
     {
         if (filter_var($url, FILTER_VALIDATE_URL) === false) {
             return false;
+        }
+
+        // Check file local already exists
+        $fileName = basename($url);
+        $saveToFile = $saveTo.DIRECTORY_SEPARATOR.$fileName;
+
+        if (Storage::exists($saveToFile)) {
+            return  $saveToFile;
         }
 
         $resource = fopen('php://temp', 'r+');
@@ -105,11 +120,9 @@ class HttpClient
             Storage::makeDirectory($saveTo);
         }
 
-        $fileName = basename($url);
-        $saveToFile = Storage::path($saveTo.DIRECTORY_SEPARATOR.$fileName);
         rewind($resource);
 
-        file_put_contents($saveToFile, stream_get_contents($resource));
+        file_put_contents(Storage::path($saveToFile), stream_get_contents($resource));
         fclose($resource);
 
         return $saveToFile;

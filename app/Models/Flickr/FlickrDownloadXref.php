@@ -11,12 +11,7 @@ use App\Database\Mongodb;
  * @property string $google_album_id
  * @package App\Models\Flickr
  */
-class FlickrDownload extends Mongodb
+class FlickrDownloadXref extends Mongodb
 {
-    protected $fillable = [
-        'user_id',
-        'type',
-        'photos_count',
-        'processed'
-    ];
+protected $guarded=[];
 }

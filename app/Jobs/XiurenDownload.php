@@ -59,6 +59,7 @@ class XiurenDownload implements ShouldQueue
             ]
         );
 
+        // @TODO Put download method into model and process it instead
         app(Xiuren::class)->download($xiurenModel);
     }
 }

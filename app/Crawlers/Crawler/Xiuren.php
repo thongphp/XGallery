@@ -12,6 +12,7 @@ namespace App\Crawlers\Crawler;
 use App\Models\XiurenModel;
 use App\Services\Client\HttpClient;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
@@ -117,7 +118,8 @@ final class Xiuren
     }
 
     /**
-     * @param XiurenModel $item
+     * @param  XiurenModel  $item
+     * @throws GuzzleException
      */
     public function download(XiurenModel $item): void
     {

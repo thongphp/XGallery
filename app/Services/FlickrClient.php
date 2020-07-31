@@ -15,7 +15,6 @@ use App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
 use App\Exceptions\OAuthClientException;
-use App\Oauth\OauthClient;
 use App\Repositories\OAuthRepository;
 use App\Services\Client\HttpClient;
 use App\Services\Flickr\Response\PeopleResponseInterface;
@@ -46,6 +45,7 @@ class FlickrClient
 
     protected function request(string $method, string $uri, array $parameters = [])
     {
+        // @TODO Auth::user()->getOauth('flickr');
         if (!$client = app(OAuthRepository::class)->findBy(['name' => 'flickr'])) {
             return null;
         }
@@ -56,6 +56,8 @@ class FlickrClient
             'token' => $client->token,
             'token_secret' => $client->tokenSecret,
         ]);
+
+        // Middleware for validating "stat"
 
         $client = new HttpClient(['auth' => 'oauth'], [$middleware]);
 
@@ -180,9 +182,10 @@ class FlickrClient
 
     /**
      * @param  int|null  $page
-     *
-     * @return object
+     * @return object|null
      * @throws FlickrApiAuthorizedUserGetContactsException
+     * @throws GuzzleException
+     * @throws OAuthClientException
      */
     public function getContactsOfCurrentUser(?int $page = 1): ?object
     {

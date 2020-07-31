@@ -100,22 +100,22 @@ class FlickrController extends BaseController
         switch ($result->getType()) {
             case FlickrUrlInterface::TYPE_ALBUM:
                 // @todo Actually it should be model instead
-                $flickr = new FlickrAlbum($result->getId());
+                $flickr = new FlickrAlbum($result);
                 break;
 
             case FlickrUrlInterface::TYPE_GALLERY:
-                $flickr = new FlickrGallery($result->getId());
+                $flickr = new FlickrGallery($result);
                 break;
 
             case FlickrUrlInterface::TYPE_PROFILE:
-                $flickr = new FlickrProfile($result->getOwner());
+                $flickr = new FlickrProfile($result);
                 break;
 
             default:
                 throw new Exception();
         }
 
-        if (!$flickr->load()) {
+        if (!$flickr->isValid()) {
             return response()->json([
                 'html' => Toast::warning(
                     'Download',

@@ -40,7 +40,7 @@ final class FlickrDownloads extends BaseCommand
     {
         $photos = FlickrDownload::limit(1)->get();
         $photos->each(function ($photo) {
-            FlickrDownloadPhotoToLocal::dispatch($photo->photo_id, $photo->google_album_id);
+            FlickrDownloadPhotoToLocal::dispatch($photo);
             $photo->delete();
         });
 
