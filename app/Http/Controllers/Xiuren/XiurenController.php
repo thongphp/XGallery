@@ -72,9 +72,7 @@ class XiurenController extends BaseController
      */
     public function download(string $id): JsonResponse
     {
-        $xiurenModel = XiurenModel::find($id);
-
-        if (!$xiurenModel) {
+        if (!$xiurenModel = XiurenModel::find($id)) {
             return response()
                 ->json(
                     ['html' => Toast::warning('Download', 'Gallery ['.$id.'] is not available.')]
