@@ -11,13 +11,11 @@ namespace App\Models;
 
 use App\Database\Mongodb;
 use App\Models\Traits\HasCover;
+use App\Services\Client\HttpClient;
 use Spatie\Url\Url;
 
 /**
- * Class Xiuren
- * @property string $url
- * @property array $cover
- * @property array $images
+ * Class XiurenModel
  * @package App\Models
  */
 class XiurenModel extends Mongodb
@@ -33,6 +31,21 @@ class XiurenModel extends Mongodb
 
     public function getTitle()
     {
-        return Url::fromString($this->url)->getPath();
+        return trim(Url::fromString($this->url)->getPath(), '/');
+    }
+
+    public function download()
+    {
+        if (empty($this->images)) {
+            return false;
+        }
+
+        $httpClient = app(HttpClient::class);
+
+        foreach ($this->images as $image) {
+            $httpClient->download($image, 'xiuren'.DIRECTORY_SEPARATOR.$this->getTitle());
+        }
+
+        return true;
     }
 }

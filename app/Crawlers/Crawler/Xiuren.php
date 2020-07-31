@@ -12,7 +12,6 @@ namespace App\Crawlers\Crawler;
 use App\Models\XiurenModel;
 use App\Services\Client\HttpClient;
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
@@ -114,17 +113,6 @@ final class Xiuren
             return (int) end($pages);
         } catch (Exception $exception) {
             return 1;
-        }
-    }
-
-    /**
-     * @param  XiurenModel  $item
-     * @throws GuzzleException
-     */
-    public function download(XiurenModel $item): void
-    {
-        foreach ($item->images as $image) {
-            $this->getClient()->download($image, 'xiuren'.DIRECTORY_SEPARATOR.$item->getTitle());
         }
     }
 }
