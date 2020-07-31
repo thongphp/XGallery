@@ -2,16 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Crawlers\Crawler\Xiuren;
-use App\Facades\UserActivity;
 use App\Jobs\Traits\HasJob;
-use App\Repositories\XiurenRepository;
+use App\Models\XiurenModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class XiurenDownload
@@ -22,43 +19,19 @@ class XiurenDownload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $id;
+    private XiurenModel $xiuren;
 
     /**
-     * @param string $id
+     * @param  XiurenModel  $xiuren
      */
-    public function __construct(string $id)
+    public function __construct(XiurenModel $xiuren)
     {
-        $this->id = $id;
+        $this->xiuren = $xiuren;
         $this->onQueue(Queues::QUEUE_DOWNLOADS);
     }
 
     public function handle(): void
     {
-        $xiurenModel = app(XiurenRepository::class)->findById($this->id);
-
-        if (!$xiurenModel) {
-            return;
-        }
-
-        UserActivity::notify(
-            '[Xiuren] System process for %s action [%s] a gallery',
-            Auth::user(),
-            'download',
-            [
-                'object_id' => $xiurenModel->getAttribute('_id'),
-                'extra' => [
-                    'title' => $xiurenModel->title,
-                    'fields' => [
-                        'ID' => $xiurenModel->getAttribute('_id'),
-                        'Title' => $xiurenModel->title,
-                        'Photos count' => count($xiurenModel->images),
-                    ],
-                    'footer' => $xiurenModel->url,
-                ],
-            ]
-        );
-
-        app(Xiuren::class)->download($xiurenModel);
+        $this->xiuren->download();
     }
 }

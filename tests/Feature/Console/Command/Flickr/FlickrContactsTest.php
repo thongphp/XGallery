@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Console\Command\Flickr;
 
-use App\Models\Flickr\FlickrContactModel;
+use App\Models\Flickr\FlickrContact;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,14 +17,14 @@ class FlickrContactsTest extends TestCase
     {
         $this->mockFlickrClientCommand('getContactsOfCurrentUser');
         $this->artisan('flickr:contacts')->assertExitCode(0);
-        $this->assertEquals(5, FlickrContactModel::all()->count());
+        $this->assertEquals(5, FlickrContact::all()->count());
     }
 
     public function testExecuteGetAllContactOfCurrentUserWithMoreThan1Page(): void
     {
         $this->mockFlickrClientCommand('getContactsOfCurrentUser', 'getContactsOfCurrentUser_hasPage2');
         $this->artisan('flickr:contacts')->assertExitCode(0);
-        $this->assertEquals(5, FlickrContactModel::all()->count());
+        $this->assertEquals(5, FlickrContact::all()->count());
     }
 
     protected function tearDown(): void

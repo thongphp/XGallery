@@ -9,11 +9,10 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Crawlers\HttpClient;
 use App\Crawlers\Middleware\TruyenchonRateLimitStore;
 use App\Models\Truyenchon\TruyenchonChapterModel;
+use App\Services\Client\HttpClient;
 use Exception;
-use GuzzleHttp\HandlerStack;
 use Illuminate\Support\Collection;
 use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 use Spatie\Url\Url;
@@ -27,17 +26,11 @@ use Symfony\Component\HttpFoundation\Request;
 final class Truyenchon
 {
     /**
-     * @param  array  $options
      * @return HttpClient
      */
-    public function getClient(array $options = []): HttpClient
+    public function getClient(): HttpClient
     {
-        $stack = HandlerStack::create();
-        $stack->push(RateLimiterMiddleware::perSecond(10, new TruyenchonRateLimitStore()));
-        $options['handler'] = $stack;
-        $options = array_merge($options, config('services.httpclient'));
-
-        return app(HttpClient::class, $options);
+        return new HttpClient(RateLimiterMiddleware::perSecond(10, new TruyenchonRateLimitStore()));
     }
 
     /**
@@ -47,7 +40,7 @@ final class Truyenchon
      */
     public function crawl(string $uri, array $options = []): ?Crawler
     {
-        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
             return null;
         }
 

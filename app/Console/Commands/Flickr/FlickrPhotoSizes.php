@@ -43,7 +43,8 @@ final class FlickrPhotoSizes extends BaseCommand
         $this->progressBarSetMessage('Photos', 'message');
 
         foreach ($photos as $photo) {
-            \App\Jobs\Flickr\FlickrPhotoSizes::dispatch($photo->id);
+            \App\Jobs\Flickr\FlickrPhotoSizes::dispatch($photo);
+            $this->progressBarSetInfo($photo->id);
             $this->progressBarSetStatus('QUEUED');
             $this->progressBar->advance();
         }

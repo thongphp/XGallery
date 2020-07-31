@@ -3,27 +3,15 @@
 namespace App\Services\Flickr\Objects;
 
 use App\Facades\FlickrClient;
-use App\Facades\UserActivity;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class FlickrProfile
  * @package App\Services\Flickr\Objects
  */
-class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
+class FlickrProfile extends FlickrDownload
 {
     private ?object $profile;
-
-    /**
-     * @return bool
-     */
-    public function load(): bool
-    {
-        $this->profile = FlickrClient::getPeopleInfo($this->id);
-
-        return $this->isValid();
-    }
 
     /**
      * @return int
@@ -34,18 +22,18 @@ class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
     }
 
     /**
-     * @return object|null
+     * @return Collection
      */
-    public function getPhotos(): ?Collection
+    public function getPhotos(): Collection
     {
         if (!$this->isValid()) {
-            return null;
+            return $this->photos;
         }
 
         $page = 1;
 
         do {
-            $photos = FlickrClient::getPeoplePhotos($this->id, $page);
+            $photos = FlickrClient::getPeoplePhotos($this->getId(), $page);
             $this->photos = $this->photos->merge($photos->photos->photo);
             $page++;
         } while ($page <= $photos->photos->pages);
@@ -61,12 +49,19 @@ class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
         return $this->profile->realname ?? $this->profile->username;
     }
 
-    /**
-     * @return string
-     */
-    public function getOwner(): string
+    public function getDescription(): ?string
     {
-        return $this->id;
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function load(): bool
+    {
+        $this->profile = FlickrClient::getPeopleInfo($this->getId());
+
+        return $this->isValid();
     }
 
     /**
@@ -75,33 +70,5 @@ class FlickrProfile extends \App\Services\Flickr\Objects\FlickrDownload
     public function isValid(): bool
     {
         return $this->profile !== null;
-    }
-
-    public function getDescription(): ?string
-    {
-        return null;
-    }
-
-    public function notification(): void
-    {
-        // @todo Notification in even not job
-        UserActivity::notify(
-            '%s request %s profile',
-            Auth::user(),
-            'download',
-            [
-                'object_id' => $this->getId(),
-                'extra' => [
-                    'title' => $this->getTitle(),
-                    // Fields are displayed in a table on the message
-                    'fields' => [
-                        'ID' => $this->getId(),
-                        'Photos' => $this->getPhotosCount(),
-                        'Owner' => $this->getOwner(),
-                        'Sync to Google' => $this->getTitle().' ['.$this->googleAlbum->id.']'
-                    ],
-                ],
-            ]
-        );
     }
 }

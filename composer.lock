@@ -1118,16 +1118,16 @@
         },
         {
             "name": "google/auth",
-            "version": "v1.11.0",
+            "version": "v1.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-auth-library-php.git",
-                "reference": "f6752236dbb2d641d50dffee789e553e2fda129d"
+                "reference": "bb959e91bd8ffbd352ab76cbf11d656ce6435088"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/f6752236dbb2d641d50dffee789e553e2fda129d",
-                "reference": "f6752236dbb2d641d50dffee789e553e2fda129d",
+                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/bb959e91bd8ffbd352ab76cbf11d656ce6435088",
+                "reference": "bb959e91bd8ffbd352ab76cbf11d656ce6435088",
                 "shasum": ""
             },
             "require": {
@@ -1166,7 +1166,7 @@
                 "google",
                 "oauth2"
             ],
-            "time": "2020-07-22T18:24:05+00:00"
+            "time": "2020-07-27T18:33:35+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1855,16 +1855,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v6.18.26",
+            "version": "v6.18.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "d11b6168c65251ffa81ae0dfaf017ad2f30013da"
+                "reference": "a731824421f9ebc586728ea9c7cff231a249aaa9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/d11b6168c65251ffa81ae0dfaf017ad2f30013da",
-                "reference": "d11b6168c65251ffa81ae0dfaf017ad2f30013da",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/a731824421f9ebc586728ea9c7cff231a249aaa9",
+                "reference": "a731824421f9ebc586728ea9c7cff231a249aaa9",
                 "shasum": ""
             },
             "require": {
@@ -1999,7 +1999,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2020-07-21T14:25:39+00:00"
+            "time": "2020-07-27T18:23:18+00:00"
         },
         {
             "name": "laravel/horizon",
@@ -2799,16 +2799,16 @@
         },
         {
             "name": "nao-pon/flysystem-google-drive",
-            "version": "1.1.12",
+            "version": "1.1.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nao-pon/flysystem-google-drive.git",
-                "reference": "f55cd5edc52f767bb612c615189e2b52e459721d"
+                "reference": "bb812339ecf06540ed096f71403f10fcbcc590f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nao-pon/flysystem-google-drive/zipball/f55cd5edc52f767bb612c615189e2b52e459721d",
-                "reference": "f55cd5edc52f767bb612c615189e2b52e459721d",
+                "url": "https://api.github.com/repos/nao-pon/flysystem-google-drive/zipball/bb812339ecf06540ed096f71403f10fcbcc590f3",
+                "reference": "bb812339ecf06540ed096f71403f10fcbcc590f3",
                 "shasum": ""
             },
             "require": {
@@ -2844,20 +2844,20 @@
                 }
             ],
             "description": "Flysystem adapter for Google Drive",
-            "time": "2020-03-05T02:25:41+00:00"
+            "time": "2020-07-30T01:26:26+00:00"
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.36.1",
+            "version": "2.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "ee7378a36cc62952100e718bcc58be4c7210e55f"
+                "reference": "1f61206de973d67f36ce50f041c792ddac663c3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/ee7378a36cc62952100e718bcc58be4c7210e55f",
-                "reference": "ee7378a36cc62952100e718bcc58be4c7210e55f",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/1f61206de973d67f36ce50f041c792ddac663c3e",
+                "reference": "1f61206de973d67f36ce50f041c792ddac663c3e",
                 "shasum": ""
             },
             "require": {
@@ -2933,7 +2933,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-07-04T12:29:56+00:00"
+            "time": "2020-07-28T06:04:54+00:00"
         },
         {
             "name": "opis/closure",
@@ -8527,16 +8527,16 @@
         },
         {
             "name": "doctrine/collections",
-            "version": "1.6.6",
+            "version": "1.6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "5f0470363ff042d0057006ae7acabc5d7b5252d5"
+                "reference": "55f8b799269a1a472457bd1a41b4f379d4cfba4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/5f0470363ff042d0057006ae7acabc5d7b5252d5",
-                "reference": "5f0470363ff042d0057006ae7acabc5d7b5252d5",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/55f8b799269a1a472457bd1a41b4f379d4cfba4a",
+                "reference": "55f8b799269a1a472457bd1a41b4f379d4cfba4a",
                 "shasum": ""
             },
             "require": {
@@ -8588,21 +8588,7 @@
                 "iterators",
                 "php"
             ],
-            "funding": [
-                {
-                    "url": "https://www.doctrine-project.org/sponsorship.html",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://www.patreon.com/phpdoctrine",
-                    "type": "patreon"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fcollections",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2020-06-22T19:14:02+00:00"
+            "time": "2020-07-27T17:53:49+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -9109,26 +9095,27 @@
         },
         {
             "name": "gitonomy/gitlib",
-            "version": "v1.2.1",
+            "version": "v1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gitonomy/gitlib.git",
-                "reference": "718ca021c67f3ea8f6a5fa5d231ec49675068868"
+                "reference": "d1fe4676bf1347c08dec84a14a4c5e7110740d72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/718ca021c67f3ea8f6a5fa5d231ec49675068868",
-                "reference": "718ca021c67f3ea8f6a5fa5d231ec49675068868",
+                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/d1fe4676bf1347c08dec84a14a4c5e7110740d72",
+                "reference": "d1fe4676bf1347c08dec84a14a4c5e7110740d72",
                 "shasum": ""
             },
             "require": {
                 "ext-pcre": "*",
-                "php": "^5.6 || ^7.0",
+                "php": "^5.6 || ^7.0 || ^8.0",
                 "symfony/polyfill-mbstring": "^1.7",
-                "symfony/process": "^3.4|^4.0|^5.0"
+                "symfony/process": "^3.4 || ^4.0 || ^5.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.7|^6.5|^7.0",
+                "ext-fileinfo": "*",
+                "phpunit/phpunit": "^5.7 || ^6.5 || ^7.0 || ^8.0 || ^9.0",
                 "psr/log": "^1.0"
             },
             "suggest": {
@@ -9136,11 +9123,6 @@
                 "psr/log": "Required to use loggers for reporting of execution"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.2-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Gitonomy\\Git\\": "src/Gitonomy/Git/"
@@ -9175,7 +9157,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-03-23T12:43:44+00:00"
+            "time": "2020-07-30T14:54:11+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -9778,16 +9760,16 @@
         },
         {
             "name": "nunomaduro/larastan",
-            "version": "v0.6.1",
+            "version": "v0.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/larastan.git",
-                "reference": "7e333510eaaed6fc0e670c69fed148320ecb1cac"
+                "reference": "fd0ab4e585db15618ab6e78b368be456aa8c86ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/7e333510eaaed6fc0e670c69fed148320ecb1cac",
-                "reference": "7e333510eaaed6fc0e670c69fed148320ecb1cac",
+                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/fd0ab4e585db15618ab6e78b368be456aa8c86ad",
+                "reference": "fd0ab4e585db15618ab6e78b368be456aa8c86ad",
                 "shasum": ""
             },
             "require": {
@@ -9802,7 +9784,7 @@
                 "illuminate/support": "^6.0 || ^7.0 || ^8.0",
                 "mockery/mockery": "^0.9 || ^1.0",
                 "php": "^7.2",
-                "phpstan/phpstan": "^0.12.28",
+                "phpstan/phpstan": "^0.12.34",
                 "symfony/process": "^4.3 || ^5.0"
             },
             "require-dev": {
@@ -9867,7 +9849,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2020-06-20T12:11:51+00:00"
+            "time": "2020-07-30T19:33:12+00:00"
         },
         {
             "name": "pdepend/pdepend",
@@ -10602,16 +10584,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.33",
+            "version": "0.12.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "46e698a0452526a05c4a351d7c47c4b8c37a548d"
+                "reference": "ad75388d71fb0b4a954f71a852fd989915a51cb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/46e698a0452526a05c4a351d7c47c4b8c37a548d",
-                "reference": "46e698a0452526a05c4a351d7c47c4b8c37a548d",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ad75388d71fb0b4a954f71a852fd989915a51cb7",
+                "reference": "ad75388d71fb0b4a954f71a852fd989915a51cb7",
                 "shasum": ""
             },
             "require": {
@@ -10654,7 +10636,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-07-19T22:10:11+00:00"
+            "time": "2020-07-30T15:31:10+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

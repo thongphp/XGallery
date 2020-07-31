@@ -59,6 +59,7 @@ final class Xiuren extends BaseCommand
                     [XiurenModel::URL => $item['url']],
                     [XiurenModel::IMAGES => $itemDetail->images] + $item
                 );
+                $this->progressBarSetInfo($item['url']);
                 $this->progressBarSetStatus('QUEUED');
                 $this->progressBar->advance();
             }

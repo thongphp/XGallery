@@ -2,11 +2,10 @@
 
 namespace App\Jobs\Flickr;
 
-use App\Facades\FlickrClient;
 use App\Facades\FlickrValidate;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Repositories\Flickr\PhotoRepository;
+use App\Models\Flickr\FlickrPhotoModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -22,51 +21,34 @@ class FlickrContactFavouritePhotos implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $nsid;
-    private array $owners = [];
+    private \App\Models\Flickr\FlickrContact $flickrContact;
 
     /**
-     * @param string $nsId
+     * @param  \App\Models\Flickr\FlickrContact  $flickrContact
      */
-    public function __construct(string $nsId)
+    public function __construct(\App\Models\Flickr\FlickrContact $flickrContact)
     {
-        $this->nsid = $nsId;
+        $this->flickrContact = $flickrContact;
         $this->onQueue(Queues::QUEUE_FLICKR);
     }
 
     public function handle(): void
     {
-        if (!FlickrValidate::validateNsId($this->nsid)) {
+        if (!FlickrValidate::validateNsId($this->flickrContact->nsid)) {
             return;
         }
 
-        $photos = FlickrClient::getFavouritePhotosOfUser($this->nsid);
-        $this->storePhotos($photos->photos->photo);
+        $photos = $this->flickrContact->fetchFavoritePhotos();
 
-        if ($photos->photos->pages === 1) {
-            return;
-        }
-
-        for ($page = 2; $page <= $photos->photos->pages; $page++) {
-            $nextPhotos = FlickrClient::getFavouritePhotosOfUser($this->nsid, $page);
-            $this->storePhotos($nextPhotos->photos->photo);
-        }
-    }
-
-    /**
-     * @param array $photos
-     */
-    private function storePhotos(array $photos)
-    {
-        $repository = app(PhotoRepository::class);
-        foreach ($photos as $photo) {
-            $repository->findOrCreateByIdWithData(get_object_vars($photo));
-            if (in_array($photo->owner, $this->owners)) {
-                continue;
+        $owner = [];
+        $photos->each(function ($photo) use ($owner) {
+            FlickrPhotoModel::firstOrCreate(get_object_vars($photo));
+            if (in_array($photo->owner, $owner)) {
+                return;
             }
 
-            $this->owners[] = $photo->owner;
+            $owner[] = $photo->owner;
             FlickrContact::dispatch($photo->owner);
-        }
+        });
     }
 }

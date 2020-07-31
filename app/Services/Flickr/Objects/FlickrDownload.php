@@ -2,27 +2,74 @@
 
 namespace App\Services\Flickr\Objects;
 
-use App\Facades\GooglePhotoClient;
 use App\Jobs\Flickr\FlickrContact;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Jobs\Flickr\FlickrDownloadPhoto;
 use App\Repositories\Flickr\ContactRepository;
+use App\Services\Flickr\Url\FlickrUrlInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-abstract class FlickrDownload
+abstract class FlickrDownload implements FlickrObjectInterface
 {
-    protected string $id;
     protected Collection $photos;
-    protected $googleAlbum;
+
+    /**
+     * @var FlickrUrlInterface
+     */
+    private FlickrUrlInterface $flickrUrl;
 
     /**
      * FlickrAlbum constructor.
-     * @param  string  $id
+     * @param  FlickrUrlInterface  $flickrUrl
      */
-    public function __construct(string $id)
+    public function __construct(FlickrUrlInterface $flickrUrl)
     {
-        $this->id = $id;
+        $this->flickrUrl = $flickrUrl;
         $this->photos = collect([]);
+
+        $this->load();
+    }
+
+    public function getType(): string
+    {
+        return $this->flickrUrl->getType();
+    }
+
+    public function download(): bool
+    {
+        // If owner is not exist, start new queue for getting this contact information.
+        if (!app(ContactRepository::class)->isExist($this->getOwner())) {
+            FlickrContact::dispatch($this->getOwner());
+        }
+
+        // Create download request
+        $download = \App\Models\Flickr\FlickrDownload::firstOrCreate([
+            'user_id' => Auth::user()->getAuthIdentifier(),
+            'type' => $this->getType(),
+            'name' => $this->getTitle(),
+            'photos_count' => $this->getPhotosCount(),
+            'processed' => 0 // Init default value
+        ]);
+
+        /**
+         * Extract photos to xref
+         * Actually getPhotos would make multi request depends on number of page but assumed not too much
+         */
+        $photos = $this->getPhotos();
+
+        $photos->each(function ($photo) use ($download) {
+            FlickrDownloadPhoto::dispatch($this, $download, $photo);
+        });
+
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOwner(): string
+    {
+        return $this->flickrUrl->getOwner();
     }
 
     /**
@@ -30,49 +77,13 @@ abstract class FlickrDownload
      */
     public function getId(): string
     {
-        return $this->id;
+        return $this->flickrUrl->getId();
     }
 
-    public function download()
+    public function getUrl(): string
     {
-        $this->googleAlbum = $this->createGoogleAlbum();
-
-        // If owner is not exist, start new queue for getting this contact information.
-        if (!app(ContactRepository::class)->isExist($this->getOwner())) {
-            FlickrContact::dispatch($this->getOwner());
-        }
-
-        $this->getPhotos()->each(function ($photo) {
-            // Store photo
-            $photo = FlickrPhotoModel::updateOrCreate(
-                ['id' => $photo->id],
-                array_merge(get_object_vars($photo), [FlickrPhotoModel::KEY_OWNER => $this->getOwner()])
-            );
-
-            \App\Models\Flickr\FlickrDownload::firstOrCreate(
-                array_merge(['user_id' => Auth::id()], ['photo_id' => $photo->id, 'google_album_id' => $this->googleAlbum->id])
-            );
-        });
-
-        $this->notification();
+        return $this->flickrUrl->getUrl();
     }
 
-    /**
-     * @return mixed
-     * @throws \JsonException
-     * @todo Check if Album already exists
-     */
-    private function createGoogleAlbum(): object
-    {
-        return GooglePhotoClient::createAlbum($this->getTitle());
-    }
-
-    abstract public function load(): bool;
-    abstract public function isValid(): bool;
-    abstract public function getPhotosCount(): int;
-    abstract public function getPhotos(): ?Collection;
-    abstract public function getTitle(): string;
-    abstract public function getOwner(): string;
-    abstract public function getDescription(): ?string;
-    abstract protected function notification();
+    abstract protected function load(): bool;
 }

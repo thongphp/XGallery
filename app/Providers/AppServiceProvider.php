@@ -10,11 +10,13 @@
 namespace App\Providers;
 
 use App\Facades\UserActivity as UserActivityFacade;
+use App\Models\Flickr\FlickrDownload;
 use App\Models\Jav\JavMovie;
+use App\Observers\FlickrDownloadObserver;
 use App\Observers\JavMovieObserver;
+use App\Services\Client\FlickrClient;
 use App\Services\Flickr\UrlExtractor;
-use App\Services\FlickrClient;
-use App\Services\FlickrValidate;
+use App\Services\Flickr\Validation;
 use App\Services\GoogleDrive;
 use App\Services\GooglePhoto;
 use App\Services\UserActivity;
@@ -48,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('flickrvalidate', function () {
-            return new FlickrValidate;
+            return new Validation;
         });
 
         $this->app->bind('flickrurlextractor', function () {
@@ -74,5 +76,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         JavMovie::observe(JavMovieObserver::class);
+        FlickrDownload::observe(FlickrDownloadObserver::class);
     }
 }

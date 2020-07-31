@@ -13,6 +13,7 @@ use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Jobs\XiurenDownload;
+use App\Models\XiurenModel;
 use App\Repositories\XiurenRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -66,16 +67,12 @@ class XiurenController extends BaseController
     }
 
     /**
-     * @param string $id
-     * @param XiurenRepository $repository
-     *
+     * @param  string  $id
      * @return JsonResponse
      */
-    public function download(string $id, XiurenRepository $repository): JsonResponse
+    public function download(string $id): JsonResponse
     {
-        $xiurenModel = $repository->findById($id);
-
-        if (!$xiurenModel) {
+        if (!$xiurenModel = XiurenModel::find($id)) {
             return response()
                 ->json(
                     ['html' => Toast::warning('Download', 'Gallery ['.$id.'] is not available.')]
@@ -105,7 +102,7 @@ class XiurenController extends BaseController
             $xiurenModel->getTitle()
         );
 
-        XiurenDownload::dispatch($id);
+        XiurenDownload::dispatch($xiurenModel);
 
         return response()->json(['html' => Toast::success('Download', $message)]);
     }

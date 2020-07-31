@@ -9,8 +9,8 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Crawlers\HttpClient;
 use App\Models\Jav\XCityVideoModel;
+use App\Services\Client\HttpClient;
 use DateTime;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
@@ -23,12 +23,11 @@ use Symfony\Component\HttpFoundation\Request;
 final class XCityVideo
 {
     /**
-     * @param  array  $options
      * @return HttpClient
      */
-    public function getClient(array $options = []): HttpClient
+    public function getClient(): HttpClient
     {
-        return new HttpClient(array_merge($options, config('services.httpclient')));
+        return new HttpClient();
     }
 
     /**
@@ -38,7 +37,7 @@ final class XCityVideo
      */
     public function crawl(string $uri, array $options = []): ?Crawler
     {
-        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
             return null;
         }
 

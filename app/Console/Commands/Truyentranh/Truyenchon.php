@@ -52,7 +52,8 @@ final class Truyenchon extends BaseCommand
 
         $this->progressBarInit($items->count());
         $items->each(function ($item) {
-            TruyenchonModel::firstOrCreate(['url'], $item);
+            TruyenchonModel::firstOrCreate(['url' => $item['url']], $item);
+            $this->progressBarSetInfo($item['url']);
             $this->progressBar->advance();
         });
 

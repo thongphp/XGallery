@@ -3,6 +3,7 @@
 namespace App\Models\Flickr;
 
 use App\Database\Mongodb;
+use App\Facades\FlickrClient;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
@@ -42,7 +43,7 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
      */
     public function flickrContact()
     {
-        return $this->belongsTo(FlickrContactModel::class, self::KEY_OWNER, FlickrContactModel::KEY_NSID);
+        return $this->belongsTo(FlickrContact::class, self::KEY_OWNER, FlickrContact::KEY_NSID);
     }
 
     /**
@@ -57,9 +58,39 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
         return $this->{self::KEY_SIZES}[0]['source'];
     }
 
+    public function getSizes(): array
+    {
+        if ($this->hasSizes()) {
+            return $this->{self::KEY_SIZES};
+        }
+
+        // @TODO Exception can't get sizes
+        $this->{self::KEY_SIZES} = FlickrClient::getPhotoSizes($this->id)->sizes->size;
+        $this->save();
+
+        return $this->{self::KEY_SIZES};
+    }
+
+    public function getBestSize(): ?array
+    {
+        $sizes = $this->getSizes();
+
+        if (!$sizes) {
+            return null;
+        }
+
+        $sizes = end($sizes);
+
+        if (is_object($sizes)) {
+            return get_object_vars($sizes);
+        }
+
+        return $sizes;
+    }
+
     /**
-     * @todo Provide method getSizes with check hasSizes and request getSizes if needed
      * @return bool
+     * @todo Provide method getSizes with check hasSizes and request getSizes if needed
      */
     public function hasSizes(): bool
     {

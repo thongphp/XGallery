@@ -9,8 +9,8 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Crawlers\HttpClient;
 use App\Models\Jav\XCityProfileModel;
+use App\Services\Client\HttpClient;
 use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
@@ -39,12 +39,11 @@ final class XCityProfile
     ];
 
     /**
-     * @param  array  $options
      * @return HttpClient
      */
-    public function getClient(array $options = []): HttpClient
+    public function getClient(): HttpClient
     {
-        return new HttpClient(array_merge($options, config('services.httpclient')));
+        return new HttpClient();
     }
 
     /**
@@ -54,7 +53,7 @@ final class XCityProfile
      */
     public function crawl(string $uri, array $options = []): ?Crawler
     {
-        if (!$response = $this->getClient($options)->request(Request::METHOD_GET, $uri)) {
+        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
             return null;
         }
 

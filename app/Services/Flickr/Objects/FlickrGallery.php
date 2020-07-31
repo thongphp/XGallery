@@ -4,9 +4,7 @@ namespace App\Services\Flickr\Objects;
 
 use App\Exceptions\Flickr\FlickrApiGalleryGetInfoException;
 use App\Facades\FlickrClient;
-use App\Facades\UserActivity;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class FlickrGallery
@@ -17,20 +15,6 @@ class FlickrGallery extends FlickrDownload
     private ?object $gallery;
 
     /**
-     * @return bool
-     */
-    public function load(): bool
-    {
-        try {
-            $this->gallery = FlickrClient::getGalleryInformation($this->id);
-        } catch (FlickrApiGalleryGetInfoException $exception) {
-            $this->gallery = null;
-        }
-
-        return $this->isValid();
-    }
-
-    /**
      * @return int
      */
     public function getPhotosCount(): int
@@ -39,12 +23,12 @@ class FlickrGallery extends FlickrDownload
     }
 
     /**
-     * @return object|null
+     * @return Collection
      */
-    public function getPhotos(): ?Collection
+    public function getPhotos(): Collection
     {
         if (!$this->isValid()) {
-            return null;
+            return $this->photos;
         }
 
         $page = 1;
@@ -67,14 +51,6 @@ class FlickrGallery extends FlickrDownload
     }
 
     /**
-     * @return string
-     */
-    public function getOwner(): string
-    {
-        return $this->gallery->gallery->owner;
-    }
-
-    /**
      * @return string|null
      */
     public function getDescription(): ?string
@@ -85,32 +61,22 @@ class FlickrGallery extends FlickrDownload
     /**
      * @return bool
      */
+    protected function load(): bool
+    {
+        try {
+            $this->gallery = FlickrClient::getGalleryInformation($this->getId());
+        } catch (FlickrApiGalleryGetInfoException $exception) {
+            $this->gallery = null;
+        }
+
+        return $this->isValid();
+    }
+
+    /**
+     * @return bool
+     */
     public function isValid(): bool
     {
         return $this->gallery !== null;
-    }
-
-    protected function notification()
-    {
-        // @todo Notification in even not job
-        UserActivity::notify(
-            '%s request %s gallery',
-            Auth::user(),
-            'download',
-            [
-                'object_id' => $this->getId(),
-                'extra' => [
-                    'title' => $this->getTitle(),
-                    // Fields are displayed in a table on the message
-                    'fields' => [
-                        'ID' => $this->getId(),
-                        'Photos' => $this->getPhotosCount(),
-                        'Owner' => $this->getOwner(),
-                        'Sync to Google' => $this->getTitle().' ['.$this->googleAlbum->id.']'
-                    ],
-                    'footer' => $this->getDescription(),
-                ],
-            ]
-        );
     }
 }

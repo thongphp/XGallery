@@ -2,8 +2,9 @@
 
 namespace App\Repositories\Flickr;
 
-use App\Models\Flickr\FlickrContactModel;
+use App\Models\Flickr\FlickrContact;
 use App\Repositories\BaseRepository;
+use App\Repositories\ConfigRepository;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,29 +16,37 @@ class ContactRepository extends BaseRepository
     protected string $primaryKey = 'nsid';
 
     /**
-     * @param FlickrContactModel $model
+     * @param FlickrContact $model
      */
-    public function __construct(FlickrContactModel $model)
+    public function __construct(FlickrContact $model)
     {
         parent::__construct($model);
     }
 
     /**
-     * @return FlickrContactModel|Model|null
+     * @return FlickrContact|Model|null
      */
-    public function getContactWithoutPhotos(): ?FlickrContactModel
+    public function getContactWithoutPhotos(): ?FlickrContact
     {
         return $this->model
-            ->where([FlickrContactModel::KEY_PHOTO_STATE => null])
+            ->where([FlickrContact::KEY_PHOTO_STATE => null])
             ->first();
+    }
+
+    public function getOldestContact($state = null): ?FlickrContact
+    {
+        return $this->getItems([
+            ConfigRepository::KEY_SORT_BY => 'updated_at',
+            FlickrContact::KEY_STATE => null, 'cache' => 0
+        ])->first();
     }
 
     /**
      * @param array $filter
      *
-     * @return FlickrContactModel|Model|null
+     * @return FlickrContact|Model|null
      */
-    public function getItemByConditions(array $filter = []): ?FlickrContactModel
+    public function getItemByConditions(array $filter = []): ?FlickrContact
     {
         return $this->getItems($filter)->first();
     }
@@ -45,11 +54,11 @@ class ContactRepository extends BaseRepository
     /**
      * @param string $nsId
      *
-     * @return FlickrContactModel|Model
+     * @return FlickrContact|Model
      */
-    public function findOrCreateByNsId(string $nsId): FlickrContactModel
+    public function findOrCreateByNsId(string $nsId): FlickrContact
     {
-        return $this->model::firstOrCreate([FlickrContactModel::KEY_NSID => $nsId]);
+        return $this->model::firstOrCreate([FlickrContact::KEY_NSID => $nsId]);
     }
 
     /**
@@ -59,23 +68,23 @@ class ContactRepository extends BaseRepository
      */
     public function isExist(string $nsId): bool
     {
-        return null !== $this->model::where([FlickrContactModel::KEY_NSID => $nsId])->first();
+        return null !== $this->model::where([FlickrContact::KEY_NSID => $nsId])->first();
     }
 
     public function resetStates(): void
     {
-        $this->model::query()->update([FlickrContactModel::KEY_STATE => null]);
+        $this->model::query()->update([FlickrContact::KEY_STATE => null]);
     }
 
     public function resetPhotoStates(): void
     {
-        $this->model::query()->update([FlickrContactModel::KEY_PHOTO_STATE => null]);
+        $this->model::query()->update([FlickrContact::KEY_PHOTO_STATE => null]);
     }
 
     /**
      * @param array $data
      *
-     * @return Model|FlickrContactModel
+     * @return Model|FlickrContact
      */
     public function save(array $data)
     {

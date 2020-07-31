@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Flickr;
 
 /**
  * Class FlickrValidate
  * @package App\Services
  */
-class FlickrValidate
+class Validation
 {
     /**
      * @param string $nsid

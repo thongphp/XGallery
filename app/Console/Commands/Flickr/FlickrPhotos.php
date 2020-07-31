@@ -12,7 +12,7 @@ namespace App\Console\Commands\Flickr;
 use App\Console\BaseCommand;
 use App\Jobs\Flickr\FlickrContactFavouritePhotos;
 use App\Jobs\Flickr\FlickrContactPhotos;
-use App\Models\Flickr\FlickrContactModel;
+use App\Models\Flickr\FlickrContact;
 use App\Repositories\Flickr\ContactRepository;
 
 /**
@@ -48,12 +48,20 @@ final class FlickrPhotos extends BaseCommand
             $contact = $contactRepository->getContactWithoutPhotos();
         }
 
-        $contact->{FlickrContactModel::KEY_PHOTO_STATE} = 1;
+        $this->output->note(sprintf('Working on %s contact', $contact->nsid));
+        $contact->{FlickrContact::KEY_PHOTO_STATE} = 1;
         $contact->save();
-        $this->output->note('Working on contact: '.$contact->nsid);
 
-        FlickrContactPhotos::dispatch($contact->nsid);
-        FlickrContactFavouritePhotos::dispatch($contact->nsid);
+        /**
+         * Follow SOLID we are not going update FlickrContact in this command
+         */
+//        $this->progressBarInit(1);
+//        \App\Jobs\Flickr\FlickrContact::dispatch($contact);
+//        $this->progressBarSetStatus('QUEUED');
+
+        FlickrContactPhotos::withChain([
+            new FlickrContactFavouritePhotos($contact)
+        ])->dispatch($contact);
 
         return true;
     }
