@@ -11,6 +11,7 @@ namespace App\Models;
 
 use App\Database\Mongodb;
 use App\Models\Traits\HasCover;
+use App\Services\Client\HttpClient;
 
 /**
  * Class Kissgoddess
@@ -29,4 +30,25 @@ class KissGoddessModel extends Mongodb
     protected $fillable = ['url', 'title', 'cover', 'images'];
 
     public const TITLE = 'title';
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+
+    public function download()
+    {
+        if (empty($this->images)) {
+            return false;
+        }
+
+        $httpClient = app(HttpClient::class);
+
+        foreach ($this->images as $image) {
+            $httpClient->download($image, 'kissgoddess'.DIRECTORY_SEPARATOR.$this->getTitle());
+        }
+
+        return true;
+    }
 }

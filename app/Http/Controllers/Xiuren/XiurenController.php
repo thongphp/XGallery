@@ -9,101 +9,40 @@
 
 namespace App\Http\Controllers\Xiuren;
 
-use App\Facades\UserActivity;
-use App\Http\Controllers\BaseController;
-use App\Http\Helpers\Toast;
+use App\Database\Mongodb;
+use App\Http\Controllers\ImagesController;
 use App\Jobs\XiurenDownload;
 use App\Models\XiurenModel;
 use App\Repositories\XiurenRepository;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class XiurenController
  * @package App\Http\Controllers\Xiuren
  */
-class XiurenController extends BaseController
+class XiurenController extends ImagesController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public const PAGE_TITLE = 'Xiuren';
+    protected string $title = 'Xiuren';
+    protected string $name = 'xiuren';
 
-    /**
-     * @param Request $request
-     * @param XiurenRepository $repository
-     *
-     * @return Application|Factory|View
-     */
-    public function dashboard(Request $request, XiurenRepository $repository)
+
+    protected function getItems(Request $request)
     {
-        return view(
-            'xiuren.index',
-            $this->getViewDefaultOptions(
-                [
-                    'items' => $repository->getItems($request),
-                    'title' => self::PAGE_TITLE,
-                ]
-            )
-        );
+        return app(XiurenRepository::class)->getItems($request);
     }
 
-    public function item(string $id, XiurenRepository $repository)
+    protected function getItem(string $id): Mongodb
     {
-        return view(
-            'xiuren.item',
-            [
-                'item' => $repository->findById($id),
-                'sidebar' => $this->getMenuItems(),
-                'title' => self::PAGE_TITLE,
-            ]
-        );
+        return XiurenModel::find($id);
     }
 
-    /**
-     * @param  string  $id
-     * @return JsonResponse
-     */
-    public function download(string $id): JsonResponse
+    protected function processDownload($model)
     {
-        if (!$xiurenModel = XiurenModel::find($id)) {
-            return response()
-                ->json(
-                    ['html' => Toast::warning('Download', 'Gallery ['.$id.'] is not available.')]
-                );
-        }
-
-        UserActivity::notify(
-            '%s request %s in [XiuRen] gallery',
-            Auth::user(),
-            'download',
-            [
-                'object_id' => $xiurenModel->getAttribute('_id'),
-                'extra' => [
-                    'title' => $xiurenModel->getTitle(),
-                    'fields' => [
-                        'ID' => $xiurenModel->getAttribute('_id'),
-                        'Title' => $xiurenModel->getTitle(),
-                        'Photos count' => count($xiurenModel->images),
-                    ],
-                    'footer' => $xiurenModel->url,
-                ],
-            ]
-        );
-
-        $message = sprintf(
-            'Added gallery <span class="badge badge-primary">%s</span> into download queue successfully',
-            $xiurenModel->getTitle()
-        );
-
-        XiurenDownload::dispatch($xiurenModel);
-
-        return response()->json(['html' => Toast::success('Download', $message)]);
+        XiurenDownload::dispatch($model);
     }
 }

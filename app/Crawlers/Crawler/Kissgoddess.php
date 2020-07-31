@@ -123,11 +123,4 @@ final class Kissgoddess
             return 1;
         }
     }
-
-    public function download(KissGoddessModel $item)
-    {
-        foreach ($item->images as $image) {
-            $this->getClient()->download($image, 'kissgoddess' . DIRECTORY_SEPARATOR . $item->title);
-        }
-    }
 }
