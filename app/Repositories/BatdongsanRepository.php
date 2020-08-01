@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Models\BatdongsanModel;
+use App\Models\Batdongsan;
 
 class BatdongsanRepository extends BaseRepository
 {
-    public function __construct(BatdongsanModel $model)
+    public function __construct(Batdongsan $model)
     {
         parent::__construct($model);
     }

@@ -4,7 +4,6 @@ namespace App\Crawlers\Tests\Unit\Crawlers;
 
 use App\Crawlers\Crawler\Batdongsan;
 use App\Crawlers\Tests\TestCase;
-use App\Models\BatdongsanModel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 
@@ -50,7 +49,7 @@ class BatdongsanTest extends TestCase
     public function testGetItem(string $url, string $expectTitle): void
     {
         $item = $this->crawler->getItem($url);
-        $this->assertInstanceOf(BatdongsanModel::class, $item);
+        $this->assertInstanceOf(\App\Models\Batdongsan::class, $item);
         $this->assertSame($expectTitle, $item->name);
     }
 

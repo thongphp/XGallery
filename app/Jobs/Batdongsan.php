@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Jobs\Traits\HasJob;
-use App\Models\BatdongsanModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -43,6 +42,6 @@ class Batdongsan implements ShouldQueue
             return;
         }
 
-        BatdongsanModel::updateOrCreate(['url' => $this->url], $itemDetail->getAttributes());
+        \App\Models\Batdongsan::updateOrCreate(['url' => $this->url], $itemDetail->getAttributes());
     }
 }

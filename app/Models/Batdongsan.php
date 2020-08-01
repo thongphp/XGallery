@@ -21,7 +21,7 @@ use App\Models\Traits\HasUrl;
  * @property string $content
  * @package App\Models
  */
-class BatdongsanModel extends Mongodb
+class Batdongsan extends Mongodb
 {
     use HasUrl;
 
