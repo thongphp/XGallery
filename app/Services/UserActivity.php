@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Core\UserActivityModel;
 use App\Models\User;
 use App\Notifications\UserActivity as UserActivityNotification;
 
@@ -20,7 +19,7 @@ class UserActivity
      */
     public function notify(string $text, ?User $user, string $action, array $args = [])
     {
-        $userActivity = app(UserActivityModel::class);
+        $userActivity = app(\App\Models\Core\UserActivity::class);
         $userActivity->actor_table = 'users';
         $userActivity->actor_id = $user ? $user->id : null;
         $userActivity->action = $action;

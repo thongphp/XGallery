@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Models\Core\UserActivityModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\SlackAttachment;
 use Illuminate\Notifications\Messages\SlackMessage;
@@ -43,11 +42,11 @@ class UserActivity extends Notification
     }
 
     /**
-     * @param UserActivityModel $notifiable
+     * @param  \App\Models\Core\UserActivity  $notifiable
      *
      * @return SlackMessage
      */
-    public function toSlack(UserActivityModel $notifiable): SlackMessage
+    public function toSlack(\App\Models\Core\UserActivity $notifiable): SlackMessage
     {
         $slackMessage = (new SlackMessage)
             ->from('User activity')
