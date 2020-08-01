@@ -9,7 +9,6 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Models\KissGoddessModel;
 use App\Services\Client\HttpClient;
 use Exception;
 use Illuminate\Support\Collection;
@@ -47,12 +46,12 @@ final class Kissgoddess
     /**
      * @param  string  $itemUri
      *
-     * @return KissGoddessModel|null
+     * @return \App\Models\KissGoddess|null
      */
-    public function getItem(string $itemUri): ?KissGoddessModel
+    public function getItem(string $itemUri): ?\App\Models\KissGoddess
     {
         $pages = $this->getIndexPagesCount($itemUri);
-        $item = new KissGoddessModel;
+        $item = app(\App\Models\KissGoddess::class);
         $item->url = $itemUri;
         $images = collect([]);
 

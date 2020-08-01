@@ -21,7 +21,7 @@ use App\Services\Client\HttpClient;
  * @property array $images
  * @package App\Models
  */
-class KissGoddessModel extends Mongodb
+class KissGoddess extends Mongodb
 {
     use HasCover;
 
@@ -35,7 +35,6 @@ class KissGoddessModel extends Mongodb
     {
         return $this->title;
     }
-
 
     public function download()
     {

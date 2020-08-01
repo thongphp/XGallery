@@ -5,7 +5,6 @@ namespace App\Crawlers\Tests\Unit\Crawlers;
 use App\Crawlers\Crawler\Kissgoddess;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\KissGoddessModel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 
@@ -43,7 +42,7 @@ class KissGoddessTest extends TestCase
     public function testGetItem(string $url): void
     {
         $item = $this->crawler->getItem($url);
-        $this->assertInstanceOf(KissGoddessModel::class, $item);
+        $this->assertInstanceOf(\App\Models\KissGoddess::class, $item);
         $this->assertModelProperties(['url','images'], $item);
     }
 

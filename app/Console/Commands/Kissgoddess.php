@@ -10,7 +10,6 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseCommand;
-use App\Models\KissGoddessModel;
 use Exception;
 
 /**
@@ -53,10 +52,11 @@ final class Kissgoddess extends BaseCommand
         }
 
         $this->progressBarInit($items->count());
+        $this->progressBarSetMessage('URLs');
         $items->each(
             function ($item) use ($crawler) {
                 $itemDetail = $crawler->getItem($item['url']);
-                KissGoddessModel::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
+                \App\Models\KissGoddess::updateOrCreate(['url' => $item['url']], ['images' => $itemDetail->images] + $item);
                 $this->progressBarSetStatus('QUEUED');
                 $this->progressBar->advance();
             }

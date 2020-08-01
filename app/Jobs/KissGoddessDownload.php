@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Jobs\KissGoddess;
+namespace App\Jobs;
 
-use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\KissGoddessModel;
+use App\Models\KissGoddess;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,12 +19,12 @@ class KissGoddessDownload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private KissGoddessModel $item;
+    private KissGoddess $item;
 
     /**
-     * @param  KissGoddessModel  $item
+     * @param  KissGoddess  $item
      */
-    public function __construct(KissGoddessModel $item)
+    public function __construct(KissGoddess $item)
     {
         $this->item = $item;
         $this->onQueue(Queues::QUEUE_DOWNLOADS);
