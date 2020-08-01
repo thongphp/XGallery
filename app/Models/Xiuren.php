@@ -18,7 +18,7 @@ use Spatie\Url\Url;
  * Class XiurenModel
  * @package App\Models
  */
-class XiurenModel extends Mongodb
+class Xiuren extends Mongodb
 {
     use HasCover;
 

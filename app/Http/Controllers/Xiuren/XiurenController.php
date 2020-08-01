@@ -12,7 +12,7 @@ namespace App\Http\Controllers\Xiuren;
 use App\Database\Mongodb;
 use App\Http\Controllers\ImagesController;
 use App\Jobs\XiurenDownload;
-use App\Models\XiurenModel;
+use App\Models\Xiuren;
 use App\Repositories\XiurenRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -30,7 +30,6 @@ class XiurenController extends ImagesController
     protected string $title = 'Xiuren';
     protected string $name = 'xiuren';
 
-
     protected function getItems(Request $request)
     {
         return app(XiurenRepository::class)->getItems($request);
@@ -38,7 +37,7 @@ class XiurenController extends ImagesController
 
     protected function getItem(string $id): Mongodb
     {
-        return XiurenModel::find($id);
+        return Xiuren::find($id);
     }
 
     protected function processDownload($model)
