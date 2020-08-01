@@ -147,7 +147,7 @@ class GooglePhoto extends GoogleOauthClient
                 ];
             }
 
-            $response = $this->request(
+            $this->request(
                 'post',
                 'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
                 [
@@ -160,12 +160,6 @@ class GooglePhoto extends GoogleOauthClient
             );
 
             $medias = [];
-        }
-
-
-
-        if (!$response) {
-            // throw new GooglePhotoApiMediaCreateException($uploadToken, $googleAlbumId, $response, $file);
         }
     }
 }
