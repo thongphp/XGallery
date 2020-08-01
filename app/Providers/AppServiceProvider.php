@@ -70,7 +70,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Totem::auth(function ($request) {
-            $user = $request->user();
+            if (!$user = $request->user()) {
+                return false;
+            }
             $authenticatedUsers = config('services.authenticated.emails');
             return in_array($user->email, $authenticatedUsers);
         });
