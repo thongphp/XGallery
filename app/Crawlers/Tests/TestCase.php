@@ -3,7 +3,8 @@
 namespace App\Crawlers\Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Tests\CreatesApplication;
+use Tests\Traits\CreatesApplication;
+use Tests\Traits\FixSQLite;
 
 /**
  * Class TestCase
@@ -11,7 +12,7 @@ use Tests\CreatesApplication;
  */
 abstract class TestCase extends BaseTestCase
 {
-    protected $baseUrl = 'http://localhost';
+    protected string $baseUrl = 'http://localhost';
 
-    use CreatesApplication;
+    use CreatesApplication, FixSQLite;
 }

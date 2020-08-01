@@ -24,7 +24,7 @@ class FlickrContactsTest extends TestCase
     {
         $this->mockFlickrClientCommand('getContactsOfCurrentUser', 'getContactsOfCurrentUser_hasPage2');
         $this->artisan('flickr:contacts')->assertExitCode(0);
-        $this->assertEquals(5, FlickrContact::all()->count());
+        self::assertEquals(5, FlickrContact::all()->count());
     }
 
     protected function tearDown(): void
