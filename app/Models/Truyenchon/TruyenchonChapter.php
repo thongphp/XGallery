@@ -24,7 +24,7 @@ use App\Models\Traits\HasUrl;
  * @property string $description
  * @property array $images
  */
-class TruyenchonChapterModel extends Mongodb
+class TruyenchonChapter extends Mongodb
 {
     use HasUrl;
     use HasCover;

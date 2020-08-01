@@ -12,7 +12,7 @@ namespace App\Jobs\Truyenchon;
 use App\Crawlers\Crawler\Truyenchon;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Truyenchon\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonChapter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -28,12 +28,12 @@ class TruyenchonChapterGetImages implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private TruyenchonChapterModel $chapter;
+    private TruyenchonChapter $chapter;
 
     /**
-     * @param TruyenchonChapterModel $chapter
+     * @param TruyenchonChapter $chapter
      */
-    public function __construct(TruyenchonChapterModel $chapter)
+    public function __construct(TruyenchonChapter $chapter)
     {
         $this->chapter = $chapter;
         $this->onQueue(Queues::QUEUE_TRUYENTRANH);

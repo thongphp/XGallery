@@ -26,7 +26,7 @@ use Jenssegers\Mongodb\Relations\HasMany;
  * @property int $state
  * @property null|Collection $chapters
  */
-class TruyenchonModel extends Mongodb
+class Truyenchon extends Mongodb
 {
     use HasUrl;
     use HasCover;
@@ -48,6 +48,6 @@ class TruyenchonModel extends Mongodb
      */
     public function chapters(): HasMany
     {
-        return $this->hasMany(TruyenchonChapterModel::class, TruyenchonChapterModel::KEY_STORY_URL, self::KEY_URL);
+        return $this->hasMany(TruyenchonChapter::class, TruyenchonChapter::KEY_STORY_URL, self::KEY_URL);
     }
 }

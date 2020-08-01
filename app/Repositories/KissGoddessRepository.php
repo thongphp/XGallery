@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\KissGoddessModel;
+use App\Models\KissGoddess;
 use App\Traits\Jav\HasOrdering;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,10 +13,10 @@ class KissGoddessRepository
 
     public function getItems(Request $request): LengthAwarePaginator
     {
-        $builder = app(KissGoddessModel::class)->newQuery();
+        $builder = app(KissGoddess::class)->newQuery();
 
         if ($keyword = $request->get(ConfigRepository::KEY_KEYWORD)) {
-            $builder->orWhere(KissGoddessModel::TITLE, 'LIKE', '%'.$keyword.'%');
+            $builder->orWhere(KissGoddess::TITLE, 'LIKE', '%'.$keyword.'%');
         }
 
         $this->processOrdering($builder, $request);
@@ -26,8 +26,8 @@ class KissGoddessRepository
             ->appends(request()->except(ConfigRepository::KEY_PAGE, '_token'));
     }
 
-    public function findById(string $id): ?KissGoddessModel
+    public function findById(string $id): ?KissGoddess
     {
-        return KissGoddessModel::find($id);
+        return KissGoddess::find($id);
     }
 }

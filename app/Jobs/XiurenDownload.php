@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Jobs\Traits\HasJob;
-use App\Models\XiurenModel;
+use App\Models\Xiuren;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,12 +19,12 @@ class XiurenDownload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private XiurenModel $xiuren;
+    private Xiuren $xiuren;
 
     /**
-     * @param  XiurenModel  $xiuren
+     * @param  Xiuren  $xiuren
      */
-    public function __construct(XiurenModel $xiuren)
+    public function __construct(Xiuren $xiuren)
     {
         $this->xiuren = $xiuren;
         $this->onQueue(Queues::QUEUE_DOWNLOADS);

@@ -9,7 +9,6 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Models\XiurenModel;
 use App\Services\Client\HttpClient;
 use Exception;
 use Illuminate\Support\Collection;
@@ -18,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Xiuren
- * @package App\Services\Crawler
+ * @package App\Crawlers\Crawler
  */
 final class Xiuren
 {
@@ -48,15 +47,15 @@ final class Xiuren
     /**
      * @param string $itemUri
      *
-     * @return XiurenModel|null
+     * @return \App\Models\Xiuren|null
      */
-    public function getItem(string $itemUri): ?XiurenModel
+    public function getItem(string $itemUri): ?\App\Models\Xiuren
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        $item = new XiurenModel;
+        $item = app(\App\Models\Xiuren::class);
         $item->url = $itemUri;
         $item->images = collect(
             $crawler->filter('#main .post .photoThum a')->each(

@@ -10,7 +10,6 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseCommand;
-use App\Models\XiurenModel;
 
 /**
  * Class Xiuren
@@ -52,12 +51,13 @@ final class Xiuren extends BaseCommand
         }
 
         $this->progressBarInit($items->count());
+        $this->progressBarSetMessage('URLs');
         $items->each(
             function ($item) use ($crawler) {
                 $itemDetail = $crawler->getItem($item['url']);
-                XiurenModel::updateOrCreate(
-                    [XiurenModel::URL => $item['url']],
-                    [XiurenModel::IMAGES => $itemDetail->images] + $item
+                \App\Models\Xiuren::updateOrCreate(
+                    [\App\Models\Xiuren::URL => $item['url']],
+                    [\App\Models\Xiuren::IMAGES => $itemDetail->images] + $item
                 );
                 $this->progressBarSetInfo($item['url']);
                 $this->progressBarSetStatus('QUEUED');

@@ -11,8 +11,8 @@ namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCommand;
 use App\Jobs\Truyenchon\TruyenchonChapterGetImages;
-use App\Models\Truyenchon\TruyenchonChapterModel;
-use App\Models\Truyenchon\TruyenchonModel;
+use App\Models\Truyenchon\Truyenchon;
+use App\Models\Truyenchon\TruyenchonChapter;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -42,7 +42,7 @@ final class TruyenchonStory extends BaseCommand
      */
     protected function fully(): bool
     {
-        $story = TruyenchonModel::orderBy('updated_at', 'asc')->first();
+        $story = Truyenchon::orderBy('updated_at', 'asc')->first();
         $story->touch();
         $this->output->note('Working on ' . $story->title);
         $crawler = app(\App\Crawlers\Crawler\Truyenchon::class);
@@ -63,9 +63,10 @@ final class TruyenchonStory extends BaseCommand
         })->toArray();
 
         $this->progressBarInit(count($chapters));
+        $this->progressBarSetMessage('Chapters');
 
         foreach ($chapters as $chapter) {
-            $model = TruyenchonChapterModel::firstOrCreate([
+            $model = TruyenchonChapter::firstOrCreate([
                 'storyUrl' => $story->url, 'chapterUrl' => $chapter['chapterUrl']
             ], $chapter);
             TruyenchonChapterGetImages::dispatch($model);

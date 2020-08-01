@@ -9,7 +9,6 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Models\BatdongsanModel;
 use App\Services\Client\HttpClient;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -52,15 +51,15 @@ final class Batdongsan
      * @SuppressWarnings("PHPMD.NPathComplexity")
      *
      * @param  string  $itemUri
-     * @return BatdongsanModel|null
+     * @return \App\Models\Batdongsan|null
      */
-    public function getItem(string $itemUri): ?BatdongsanModel
+    public function getItem(string $itemUri): ?\App\Models\Batdongsan
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        $item = new BatdongsanModel;
+        $item = app(\App\Models\Batdongsan::class);
         $nameNode = $crawler->filter('.pm-title h1');
 
         if ($nameNode->count() === 0) {

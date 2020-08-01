@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\Truyenchon\TruyenchonChapterModel;
-use App\Models\Truyenchon\TruyenchonModel;
+use App\Models\Truyenchon\Truyenchon;
+use App\Models\Truyenchon\TruyenchonChapter;
 
 /**
  * Class TruyenchonRepository
@@ -11,7 +11,7 @@ use App\Models\Truyenchon\TruyenchonModel;
  */
 class TruyenchonRepository extends BaseRepository
 {
-    public function __construct(TruyenchonModel $model)
+    public function __construct(Truyenchon $model)
     {
         parent::__construct($model);
     }
@@ -27,19 +27,19 @@ class TruyenchonRepository extends BaseRepository
 
     public function firstOrCreate(string $storyUrl, string $storyCover, string $storyTitle)
     {
-        return TruyenchonModel::firstOrCreate([
+        return Truyenchon::firstOrCreate([
             'url' => $storyUrl, 'cover' => $storyCover, 'title' => $storyTitle
         ]);
     }
 
-    public function getStoryByState(?int $state = null): ?TruyenchonModel
+    public function getStoryByState(?int $state = null): ?Truyenchon
     {
-        return TruyenchonModel::where(['state' => $state])->first();
+        return Truyenchon::where(['state' => $state])->first();
     }
 
     public function firstOrCreateChapter(string $storyUrl, string $chapterUrl, string $chapter)
     {
-        return TruyenchonChapterModel::firstOrCreate([
+        return TruyenchonChapter::firstOrCreate([
             'storyUrl' => $storyUrl, 'chapterUrl' => $chapterUrl, 'chapter' => $chapter
         ]);
     }
@@ -47,10 +47,10 @@ class TruyenchonRepository extends BaseRepository
     /**
      * @param string $url
      *
-     * @return TruyenchonChapterModel|null
+     * @return TruyenchonChapter|null
      */
-    public function getChapterByUrl(string $url): ?TruyenchonChapterModel
+    public function getChapterByUrl(string $url): ?TruyenchonChapter
     {
-        return TruyenchonChapterModel::where(['chapterUrl' => $url])->first();
+        return TruyenchonChapter::where(['chapterUrl' => $url])->first();
     }
 }

@@ -12,7 +12,7 @@ namespace App\Http\Controllers\Truyenchon;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Jobs\Truyenchon\TruyenchonStoryDownload;
-use App\Models\Truyenchon\TruyenchonModel;
+use App\Models\Truyenchon\Truyenchon;
 use App\Repositories\TruyenchonRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -56,8 +56,8 @@ class TruyenchonController extends BaseController
      */
     public function story(string $id, string $chapter)
     {
-        /** @var TruyenchonModel $story */
-        $story = TruyenchonModel::find($id);
+        /** @var Truyenchon $story */
+        $story = Truyenchon::find($id);
         $keys = [];
         foreach ($story->chapters as $item) {
             $keys[] = $item->chapter;
@@ -86,7 +86,7 @@ class TruyenchonController extends BaseController
      */
     public function download(string $id): JsonResponse
     {
-        $story = TruyenchonModel::find($id);
+        $story = Truyenchon::find($id);
         $message = sprintf(
             'Added story <span class="badge badge-primary">%s</span> into download queue successfully',
             $story->title

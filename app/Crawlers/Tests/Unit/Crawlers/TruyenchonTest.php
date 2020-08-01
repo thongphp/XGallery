@@ -5,7 +5,7 @@ namespace App\Crawlers\Tests\Unit\Crawlers;
 use App\Crawlers\Crawler\Truyenchon;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\Truyenchon\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonChapter;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 
@@ -27,7 +27,7 @@ class TruyenchonTest extends TestCase
     public function testGetItem(): void
     {
         $item = $this->crawler->getItem('http://truyenchon.com/truyen/kinh-di-khong-loi/chap-211/599759');
-        $this->assertInstanceOf(TruyenchonChapterModel::class, $item);
+        $this->assertInstanceOf(TruyenchonChapter::class, $item);
         $this->assertModelProperties(['chapterUrl', 'images', 'title'], $item);
     }
 
@@ -52,6 +52,6 @@ class TruyenchonTest extends TestCase
 
     public function testGetPagesCount(): void
     {
-        $this->assertEquals(380, $this->crawler->getIndexPagesCount('http://truyenchon.com'));
+        $this->assertGreaterThan(380, $this->crawler->getIndexPagesCount('http://truyenchon.com'));
     }
 }

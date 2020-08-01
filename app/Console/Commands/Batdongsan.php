@@ -10,7 +10,6 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseCommand;
-use App\Services\Client\HttpClient;
 use Exception;
 
 /**
@@ -40,9 +39,6 @@ final class Batdongsan extends BaseCommand
      */
     protected function fully(): bool
     {
-        $client = new HttpClient();
-        $client->download('https://file-examples-com.github.io/uploads/2017/10/file_example_JPG_100kB.jpg', 'test');
-        exit;
         if (!$endpoint = $this->getEndpoint('Batdongsan')) {
             return false;
         }
@@ -55,6 +51,7 @@ final class Batdongsan extends BaseCommand
         }
 
         $this->progressBarInit($items->count());
+        $this->progressBarSetMessage('URLs');
         $items->each(function ($url) {
             \App\Jobs\Batdongsan::dispatch($url);
             $this->progressBarSetInfo($url);

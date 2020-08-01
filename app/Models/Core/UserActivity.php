@@ -18,7 +18,7 @@ use Illuminate\Notifications\Notification;
  * @property int $extra;
  * @package App\Models\Core
  */
-class UserActivityModel extends Model
+class UserActivity extends Model
 {
     use Notifiable;
 
