@@ -3,7 +3,7 @@
 namespace Tests\Feature\Console\Command\Flickr;
 
 use App\Jobs\Flickr\FlickrPhotoSizes;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -29,7 +29,7 @@ class FlickrPhotoSizesTest extends TestCase
 
     public function testExecuteGetAllPhotosAndStartGetPhotoSizes(): void
     {
-        $this->createPhoto([FlickrPhotoModel::KEY_ID => '1']);
+        $this->createPhoto([FlickrPhoto::KEY_ID => '1']);
 
         $this->expectsJobs(FlickrPhotoSizes::class);
         $this->artisan('flickr:photossizes')->assertExitCode(0);
@@ -38,11 +38,11 @@ class FlickrPhotoSizesTest extends TestCase
     /**
      * @param array $photo
      *
-     * @return FlickrPhotoModel
+     * @return FlickrPhoto
      */
-    private function createPhoto(array $photo): FlickrPhotoModel
+    private function createPhoto(array $photo): FlickrPhoto
     {
-        $model = app(FlickrPhotoModel::class);
+        $model = app(FlickrPhoto::class);
         $model->fill($photo)->save();
 
         return $model;
@@ -50,8 +50,8 @@ class FlickrPhotoSizesTest extends TestCase
 
     public function testExecuteGetAllPhotosAndStartGetPhotoSizesWithNoEmptySizesPhoto(): void
     {
-        $this->createPhoto([FlickrPhotoModel::KEY_ID => '1', FlickrPhotoModel::KEY_SIZES => ['foo' => 'bar']]);
-        $this->createPhoto([FlickrPhotoModel::KEY_ID => '2', FlickrPhotoModel::KEY_SIZES => ['bar' => 'foo']]);
+        $this->createPhoto([FlickrPhoto::KEY_ID => '1', FlickrPhoto::KEY_SIZES => ['foo' => 'bar']]);
+        $this->createPhoto([FlickrPhoto::KEY_ID => '2', FlickrPhoto::KEY_SIZES => ['bar' => 'foo']]);
 
         $this->doesntExpectJobs(FlickrPhotoSizes::class);
         $this->artisan('flickr:photossizes')->assertExitCode(0);

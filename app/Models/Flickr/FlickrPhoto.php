@@ -11,7 +11,7 @@ use Jenssegers\Mongodb\Eloquent\SoftDeletes;
  * Class FlickrPhotoModel
  * @package App\Models\Flickr
  */
-class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
+class FlickrPhoto extends Mongodb implements FlickrPhotoInterface
 {
     use SoftDeletes;
 
@@ -90,7 +90,6 @@ class FlickrPhotoModel extends Mongodb implements FlickrPhotoInterface
 
     /**
      * @return bool
-     * @todo Provide method getSizes with check hasSizes and request getSizes if needed
      */
     public function hasSizes(): bool
     {

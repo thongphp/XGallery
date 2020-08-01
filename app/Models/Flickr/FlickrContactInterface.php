@@ -29,7 +29,7 @@ namespace App\Models\Flickr;
  * @property string|null $mobileurl
  * @property array|null $photos
  *
- * @property \App\Models\Flickr\FlickrPhotoModel[]|null $flickrphotos;
+ * @property \App\Models\Flickr\FlickrPhoto[]|null $flickrphotos;
  * @property int|null $state
  * @property int|null $photo_state
  */

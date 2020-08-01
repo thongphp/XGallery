@@ -4,7 +4,7 @@ namespace Tests\Unit\Jobs\Flickr;
 
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrPhotoSizes;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,16 +25,16 @@ class FlickrPhotoSizesTest extends TestCase
 
     public function testHandle(): void
     {
-        app(FlickrPhotoModel::class)
-            ->fill([FlickrPhotoModel::KEY_ID => self::PHOTO_ID])
+        app(FlickrPhoto::class)
+            ->fill([FlickrPhoto::KEY_ID => self::PHOTO_ID])
             ->save();
 
         $this->mockFlickrClientCommand('getPhotoSizes');
         $this->createJob(self::PHOTO_ID)->handle();
 
-        $photo = FlickrPhotoModel::where([FlickrPhotoModel::KEY_ID => self::PHOTO_ID])->first();
+        $photo = FlickrPhoto::where([FlickrPhoto::KEY_ID => self::PHOTO_ID])->first();
         $this->assertNotNull($photo);
-        $this->assertNotNull($photo->{FlickrPhotoModel::KEY_SIZES});
+        $this->assertNotNull($photo->{FlickrPhoto::KEY_SIZES});
     }
 
     /**

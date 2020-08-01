@@ -4,7 +4,7 @@ namespace App\Jobs\Flickr;
 
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,15 +21,15 @@ class FlickrPhotoSizes implements ShouldQueue
     use HasJob;
 
     /**
-     * @var FlickrPhotoModel
+     * @var FlickrPhoto
      */
-    private FlickrPhotoModel $flickrPhotoModel;
+    private FlickrPhoto $flickrPhotoModel;
 
     /**
      * FlickrPhotoSizes constructor.
-     * @param  FlickrPhotoModel  $flickrPhotoModel
+     * @param  FlickrPhoto  $flickrPhotoModel
      */
-    public function __construct(FlickrPhotoModel $flickrPhotoModel)
+    public function __construct(FlickrPhoto $flickrPhotoModel)
     {
         $this->flickrPhotoModel = $flickrPhotoModel;
         $this->onQueue(Queues::QUEUE_FLICKR);

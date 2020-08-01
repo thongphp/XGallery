@@ -3,7 +3,7 @@
 namespace Tests\Unit\Models\Flickr;
 
 use App\Models\Flickr\FlickrContact;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 use Tests\Traits\FlickrMongoDatabase;
@@ -43,11 +43,11 @@ class FlickrPhotoModelTest extends TestCase
     /**
      * @param array $photo
      *
-     * @return FlickrPhotoModel
+     * @return FlickrPhoto
      */
-    private function createPhoto(array $photo): FlickrPhotoModel
+    private function createPhoto(array $photo): FlickrPhoto
     {
-        $model = app(FlickrPhotoModel::class);
+        $model = app(FlickrPhoto::class);
         $model->fill($photo)->save();
 
         return $model;
