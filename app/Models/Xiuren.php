@@ -16,6 +16,9 @@ use Spatie\Url\Url;
 
 /**
  * Class XiurenModel
+ * @property string $url
+ * @property string $cover
+ * @property array $images
  * @package App\Models
  */
 class Xiuren extends Mongodb
