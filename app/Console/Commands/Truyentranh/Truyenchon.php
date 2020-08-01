@@ -10,7 +10,6 @@
 namespace App\Console\Commands\Truyentranh;
 
 use App\Console\BaseCommand;
-use App\Models\Truyenchon\TruyenchonModel;
 use Exception;
 
 /**
@@ -51,9 +50,11 @@ final class Truyenchon extends BaseCommand
         }
 
         $this->progressBarInit($items->count());
+        $this->progressBarSetMessage('URLs');
         $items->each(function ($item) {
-            TruyenchonModel::firstOrCreate(['url' => $item['url']], $item);
+            \App\Models\Truyenchon\Truyenchon::firstOrCreate(['url' => $item['url']], $item);
             $this->progressBarSetInfo($item['url']);
+            $this->progressBarSetStatus('FINISHED');
             $this->progressBar->advance();
         });
 

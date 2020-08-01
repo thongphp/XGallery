@@ -10,7 +10,7 @@
 namespace App\Crawlers\Crawler;
 
 use App\Crawlers\Middleware\TruyenchonRateLimitStore;
-use App\Models\Truyenchon\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonChapter;
 use App\Services\Client\HttpClient;
 use Exception;
 use Illuminate\Support\Collection;
@@ -30,7 +30,7 @@ final class Truyenchon
      */
     public function getClient(): HttpClient
     {
-        return new HttpClient(RateLimiterMiddleware::perSecond(10, new TruyenchonRateLimitStore()));
+        return new HttpClient([], [RateLimiterMiddleware::perSecond(10, new TruyenchonRateLimitStore())]);
     }
 
     /**
@@ -49,15 +49,15 @@ final class Truyenchon
 
     /**
      * @param  string  $chapterUrl
-     * @return TruyenchonChapterModel|null
+     * @return TruyenchonChapter|null
      */
-    public function getItem(string $chapterUrl): ?TruyenchonChapterModel
+    public function getItem(string $chapterUrl): ?TruyenchonChapter
     {
         if (!$crawler = $this->crawl($chapterUrl)) {
             return null;
         }
 
-        $item = new TruyenchonChapterModel;
+        $item = app(TruyenchonChapter::class);
         $item->chapterUrl = $chapterUrl;
         $item->images = collect($crawler->filter('.page-chapter img')->each(function ($img) {
             return $img->attr('data-original');

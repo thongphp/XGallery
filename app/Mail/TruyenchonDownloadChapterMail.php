@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Truyenchon\TruyenchonChapterModel;
+use App\Models\Truyenchon\TruyenchonChapter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -12,10 +12,10 @@ class TruyenchonDownloadChapterMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private TruyenchonChapterModel $chapterModel;
+    private TruyenchonChapter $chapterModel;
     private string $pdfFile;
 
-    public function __construct(TruyenchonChapterModel $chapterModel, string $pdfFile)
+    public function __construct(TruyenchonChapter $chapterModel, string $pdfFile)
     {
         $this->chapterModel = $chapterModel;
         $this->pdfFile = $pdfFile;
