@@ -24,3 +24,7 @@ div#overlay {
     display: none !important;
     visibility: hidden;
 }
+
+.no-border {
+    border: none !important;
+}

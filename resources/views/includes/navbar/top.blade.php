@@ -1,10 +1,18 @@
 @section('navbar')
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <!-- Left navbar links -->
-        <ul class="navbar-nav">
+        <ul class="navbar-nav mr-2">
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#"><em class="fas fa-bars"></em></a>
             </li>
+            @auth
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('user.profile.view')}}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('user.activities.view')}}">Activities</a>
+                </li>
+            @endauth
         </ul>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">

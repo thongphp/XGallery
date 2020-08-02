@@ -57,8 +57,9 @@ abstract class ImagesController extends BaseController
             Auth::user(),
             'download',
             [
-                'object_id' => $item->_id,
-                'extra' => [
+                \App\Models\Core\UserActivity::OBJECT_ID => $item->_id,
+                \App\Models\Core\UserActivity::OBJECT_TABLE => $item->getTable(),
+                \App\Models\Core\UserActivity::EXTRA => [
                     'title' => $item->getTitle(),
                     'fields' => [
                         'ID' => $item->_id,

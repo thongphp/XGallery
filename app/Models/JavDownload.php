@@ -11,6 +11,7 @@ namespace App\Models;
 
 use App\Database\Mongodb;
 use App\Models\Jav\Onejav;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class JavDownload
@@ -18,7 +19,10 @@ use App\Models\Jav\Onejav;
  */
 class JavDownload extends Mongodb
 {
-    public function downloads()
+    /**
+     * @return Collection
+     */
+    public function downloads(): Collection
     {
         return $this->hasMany(Onejav::class, 'title', 'item_number')->orderBy('size', 'desc')->get();
     }

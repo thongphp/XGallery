@@ -6,30 +6,37 @@ use Illuminate\Foundation\Auth\User as Authenticator;
 
 /**
  * Class User
+ * @property string $id
  * @property string $name
  * @property string $email
- * @property int $id
  * @property string $remember_token
+ * @property string $avatar
  * @package App\Models
  */
 class User extends Authenticator
 {
+    public const ID = 'id';
+    public const NAME = 'name';
+    public const EMAIL = 'email';
+    public const AVATAR = 'avatar';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email',
+        self::NAME, self::EMAIL, self::AVATAR
     ];
 
     /**
-     * @param  string  $service
+     * @param string $service
+     *
      * @return Oauth|null
      */
-    public function getOauth(string $service): ?Oauth
+    public function getOAuth(string $service): ?Oauth
     {
-        return app(Oauth::class)->firstWhere(['user_id' => $this->id, 'service' => $service]);
+        return Oauth::firstWhere([Oauth::SERVICE => $service, Oauth::USER_ID => $this->{self::ID}]);
     }
 
     /**
@@ -37,6 +44,6 @@ class User extends Authenticator
      */
     public function isAdmin(): bool
     {
-        return in_array($this->email, config('services.authenticated.emails'), true);
+        return in_array($this->{self::EMAIL}, config('services.authenticated.emails'), true);
     }
 }
