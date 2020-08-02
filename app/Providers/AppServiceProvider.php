@@ -12,6 +12,7 @@ namespace App\Providers;
 use App\Facades\UserActivity as UserActivityFacade;
 use App\Models\Flickr\FlickrDownload;
 use App\Models\Jav\JavMovie;
+use App\Models\User;
 use App\Observers\FlickrDownloadObserver;
 use App\Observers\JavMovieObserver;
 use App\Services\Client\FlickrClient;
@@ -21,6 +22,7 @@ use App\Services\GoogleDrive;
 use App\Services\GooglePhoto;
 use App\Services\UserActivity;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Studio\Totem\Totem;
 
@@ -69,12 +71,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Totem::auth(function ($request) {
+        Totem::auth(static function (Request $request) {
             if (!$user = $request->user()) {
                 return false;
             }
-            $authenticatedUsers = config('services.authenticated.emails');
-            return in_array($user->email, $authenticatedUsers);
+
+            return $user->isAdmin();
         });
 
         JavMovie::observe(JavMovieObserver::class);

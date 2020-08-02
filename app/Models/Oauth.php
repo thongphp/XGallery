@@ -20,7 +20,9 @@ use App\Database\Mongodb;
  */
 class Oauth extends Mongodb
 {
+    public const ID = 'id';
+
     protected $collection = 'oauths';
 
-    protected $fillable = ['id'];
+    protected $fillable = [self::ID];
 }

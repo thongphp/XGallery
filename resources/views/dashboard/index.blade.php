@@ -57,4 +57,13 @@
         </div>
         <!-- /.col -->
     </div>
+    @guest
+    <div class="row">
+        <div class="col-12 text-center">
+            <div class="alert alert-info">
+                <span>Please login with your Google Account to use features.</span>
+            </div>
+        </div>
+    </div>
+    @endguest
 @stop

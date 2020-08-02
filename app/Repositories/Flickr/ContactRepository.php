@@ -33,12 +33,21 @@ class ContactRepository extends BaseRepository
             ->first();
     }
 
+    /**
+     * @SuppressWarnings("unused")
+     *
+     * @param null $state
+     *
+     * @return FlickrContact|null
+     */
     public function getOldestContact($state = null): ?FlickrContact
     {
-        return $this->getItems([
-            ConfigRepository::KEY_SORT_BY => 'updated_at',
-            FlickrContact::KEY_STATE => null, 'cache' => 0
-        ])->first();
+        return $this->getItems(
+            [
+                ConfigRepository::KEY_SORT_BY => 'updated_at',
+                FlickrContact::KEY_STATE => null, 'cache' => 0,
+            ]
+        )->first();
     }
 
     /**

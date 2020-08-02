@@ -10,11 +10,13 @@ use Throwable;
  */
 class Toast
 {
-    public static function success(string $title, string $message = ''): string
-    {
-        return self::html($title, ucfirst(__FUNCTION__), $message);
-    }
-
+    /**
+     * @param string $title
+     * @param string $status
+     * @param string $message
+     *
+     * @return string
+     */
     public static function html(string $title, string $status, string $message): string
     {
         try {
@@ -27,6 +29,23 @@ class Toast
         }
     }
 
+    /**
+     * @param string $title
+     * @param string $message
+     *
+     * @return string
+     */
+    public static function success(string $title, string $message = ''): string
+    {
+        return self::html($title, ucfirst(__FUNCTION__), $message);
+    }
+
+    /**
+     * @param string $title
+     * @param string $message
+     *
+     * @return string
+     */
     public static function warning(string $title, string $message = ''): string
     {
         return self::html($title, ucfirst(__FUNCTION__), $message);

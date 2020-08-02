@@ -5,27 +5,31 @@ namespace App\Observers;
 use App\Facades\GooglePhotoClient;
 use App\Models\Flickr\FlickrDownload;
 use App\Models\Flickr\FlickrDownloadXref;
+use Illuminate\Support\Collection;
 
 class FlickrDownloadObserver
 {
     /**
      * Handle the flickr download "created" event.
      *
-     * @param  FlickrDownload  $flickrDownload
+     * @SuppressWarnings("unused")
+     *
+     * @param FlickrDownload $flickrDownload
+     *
      * @return void
      */
-    public function created(FlickrDownload $flickrDownload)
+    public function created(FlickrDownload $flickrDownload): void
     {
     }
 
     /**
      * Handle the flickr download "updated" event.
      *
-     * @param  FlickrDownload  $flickrDownload
+     * @param FlickrDownload $flickrDownload
+     *
      * @return void
-     * @throws \JsonException
      */
-    public function updated(FlickrDownload $flickrDownload)
+    public function updated(FlickrDownload $flickrDownload): void
     {
         if ($flickrDownload->processed !== $flickrDownload->photos_count) {
             return;
@@ -34,12 +38,13 @@ class FlickrDownloadObserver
         /**
          * Show time
          * Get all linked download WITH google_photo_token
-         * @var $downloadedPhotos \Illuminate\Support\Collection
+         * @var $downloadedPhotos Collection
          */
-
-        $downloadedPhotos = FlickrDownloadXref::where([
-            'download_id' => $flickrDownload->_id
-        ])->whereNotNull('google_photo_token')->get();
+        $downloadedPhotos = FlickrDownloadXref::where(
+            [
+                'download_id' => $flickrDownload->_id,
+            ]
+        )->whereNotNull('google_photo_token')->get();
 
         if ($downloadedPhotos->isEmpty()) {
             return;
@@ -56,33 +61,39 @@ class FlickrDownloadObserver
     /**
      * Handle the flickr download "deleted" event.
      *
-     * @param  FlickrDownload  $flickrDownload
+     * @SuppressWarnings("unused")
+     *
+     * @param FlickrDownload $flickrDownload
+     *
      * @return void
      */
-    public function deleted(FlickrDownload $flickrDownload)
+    public function deleted(FlickrDownload $flickrDownload): void
     {
-        //
     }
 
     /**
      * Handle the flickr download "restored" event.
      *
-     * @param  FlickrDownload  $flickrDownload
+     * @SuppressWarnings("unused")
+     *
+     * @param FlickrDownload $flickrDownload
+     *
      * @return void
      */
-    public function restored(FlickrDownload $flickrDownload)
+    public function restored(FlickrDownload $flickrDownload): void
     {
-        //
     }
 
     /**
      * Handle the flickr download "force deleted" event.
      *
-     * @param  FlickrDownload  $flickrDownload
+     * @SuppressWarnings("unused")
+     *
+     * @param FlickrDownload $flickrDownload
+     *
      * @return void
      */
-    public function forceDeleted(FlickrDownload $flickrDownload)
+    public function forceDeleted(FlickrDownload $flickrDownload): void
     {
-        //
     }
 }

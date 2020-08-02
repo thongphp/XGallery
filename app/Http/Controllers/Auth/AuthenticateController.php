@@ -25,7 +25,7 @@ class AuthenticateController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected string $redirectTo = RouteServiceProvider::HOME;
 
     protected array $with = [];
     protected string $drive = '';
@@ -78,7 +78,7 @@ class AuthenticateController extends Controller
         Auth::login($user, true);
 
         return redirect()
-            ->route('dashboard.dashboard.view')
+            ->route('user.profile.view')
             ->with('success', 'Authenticated with '.ucfirst($this->drive).' successfully.');
     }
 }

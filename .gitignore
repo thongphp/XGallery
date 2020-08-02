@@ -1,4 +1,4 @@
- /vendor/
+vendor/
 node_modules/
 npm-debug.log
 yarn-error.log
@@ -27,7 +27,6 @@ Homestead.json
 /.idea/
 /.env.testing
 /yarn.lock
-/vendor/
 _ide_helper.php
 .phpstorm.meta.php
 .DS_Store

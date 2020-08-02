@@ -3,32 +3,51 @@
         <!-- Left navbar links -->
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                <a class="nav-link" data-widget="pushmenu" href="#"><em class="fas fa-bars"></em></a>
             </li>
         </ul>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <form class="form-inline my-2 my-lg-0" action="">
-                        <span class="mr-sm-2">
+                        <div class="mr-sm-2">
                             <div class="input-group">
-                                <input class="form-control" type="text" name="keyword" value="" id="">
-                                <span class="input-group-append">
-                                    <div class="input-group-text bg-transparent"><i
-                                            class="fa fa-search"></i>
+                                <input class="form-control" type="text" name="keyword" value="" id=""/>
+                                <div class="input-group-append">
+                                    <div class="input-group-text bg-transparent">
+                                        <em class="fa fa-search"></em>
                                     </div>
-                                </span>
+                                </div>
                             </div>
-                        </span>
+                        </div>
                     </form>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
                 @auth
                     <li class="nav-item">
-                        <i class="fas fa-user"></i> {{\Illuminate\Support\Facades\Auth::user()->name}}
+                        <a href="{{route('user.profile.view')}}">
+                            <em class="fas fa-user"></em> {{\Illuminate\Support\Facades\Auth::user()->name}}
+                        </a>
                     </li>
                 @endauth
+                @guest
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-outline-danger btn-modal"
+                                data-modal-title="Login"
+                                data-modal-content="#modal-login-content"
+                        >
+                            <em class="fas fa-user"></em> Login
+                        </button>
+                        <div id="modal-login-content" class="hidden">
+                            <div class="text-center">
+                                <a class="btn btn-danger" href="{{route('oauth.login')}}">
+                                    <em class="fab fa-google"></em> Login with Google
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                @endguest
             </ul>
         </div>
     </nav>

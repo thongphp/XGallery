@@ -7,6 +7,7 @@ use App\Http\Controllers\Jav\IdolsController;
 use App\Http\Controllers\Jav\JavController;
 use App\Http\Controllers\KissGoddess\KissGoddessController;
 use App\Http\Controllers\Truyenchon\TruyenchonController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Xiuren\XiurenController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard.view')->middleware([]);
+
+Route::middleware(['auth'])
+    ->namespace(UserController::class)
+    ->group(
+        static function () {
+            Route::get('/profile', [UserController::class, 'profile'])->name('user.profile.view');
+            Route::get('/logout', [UserController::class, 'logout'])->name('user.logout');
+        }
+    );
 
 Route::namespace('App\Http\Controllers\Auth')
     ->prefix('oauth')

@@ -12,10 +12,11 @@ class JavMovieObserver
     /**
      * Handle the jav movie "created" event.
      *
-     * @param  JavMovie  $javMovie
+     * @param JavMovie $javMovie
+     *
      * @return void
      */
-    public function created(JavMovie $javMovie)
+    public function created(JavMovie $javMovie): void
     {
         Event::dispatch(new JavMovieCreated($javMovie));
     }
@@ -23,10 +24,11 @@ class JavMovieObserver
     /**
      * Handle the jav movie "updated" event.
      *
-     * @param  JavMovie  $javMovie
+     * @param JavMovie $javMovie
+     *
      * @return void
      */
-    public function updated(JavMovie $javMovie)
+    public function updated(JavMovie $javMovie): void
     {
         Event::dispatch(new JavMovieUpdated($javMovie));
     }
@@ -34,33 +36,39 @@ class JavMovieObserver
     /**
      * Handle the jav movie "deleted" event.
      *
-     * @param  JavMovie  $javMovie
+     * @SuppressWarnings("unused")
+     *
+     * @param JavMovie $javMovie
+     *
      * @return void
      */
-    public function deleted(JavMovie $javMovie)
+    public function deleted(JavMovie $javMovie): void
     {
-        //
     }
 
     /**
      * Handle the jav movie "restored" event.
      *
-     * @param  JavMovie  $javMovie
+     * @SuppressWarnings("unused")
+     *
+     * @param JavMovie $javMovie
+     *
      * @return void
      */
-    public function restored(JavMovie $javMovie)
+    public function restored(JavMovie $javMovie): void
     {
-        //
     }
 
     /**
      * Handle the jav movie "force deleted" event.
      *
-     * @param  JavMovie  $javMovie
+     * @SuppressWarnings("unused")
+     *
+     * @param JavMovie $javMovie
+     *
      * @return void
      */
-    public function forceDeleted(JavMovie $javMovie)
+    public function forceDeleted(JavMovie $javMovie): void
     {
-        //
     }
 }

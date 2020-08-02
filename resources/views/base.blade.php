@@ -118,6 +118,20 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="xgallery-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer hidden"></div>
+        </div>
+    </div>
+</div>
 @include('includes.footer')
 @section('scripts')
     <script
@@ -144,6 +158,7 @@
         jQuery(document).ready(function () {
             xgallery.ajax.init();
             xgallery.datepicker.init();
+            xgallery.modal.init();
             var lazyLoadInstance = new LazyLoad({
                 elements_selector: ".lazy"
                 // ... more custom settings?

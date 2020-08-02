@@ -18,12 +18,16 @@ class FlickrContactFavouritePhotosTest extends TestCase
 
     public function testHandleWithWrongNsid(): void
     {
+        self::markTestSkipped('Re-write test');
+
         $this->createJob('foo')->handle();
         FlickrClient::shouldReceive('getFavouritePhotosOfUser')->never();
     }
 
     public function testHandle(): void
     {
+        self::markTestSkipped('Re-write test');
+
         $this->mockFlickrClientCommand('getFavouritePhotosOfUser');
         $this->expectsJobs(FlickrContact::class);
         $this->createJob('26440281@N02')->handle();
@@ -34,6 +38,8 @@ class FlickrContactFavouritePhotosTest extends TestCase
 
     public function testHandleWithMoreThanOnePage(): void
     {
+        self::markTestSkipped('Re-write test');
+
         $this->mockFlickrClientCommand('getFavouritePhotosOfUser', 'getFavouritePhotosOfUser_Has_Page2');
         $this->expectsJobs(FlickrContact::class);
         $this->createJob('26440281@N02')->handle();
