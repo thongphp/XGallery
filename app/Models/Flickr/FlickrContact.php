@@ -66,7 +66,7 @@ class FlickrContact extends Mongodb implements FlickrContactInterface
      */
     public function flickrPhotos()
     {
-        return $this->hasMany(FlickrPhotoModel::class, FlickrPhotoModel::KEY_OWNER, self::KEY_NSID);
+        return $this->hasMany(FlickrPhoto::class, FlickrPhoto::KEY_OWNER, self::KEY_NSID);
     }
 
     public function fetchPhotos(): Collection

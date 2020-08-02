@@ -5,8 +5,7 @@ namespace Tests\Unit\Jobs\Flickr;
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrContact;
 use App\Jobs\Flickr\FlickrContactFavouritePhotos;
-use App\Models\Flickr\FlickrPhotoModel;
-use App\Repositories\Flickr\PhotoRepository;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -29,7 +28,7 @@ class FlickrContactFavouritePhotosTest extends TestCase
         $this->expectsJobs(FlickrContact::class);
         $this->createJob('26440281@N02')->handle();
 
-        $photos = FlickrPhotoModel::all();
+        $photos = FlickrPhoto::all();
         $this->assertEquals(6, $photos->count());
     }
 
@@ -39,7 +38,7 @@ class FlickrContactFavouritePhotosTest extends TestCase
         $this->expectsJobs(FlickrContact::class);
         $this->createJob('26440281@N02')->handle();
 
-        $photos = FlickrPhotoModel::all();
+        $photos = FlickrPhoto::all();
         $this->assertEquals(6, $photos->count());
     }
 

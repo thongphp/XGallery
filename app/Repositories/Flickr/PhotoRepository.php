@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Flickr;
 
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use App\Repositories\BaseRepository;
 use App\Repositories\ConfigRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 class PhotoRepository extends BaseRepository
 {
     /**
-     * @param FlickrPhotoModel $model
+     * @param FlickrPhoto $model
      */
-    public function __construct(FlickrPhotoModel $model)
+    public function __construct(FlickrPhoto $model)
     {
         parent::__construct($model);
     }
@@ -26,7 +26,7 @@ class PhotoRepository extends BaseRepository
     {
         return $this->getItems(
             [
-                FlickrPhotoModel::KEY_SIZES => null,
+                FlickrPhoto::KEY_SIZES => null,
                 ConfigRepository::KEY_PER_PAGE => $limit,
                 'cache' => 0,
             ]
@@ -36,10 +36,10 @@ class PhotoRepository extends BaseRepository
     /**
      * @param string $id
      *
-     * @return FlickrPhotoModel
+     * @return FlickrPhoto
      * @deprecated
      */
-    public function findOrCreateById(string $id): FlickrPhotoModel
+    public function findOrCreateById(string $id): FlickrPhoto
     {
         return $this->model::firstOrCreate(['id' => $id]);
     }
@@ -47,9 +47,9 @@ class PhotoRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return FlickrPhotoModel|null
+     * @return FlickrPhoto|null
      */
-    public function findOrCreateByIdWithData(array $data): ?FlickrPhotoModel
+    public function findOrCreateByIdWithData(array $data): ?FlickrPhoto
     {
         if (empty($data) || empty($data['id'])) {
             return null;
@@ -61,9 +61,9 @@ class PhotoRepository extends BaseRepository
     /**
      * @param array $data
      *
-     * @return FlickrPhotoModel|Model
+     * @return FlickrPhoto|Model
      */
-    public function save(array $data): FlickrPhotoModel
+    public function save(array $data): FlickrPhoto
     {
         $model = clone($this->model);
 

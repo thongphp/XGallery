@@ -5,7 +5,7 @@ namespace App\Jobs\Flickr;
 use App\Facades\FlickrValidate;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -42,7 +42,7 @@ class FlickrContactFavouritePhotos implements ShouldQueue
 
         $owner = [];
         $photos->each(function ($photo) use ($owner) {
-            FlickrPhotoModel::firstOrCreate(get_object_vars($photo));
+            FlickrPhoto::firstOrCreate(get_object_vars($photo));
             if (in_array($photo->owner, $owner)) {
                 return;
             }

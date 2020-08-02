@@ -9,7 +9,7 @@ use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrDownloadPhotoToLocal;
 use App\Jobs\Google\SyncPhotoToGooglePhoto;
 use App\Models\Flickr\FlickrDownload;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
@@ -25,7 +25,7 @@ class FlickrDownloadPhotoToLocalTest extends TestCase
 
     public function testHandleWithPhotoHasNoSizesAndException(): void
     {
-        $this->createPhoto([FlickrPhotoModel::KEY_ID => self::PHOTO_ID]);
+        $this->createPhoto([FlickrPhoto::KEY_ID => self::PHOTO_ID]);
         FlickrClient::shouldReceive('getPhotoSizes')->andThrow(new FlickrApiPhotoGetSizesException(self::PHOTO_ID));
 
         $this->expectException(FlickrApiPhotoGetSizesException::class);
@@ -36,7 +36,7 @@ class FlickrDownloadPhotoToLocalTest extends TestCase
 
     public function testHandleWithPhotoHasNoSizesAndCanNotDownloadFile(): void
     {
-        $this->createPhoto([FlickrPhotoModel::KEY_ID => self::PHOTO_ID]);
+        $this->createPhoto([FlickrPhoto::KEY_ID => self::PHOTO_ID]);
         $this->mockFlickrClientCommand('getPhotoSizes');
 
         $this->mock(HttpClient::class, static function (Mockery\MockInterface $mock) {
@@ -53,7 +53,7 @@ class FlickrDownloadPhotoToLocalTest extends TestCase
 
     public function testHandleWithSuccess(): void
     {
-        $this->createPhoto([FlickrPhotoModel::KEY_ID => self::PHOTO_ID, 'title' => 'Test photo']);
+        $this->createPhoto([FlickrPhoto::KEY_ID => self::PHOTO_ID, 'title' => 'Test photo']);
         $this->mockFlickrClientCommand('getPhotoSizes');
 
         $this->mock(HttpClient::class, static function (Mockery\MockInterface $mock) {
@@ -70,11 +70,11 @@ class FlickrDownloadPhotoToLocalTest extends TestCase
     /**
      * @param array $photo
      *
-     * @return FlickrPhotoModel
+     * @return FlickrPhoto
      */
-    private function createPhoto(array $photo): FlickrPhotoModel
+    private function createPhoto(array $photo): FlickrPhoto
     {
-        $model = app(FlickrPhotoModel::class);
+        $model = app(FlickrPhoto::class);
         $model->fill($photo)->save();
 
         return $model;

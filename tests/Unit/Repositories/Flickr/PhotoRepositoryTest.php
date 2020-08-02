@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Repositories\Flickr;
 
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use App\Repositories\Flickr\PhotoRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -13,7 +13,7 @@ class PhotoRepositoryTest extends TestCase
     use DatabaseMigrations, FlickrMongoDatabase;
 
     private PhotoRepository $repository;
-    private FlickrPhotoModel $model;
+    private FlickrPhoto $model;
 
     public function testGetPhotosWithNoSizes(): void
     {
@@ -33,11 +33,11 @@ class PhotoRepositoryTest extends TestCase
     /**
      * @param array $photo
      *
-     * @return FlickrPhotoModel
+     * @return FlickrPhoto
      */
-    private function createPhoto(array $photo): FlickrPhotoModel
+    private function createPhoto(array $photo): FlickrPhoto
     {
-        $model = app(FlickrPhotoModel::class);
+        $model = app(FlickrPhoto::class);
         $model->fill($photo)->save();
 
         return $model;
@@ -92,7 +92,7 @@ class PhotoRepositoryTest extends TestCase
         parent::setUp();
 
         $this->repository = app(PhotoRepository::class);
-        $this->model = app(FlickrPhotoModel::class);
+        $this->model = app(FlickrPhoto::class);
     }
 
     protected function tearDown(): void

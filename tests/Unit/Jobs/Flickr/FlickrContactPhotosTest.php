@@ -4,7 +4,7 @@ namespace Tests\Unit\Jobs\Flickr;
 
 use App\Facades\FlickrClient;
 use App\Jobs\Flickr\FlickrContactPhotos;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -26,7 +26,7 @@ class FlickrContactPhotosTest extends TestCase
         $this->mockFlickrClientCommand('getPeoplePhotos');
         $this->createJob('26440281@N02')->handle();
 
-        $photos = FlickrPhotoModel::where([FlickrPhotoModel::KEY_OWNER => '26440281@N02'])->get();
+        $photos = FlickrPhoto::where([FlickrPhoto::KEY_OWNER => '26440281@N02'])->get();
         $this->assertEquals(5, $photos->count());
     }
 
@@ -35,7 +35,7 @@ class FlickrContactPhotosTest extends TestCase
         $this->mockFlickrClientCommand('getPeoplePhotos', 'getPeoplePhotos_Has_Page2');
         $this->createJob('26440281@N02')->handle();
 
-        $photos = FlickrPhotoModel::where([FlickrPhotoModel::KEY_OWNER => '26440281@N02'])->get();
+        $photos = FlickrPhoto::where([FlickrPhoto::KEY_OWNER => '26440281@N02'])->get();
         $this->assertEquals(5, $photos->count());
     }
 

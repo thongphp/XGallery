@@ -7,7 +7,7 @@ use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Flickr\FlickrDownload;
 use App\Models\Flickr\FlickrDownloadXref;
-use App\Models\Flickr\FlickrPhotoModel;
+use App\Models\Flickr\FlickrPhoto;
 use App\Services\Client\HttpClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -56,9 +56,9 @@ class FlickrDownloadPhoto implements ShouldQueue
         /**
          * Try to save photo
          * Actually this step also used to "get" photo from database and use sizes if possible
-         * @var FlickrPhotoModel $photo
+         * @var FlickrPhoto $photo
          */
-        $photo = FlickrPhotoModel::firstOrCreate([
+        $photo = FlickrPhoto::firstOrCreate([
             'id' => $this->photo->id,
             'secret' => $this->photo->secret,
             'server' => $this->photo->server,
