@@ -12,7 +12,7 @@
                     <form class="form-inline my-2 my-lg-0" action="">
                         <div class="mr-sm-2">
                             <div class="input-group">
-                                <input class="form-control" type="text" name="keyword" value="" id="" />
+                                <input class="form-control" type="text" name="keyword" value="" id=""/>
                                 <div class="input-group-append">
                                     <div class="input-group-text bg-transparent">
                                         <em class="fa fa-search"></em>
@@ -33,9 +33,19 @@
                 @endauth
                 @guest
                     <li class="nav-item">
-                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-login">
+                        <button type="button" class="btn btn-outline-danger btn-modal"
+                                data-modal-title="Login"
+                                data-modal-content="#modal-login-content"
+                        >
                             <em class="fas fa-user"></em> Login
                         </button>
+                        <div id="modal-login-content" class="hidden">
+                            <div class="text-center">
+                                <a class="btn btn-danger" href="{{route('oauth.login')}}">
+                                    <em class="fab fa-google"></em> Login with Google
+                                </a>
+                            </div>
+                        </div>
                     </li>
                 @endguest
             </ul>

@@ -76,7 +76,6 @@ class AppServiceProvider extends ServiceProvider
                 return false;
             }
 
-            /* @var User $user */
             return $user->isAdmin();
         });
 

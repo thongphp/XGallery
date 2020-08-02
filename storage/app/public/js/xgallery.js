@@ -42,6 +42,31 @@
         }
     };
 
+    xgallery.modal = {
+        init: function () {
+            jQuery('.btn-modal').on('click', function (e) {
+                e.preventDefault();
+                const $this = jQuery(this);
+                xgallery.modal.show(
+                    $this.data('modal-title'),
+                    jQuery($this.data('modal-content')).html(),
+                    jQuery($this.data('modal-footer')).html() || null
+                );
+            });
+        },
+        show: function (title, bodyHtml, footerHtml) {
+            const $modal = jQuery("#xgallery-modal");
+            $modal.find('.modal-header h4').html(title);
+            $modal.find('.modal-body').html(bodyHtml);
+
+            if (footerHtml) {
+                $modal.find('.modal-footer').removeClass('hidden').html(footerHtml);
+            }
+
+            $modal.modal({show: true});
+        }
+    };
+
     xgallery.ajax = {
         request: function (data) {
             ajaxUrl = data.ajaxUrl;
@@ -68,12 +93,14 @@
                 })
         },
         init: function () {
-            jQuery('body').on('click', '.ajax-pool', function (e) {
+            const $body = jQuery('body');
+
+            $body.on('click', '.ajax-pool', function (e) {
                 e.preventDefault();
                 xgallery.ajax.request(jQuery(this).data());
             });
 
-            jQuery('body').on('submit', '.ajax-form', function (e) {
+            $body.on('submit', '.ajax-form', function (e) {
                 e.preventDefault();
                 xgallery.ajax.request({ 'url': jQuery(this).find('input[name="url"]').val(), 'ajaxUrl': jQuery(this).attr('action') });
             })

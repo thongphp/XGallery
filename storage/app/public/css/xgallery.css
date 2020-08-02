@@ -19,3 +19,8 @@ div#overlay {
 .filter-tool .row .col:last-child .bootstrap-select .dropdown-menu.show {
     right: 0;
 }
+
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
