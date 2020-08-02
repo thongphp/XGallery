@@ -20,7 +20,7 @@ use App\Database\Mongodb;
  * @property int $foo
  * @package App\Models\Jav
  */
-class XCityProfileModel extends Mongodb
+class XCityProfile extends Mongodb
 {
     protected $collection = 'xcity_profiles';
 

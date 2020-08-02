@@ -2,10 +2,9 @@
 
 namespace App\Crawlers\Tests\Unit\Crawlers;
 
-use App\Crawlers\Crawler\R18;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\Jav\R18Model;
+use App\Models\Jav\R18;
 use Illuminate\Contracts\Foundation\Application;
 
 /**
@@ -30,7 +29,7 @@ class R18Test extends TestCase
     public function testGetItem(): void
     {
         $item = $this->crawler->getItem('https://www.r18.com/videos/vod/movies/detail/-/id=dnjr00032');
-        $this->assertInstanceOf(R18Model::class, $item);
+        $this->assertInstanceOf(R18::class, $item);
         $this->assertModelProperties($item->getFillable(), $item);
     }
 

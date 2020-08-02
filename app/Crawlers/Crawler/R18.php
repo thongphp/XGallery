@@ -9,7 +9,6 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Models\Jav\R18Model;
 use App\Services\Client\HttpClient;
 use DateTime;
 use Exception;
@@ -49,15 +48,15 @@ final class R18
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      *
      * @param  string  $itemUri
-     * @return R18Model|null
+     * @return \App\Models\Jav\R18|null
      */
-    public function getItem(string $itemUri): ?R18Model
+    public function getItem(string $itemUri): ?\App\Models\Jav\R18
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        $item = new R18Model;
+        $item = app(\App\Models\Jav\R18::class);
         $item->url = $itemUri;
         $item->cover = trim($crawler->filter('.detail-single-picture img')->attr('src'));
         $item->title = trim($crawler->filter('.product-details-page h1')->text(null, false));

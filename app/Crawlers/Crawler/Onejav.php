@@ -9,7 +9,6 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Models\Jav\OnejavModel;
 use App\Services\Client\HttpClient;
 use DateTime;
 use Exception;
@@ -128,11 +127,11 @@ final class Onejav
 
     /**
      * @param  Crawler  $crawler
-     * @return OnejavModel
+     * @return \App\Models\Jav\Onejav
      */
-    private function parse(Crawler $crawler): OnejavModel
+    private function parse(Crawler $crawler): \App\Models\Jav\Onejav
     {
-        $item = app(OnejavModel::class);
+        $item = app(\App\Models\Jav\Onejav::class);
         $item->url = self::ENDPOINT.trim($crawler->filter('h5.title a')->attr('href'));
 
         if ($crawler->filter('.columns img.image')->count()) {

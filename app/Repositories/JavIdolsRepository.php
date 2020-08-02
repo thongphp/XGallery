@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Jav\JavIdolModel;
+use App\Models\Jav\JavIdol;
 use App\Traits\Jav\HasFilterValues;
 use App\Traits\Jav\HasOrdering;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -24,7 +24,7 @@ class JavIdolsRepository
      */
     public function getItems(Request $request): LengthAwarePaginator
     {
-        $builder = app(JavIdolModel::class)->query();
+        $builder = app(JavIdol::class)->query();
 
         $select = ['jav_idols.*'];
 

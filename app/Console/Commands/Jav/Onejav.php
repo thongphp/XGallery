@@ -11,7 +11,6 @@ namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCommand;
 use App\Models\Jav\JavMovie;
-use App\Models\Jav\OnejavModel;
 use App\Traits\Jav\HasXref;
 use Exception;
 use Illuminate\Support\Collection;
@@ -86,10 +85,7 @@ final class Onejav extends BaseCommand
         $this->progressBarInit($items->count());
         $items->each(function ($item) {
             $attributes = $item->getAttributes();
-            /**
-             * @var OnejavModel $item
-             */
-            $item = OnejavModel::updateOrCreate(['url' => $attributes['url']], $attributes);
+            $item = \App\Models\Jav\Onejav::updateOrCreate(['url' => $attributes['url']], $attributes);
             $movie = JavMovie::updateOrCreate(
                 ['dvd_id' => $item->title],
                 [

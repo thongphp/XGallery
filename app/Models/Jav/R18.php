@@ -25,7 +25,7 @@ use App\Database\Mongodb;
  * @property array $gallery
  * @package App\Models\Jav
  */
-class R18Model extends Mongodb
+class R18 extends Mongodb
 {
     public const R18_URL = 'https://www.r18.com/';
 

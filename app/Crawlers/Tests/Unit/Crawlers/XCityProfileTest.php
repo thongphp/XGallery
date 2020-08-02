@@ -2,10 +2,9 @@
 
 namespace App\Crawlers\Tests\Unit\Crawlers;
 
-use App\Crawlers\Crawler\XCityProfile;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\Jav\XCityProfileModel;
+use App\Models\Jav\XCityProfile;
 
 class XCityProfileTest extends TestCase
 {
@@ -23,7 +22,7 @@ class XCityProfileTest extends TestCase
     public function testGetItem(): void
     {
         $item = $this->crawler->getItem('https://xxx.xcity.jp/idol/detail/12144/');
-        $this->assertInstanceOf(XCityProfileModel::class, $item);
+        $this->assertInstanceOf(XCityProfile::class, $item);
         $this->assertModelProperties($item->getFillable(), $item);
     }
 

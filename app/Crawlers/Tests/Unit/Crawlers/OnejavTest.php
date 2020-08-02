@@ -2,10 +2,9 @@
 
 namespace App\Crawlers\Tests\Unit\Crawlers;
 
-use App\Crawlers\Crawler\Onejav;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\Jav\OnejavModel;
+use App\Models\Jav\Onejav;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 
@@ -33,7 +32,7 @@ class OnejavTest extends TestCase
         $items = $this->crawler->getDaily();
         $this->assertInstanceOf(Collection::class, $items);
         $item = $items->first();
-        $this->assertInstanceOf(OnejavModel::class, $item);
+        $this->assertInstanceOf(Onejav::class, $item);
         $this->assertModelProperties($item->getFillable(), $item);
         $this->assertIsFloat($item->size);
     }
@@ -44,7 +43,7 @@ class OnejavTest extends TestCase
         $this->assertInstanceOf(Collection::class, $items);
         $this->assertEquals(10, $items->count());
         $item = $items->first();
-        $this->assertInstanceOf(OnejavModel::class, $item);
+        $this->assertInstanceOf(Onejav::class, $item);
         $this->assertModelProperties($item->getFillable(), $item);
         $this->assertIsFloat($item->size);
     }

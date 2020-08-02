@@ -10,7 +10,7 @@
 namespace App\Models;
 
 use App\Database\Mongodb;
-use App\Models\Jav\OnejavModel;
+use App\Models\Jav\Onejav;
 
 /**
  * Class JavDownload
@@ -20,6 +20,6 @@ class JavDownload extends Mongodb
 {
     public function downloads()
     {
-        return $this->hasMany(OnejavModel::class, 'title', 'item_number')->orderBy('size', 'desc')->get();
+        return $this->hasMany(Onejav::class, 'title', 'item_number')->orderBy('size', 'desc')->get();
     }
 }

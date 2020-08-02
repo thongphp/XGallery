@@ -2,10 +2,9 @@
 
 namespace App\Crawlers\Tests\Unit\Crawlers;
 
-use App\Crawlers\Crawler\XCityVideo;
 use App\Crawlers\Tests\TestCase;
 use App\Crawlers\Tests\Traits\HasModelTests;
-use App\Models\Jav\XCityVideoModel;
+use App\Models\Jav\XCityVideo;
 
 class XCityVideoTest extends TestCase
 {
@@ -66,7 +65,7 @@ class XCityVideoTest extends TestCase
     public function testGetItem(string $url, array $expectFields): void
     {
         $item = $this->crawler->getItem($url);
-        $this->assertInstanceOf(XCityVideoModel::class, $item);
+        $this->assertInstanceOf(XCityVideo::class, $item);
         $this->assertModelProperties($expectFields, $item);
     }
 
