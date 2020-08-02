@@ -10,7 +10,6 @@
 namespace App\Console\Commands\Jav;
 
 use App\Console\BaseCommand;
-use App\Console\Traits\HasCrawler;
 use Exception;
 
 /**

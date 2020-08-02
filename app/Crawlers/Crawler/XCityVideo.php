@@ -9,7 +9,6 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Models\Jav\XCityVideoModel;
 use App\Services\Client\HttpClient;
 use DateTime;
 use Illuminate\Support\Collection;
@@ -50,15 +49,15 @@ final class XCityVideo
      *
      * @param  string  $itemUri
      *
-     * @return XCityVideoModel|null
+     * @return \App\Models\Jav\XCityProfile|null
      */
-    public function getItem(string $itemUri): ?XCityVideoModel
+    public function getItem(string $itemUri): ?\App\Models\Jav\XCityProfile
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
-        $item = app(XCityVideoModel::class);
+        $item = app(\App\Models\Jav\XCityProfile::class);
         $item->title = $crawler->filter('#program_detail_title')->text(null, false);
         $item->url = $itemUri;
         $item->cover = $crawler->filter('div.photo a')->attr('href');
@@ -124,7 +123,6 @@ final class XCityVideo
                         if (!empty($releaseDate) && strpos($releaseDate, 'undelivered now') === false) {
                             return ['release_date' => DateTime::createFromFormat('Y/m/j', $releaseDate)];
                         }
-
                 }
 
                 return null;

@@ -24,7 +24,7 @@ use App\Database\Mongodb;
  * @property string $torrent
  * @package App\Models\Jav
  */
-class OnejavModel extends Mongodb
+class Onejav extends Mongodb
 {
     public $collection = 'onejav';
 

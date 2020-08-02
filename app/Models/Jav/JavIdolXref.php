@@ -12,15 +12,12 @@ namespace App\Models\Jav;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class JavGenreModel
+ * Class JavIdolXrefModel
  * @package App\Models\Jav
- *
- * @property string $id
- * @property string $name
  */
-class JavGenreModel extends Model
+class JavIdolXref extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['idol_id', 'movie_id'];
 
-    protected $table = 'jav_genres';
+    protected $table = 'jav_idols_xref';
 }

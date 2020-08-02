@@ -9,7 +9,6 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Models\Jav\XCityProfileModel;
 use App\Services\Client\HttpClient;
 use DateTime;
 use Exception;
@@ -66,16 +65,16 @@ final class XCityProfile
      *
      * @param  string  $itemUri
      *
-     * @return XCityProfileModel|null
+     * @return \App\Models\Jav\XCityProfile|null
      */
-    public function getItem(string $itemUri): ?XCityProfileModel
+    public function getItem(string $itemUri): ?\App\Models\Jav\XCityProfile
     {
         if (!$crawler = $this->crawl($itemUri)) {
             return null;
         }
 
         try {
-            $item = app(XCityProfileModel::class);
+            $item = app(\App\Models\Jav\XCityProfile::class);
             $item->name = $crawler->filter('.itemBox h1')->text(null, false);
             $item->url = $itemUri;
             $item->cover = $crawler->filter('.photo p.tn img')->attr('src');

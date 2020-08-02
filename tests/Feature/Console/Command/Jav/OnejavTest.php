@@ -4,7 +4,7 @@ namespace Tests\Feature\Console\Command\Jav;
 
 use App\Models\CrawlerEndpoints;
 use App\Models\Jav\JavMovie;
-use App\Models\Jav\OnejavModel;
+use App\Models\Jav\Onejav;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,15 +15,15 @@ class OnejavTest extends TestCase
     public function testGetDaily()
     {
         $this->artisan('jav:onejav daily')->assertExitCode(0);
-        $this->assertIsInt(OnejavModel::all()->count());
-        $this->assertGreaterThan(1, OnejavModel::all()->count());
+        $this->assertIsInt(Onejav::all()->count());
+        $this->assertGreaterThan(1, Onejav::all()->count());
     }
 
     public function testGetFully()
     {
         $this->artisan('jav:onejav fully')->assertExitCode(0);
-        $this->assertIsInt(OnejavModel::all()->count());
-        $this->assertGreaterThan(1, OnejavModel::all()->count());
+        $this->assertIsInt(Onejav::all()->count());
+        $this->assertGreaterThan(1, Onejav::all()->count());
 
         $movies = JavMovie::all();
         $this->assertGreaterThan(1, $movies->count());

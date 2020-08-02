@@ -9,8 +9,8 @@
 
 namespace App\Repositories;
 
-use App\Models\Jav\JavGenreModel;
-use App\Models\Jav\JavIdolModel;
+use App\Models\Jav\JavGenre;
+use App\Models\Jav\JavIdol;
 use App\Models\Jav\JavMovie;
 use App\Objects\Option;
 use App\Traits\Jav\HasFilterValues;
@@ -184,10 +184,10 @@ class JavMoviesRepository
      */
     public function populateGenreOptions(array $selectedOptions): array
     {
-        $results = JavGenreModel::all();
+        $results = JavGenre::all();
 
         return $results->map(
-            static function (JavGenreModel $item) use ($selectedOptions) {
+            static function (JavGenre $item) use ($selectedOptions) {
                 return new Option($item->name, $item->id, in_array($item->id, $selectedOptions));
             }
         )
@@ -210,10 +210,10 @@ class JavMoviesRepository
      */
     public function populateIdolOptions(array $selectedOptions): array
     {
-        $results = JavIdolModel::all();
+        $results = JavIdol::all();
 
         return $results->map(
-            static function (JavIdolModel $item) use ($selectedOptions) {
+            static function (JavIdol $item) use ($selectedOptions) {
                 return new Option($item->name, $item->id, in_array($item->id, $selectedOptions));
             }
         )

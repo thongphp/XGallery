@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class JavGenreXref
  * @package App\Models\Jav
  */
-class JavGenreXrefModel extends Model
+class JavGenreXref extends Model
 {
     protected $fillable = ['genre_id', 'movie_id'];
 

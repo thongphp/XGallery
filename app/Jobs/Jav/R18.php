@@ -12,7 +12,6 @@ namespace App\Jobs\Jav;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Jav\JavMovie;
-use App\Models\Jav\R18Model;
 use App\Traits\Jav\HasXref;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -54,7 +53,7 @@ class R18 implements ShouldQueue
         }
 
         $attributes = $itemDetail->getAttributes();
-        R18Model::updateOrCreate(['content_id' => $attributes['content_id']], $attributes);
+        \App\Models\Jav\R18::updateOrCreate(['content_id' => $attributes['content_id']], $attributes);
 
         // Because R18 have movie detail. We will use update instead firstOrCreate
         $movie = JavMovie::updateOrCreate(

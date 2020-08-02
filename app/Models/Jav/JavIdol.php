@@ -22,7 +22,7 @@ use JustBetter\PaginationWithHavings\PaginationWithHavings;
  * @property string $id
  * @property string $name
  */
-class JavIdolModel extends Model
+class JavIdol extends Model
 {
     use HasCover, PaginationWithHavings;
 

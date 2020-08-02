@@ -4,8 +4,7 @@ namespace App\Jobs\Jav;
 
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Models\Jav\JavIdolModel;
-use App\Models\Jav\XCityProfileModel;
+use App\Models\Jav\JavIdol;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -44,8 +43,8 @@ class XCityProfile implements ShouldQueue
             return;
         }
 
-        XCityProfileModel::updateOrCreate(['url' => $itemDetail->url], $itemDetail->getAttributes());
-        JavIdolModel::updateOrCreate(
+        \App\Models\Jav\XCityProfile::updateOrCreate(['url' => $itemDetail->url], $itemDetail->getAttributes());
+        JavIdol::updateOrCreate(
             ['name' => $itemDetail->name],
             [
                 'name' => $itemDetail->name,

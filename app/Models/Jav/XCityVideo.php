@@ -24,7 +24,7 @@ use App\Database\Mongodb;
  * @property string $description
  * @package App\Models\Jav
  */
-class XCityVideoModel extends Mongodb
+class XCityVideo extends Mongodb
 {
     protected $collection = 'xcity_videos';
 

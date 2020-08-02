@@ -10,7 +10,7 @@
 namespace App\Http\Controllers\Jav;
 
 use App\Http\Controllers\BaseController;
-use App\Models\Jav\JavIdolModel;
+use App\Models\Jav\JavIdol;
 use App\Repositories\JavIdolsRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -51,7 +51,7 @@ class IdolsController extends BaseController
      */
     public function idol(int $id)
     {
-        $idol = JavIdolModel::find($id);
+        $idol = JavIdol::find($id);
 
         if (!$idol) {
             return view(
