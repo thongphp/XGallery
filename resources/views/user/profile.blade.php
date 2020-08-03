@@ -54,7 +54,7 @@
                         <h4>Authorize services</h4>
                         <div class="row">
                             <div class="col">
-                                <table class="table table-hover table-borderless table-striped">
+                                <table class="table table-hover table-borderless table-striped" summary="Show list of services">
                                     <thead>
                                     <tr>
                                         <th scope="col" colspan="2">
