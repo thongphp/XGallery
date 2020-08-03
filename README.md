@@ -33,6 +33,7 @@ Run the following command
 
 ```
 php artisan key:generate
+php artisan migrate:fresh
 ```
 
 You will need provide extra data like Google / Flickr keys
