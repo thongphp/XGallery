@@ -13,17 +13,21 @@ use App\Database\Mongodb;
 
 /**
  * Class Oauth
- * @property string $remember_token
+ * @property string $_id
  * @property array $credential
+ * @property string $user_id
+ * @property string $service
  * @package App\Models
- *
- * @property string $id;
  */
 class Oauth extends Mongodb
 {
-    public const ID = 'id';
+    public const ID = '_id';
+    public const USER_ID = 'user_id';
+    public const SERVICE = 'service';
+    public const CREDENTIAL = 'credential';
 
     protected $collection = 'oauths';
 
     protected $guarded = [];
+    protected $fillable = [self::USER_ID];
 }

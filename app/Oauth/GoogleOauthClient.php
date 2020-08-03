@@ -101,7 +101,7 @@ class GoogleOauthClient
     {
         try {
             $expiredDate = new DateTime($oauth->getAttributeValue($oauth->getUpdatedAtColumn()));
-            $credential = $oauth->credential;
+            $credential = $oauth->{Oauth::CREDENTIAL};
 
             $expiredDate->add(new DateInterval('PT'.$credential['expiresIn'].'S'));
             $current = new DateTime('now');

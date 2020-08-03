@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers\Jav;
 
+use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Models\Jav\JavMovie;
@@ -21,6 +22,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
@@ -67,7 +69,7 @@ class JavController extends BaseController
                 ),
                 'dateFrom' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_FROM, null),
                 'dateTo' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_TO, null),
-                'downloadable' => (boolean)$request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE, false),
+                'downloadable' => (boolean) $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_DOWNLOADABLE, false),
                 'idolHeight' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_HEIGHT, null),
                 'idolBreast' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_BREAST, null),
                 'idolWaist' => $request->get(ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL_WAIST, null),
@@ -79,7 +81,8 @@ class JavController extends BaseController
     }
 
     /**
-     * @param  int  $id
+     * @param int $id
+     *
      * @return Application|Factory|View
      */
     public function movie(int $id)
@@ -98,24 +101,58 @@ class JavController extends BaseController
     }
 
     /**
-     * @param  string  $itemNumber
+     * @param string $itemNumber
+     *
      * @return JsonResponse
      * @throws Throwable
      */
     public function download(string $itemNumber): JsonResponse
     {
         if (JavDownload::where(['item_number' => $itemNumber])->first()) {
-            return response()->json([
-                'html' => Toast::warning('Download', 'Item <strong>'.$itemNumber.'</strong> already exists'),
-            ]);
+            return response()->json(
+                [
+                    'html' => Toast::warning('Download', 'Item <strong>'.$itemNumber.'</strong> already exists'),
+                ]
+            );
         }
+
+        $this->notify($itemNumber);
 
         $model = app(JavDownload::class);
         $model->item_number = $itemNumber;
         $model->save();
 
-        return response()->json([
-            'html' => Toast::success('Download', 'Item <strong>'.$itemNumber.'</strong> added to queue')
-        ]);
+        return response()->json(
+            [
+                'html' => Toast::success('Download', 'Item <strong>'.$itemNumber.'</strong> added to queue'),
+            ]
+        );
+    }
+
+    /**
+     * @param string $itemNumber
+     */
+    private function notify(string $itemNumber): void
+    {
+        $movie = JavMovie::where([JavMovie::DVD_ID => $itemNumber])->first();
+
+        UserActivity::notify(
+            '%s request %s movie',
+            Auth::user(),
+            'download',
+            [
+                \App\Models\Core\UserActivity::OBJECT_ID => $movie->id,
+                \App\Models\Core\UserActivity::OBJECT_TABLE => $movie->getTable(),
+                \App\Models\Core\UserActivity::EXTRA => [
+                    'title' => $movie->name,
+                    'fields' => [
+                        'Title' => $movie->name,
+                        'DVD-ID' => $movie->dvd_id,
+                        'Director' => $movie->director,
+                        'Studio' => $movie->studio,
+                    ]
+                ],
+            ]
+        );
     }
 }

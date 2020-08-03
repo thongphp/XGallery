@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\BaseController;
+use App\Models\Core\UserActivity;
+use App\Repositories\UserActivitiesRepository;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -27,7 +31,6 @@ class UserController extends BaseController
                 [
                     'title' => 'Profile',
                     'user' => $user,
-                    'googleInfo' => $user->getGoogleInfo(),
                 ]
             )
         );
@@ -41,5 +44,28 @@ class UserController extends BaseController
         Auth::logout();
 
         return redirect()->route('dashboard.dashboard.view')->with('info', 'Logout success');
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Application|Factory|View
+     */
+    public function activities(Request $request)
+    {
+        $repository = app(UserActivitiesRepository::class);
+        $filters = $request->all();
+        $filters[UserActivity::ACTOR_ID] = Auth::id();
+        $items = $repository->getItems($filters);
+
+        return view(
+            'user.activities',
+            [
+                'title' => 'User Activities',
+                'sidebar' => $this->getMenuItems(),
+                'actor' => Auth::user(),
+                'activities' => $items
+            ]
+        );
     }
 }

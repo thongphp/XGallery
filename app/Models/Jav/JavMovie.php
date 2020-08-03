@@ -37,6 +37,8 @@ class JavMovie extends Model
 {
     use HasCover, PaginationWithHavings;
 
+    public const DVD_ID = 'dvd_id';
+
     protected $fillable = [
         'name',
         'cover',

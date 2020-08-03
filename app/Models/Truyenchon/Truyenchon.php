@@ -19,6 +19,7 @@ use Jenssegers\Mongodb\Relations\HasMany;
  * Class TruyenchonModel
  * @package App\Models\Truyenchon
  *
+ * @property string $_id
  * @property string $url
  * @property array $images
  * @property string $title
@@ -31,7 +32,7 @@ class Truyenchon extends Mongodb
     use HasUrl;
     use HasCover;
 
-    const STATE_PROCESSED = 1;
+    public const STATE_PROCESSED = 1;
     public const KEY_URL = 'url';
 
     public $collection = 'truyenchon';

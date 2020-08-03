@@ -29,6 +29,7 @@ Route::middleware(['auth'])
     ->group(
         static function () {
             Route::get('/profile', [UserController::class, 'profile'])->name('user.profile.view');
+            Route::get('/activities', [UserController::class, 'activities'])->name('user.activities.view');
             Route::get('/logout', [UserController::class, 'logout'])->name('user.logout');
         }
     );

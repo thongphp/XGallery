@@ -10,8 +10,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
-use App\Repositories\OAuthRepository;
 use App\Traits\HasObject;
+use Auth;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Routing\Controller;
@@ -50,13 +50,13 @@ class BaseController extends Controller
     }
 
     /**
-     * @return Application|Factory|View|void
+     * @return Application|Factory|View|null
      */
     protected function validateAuthenticate()
     {
-        $oAuthRepository = app(OAuthRepository::class);
-        $flickrOAuth = $oAuthRepository->findBy(['name' => 'flickr']);
-        $googleOAuth = $oAuthRepository->findBy(['name' => 'google']);
+        $user = Auth::user();
+        $flickrOAuth = $user->getOAuth('flickr');
+        $googleOAuth = $user->getOAuth('google');
 
         if (!$flickrOAuth || !$googleOAuth) {
             return view(
@@ -67,6 +67,6 @@ class BaseController extends Controller
             );
         }
 
-        return;
+        return null;
     }
 }

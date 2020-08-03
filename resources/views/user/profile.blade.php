@@ -13,10 +13,11 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="text-center">
-                                    <img src="{{$googleInfo->avatar}}" class="profile-user-img img-fluid img-circle" alt="{{$user->name}}" />
+                                    <img src="{{$user->avatar}}" class="profile-user-img img-fluid img-circle"
+                                         alt="{{$user->name}}"/>
                                 </div>
                                 <h3 class="profile-username text-center">{{$user->name}}</h3>
-                                <hr />
+                                <hr/>
                                 <div class="text-center">
                                     <a href="{{route('user.logout')}}" class="btn btn-outline-danger">
                                         <em class="fas fa-sign-out-alt"></em> Logout
@@ -26,18 +27,49 @@
                             <div class="col-6">
                                 <div class="list-group list-group-unbordered">
                                     <div class="list-group-item">
-                                        <span class="text-bold">Role: </span> <span class="text-muted">@if($user->isAdmin()) Admin @else User @endif</span>
+                                        <span class="text-bold">Role: </span> <span class="text-muted">@if($user->isAdmin())
+                                                Admin @else User @endif</span>
                                     </div>
                                     <div class="list-group-item">
-                                        <span class="text-bold">Email: </span> <span class="text-muted">{{$user->email}}</span>
+                                        <span class="text-bold">Email: </span> <span
+                                            class="text-muted">{{$user->email}}</span>
                                     </div>
                                     <div class="list-group-item">
-                                        <span class="text-bold">Created: </span> <span class="text-muted">{{$googleInfo->created_at}}</span>
+                                        <span class="text-bold">Created: </span> <span
+                                            class="text-muted">{{$user->created_at}}</span>
                                     </div>
                                     <div class="list-group-item">
-                                        <span class="text-bold">Updated: </span> <span class="text-muted">{{$googleInfo->updated_at}}</span>
+                                        <span class="text-bold">Updated: </span> <span
+                                            class="text-muted">{{$user->updated_at}}</span>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card card-info card-outline">
+                    <div class="card-body box">
+                        <h4>Authorize services</h4>
+                        <div class="row">
+                            <div class="col">
+                                <table class="table table-hover table-borderless table-striped" summary="Show list of services">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col" colspan="2">
+                                            Services
+                                        </th>
+                                        <th scope="col">
+                                            Status
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @include('user.includes.profile_service', ['service' => 'google'])
+                                    @include('user.includes.profile_service', ['service' => 'flickr'])
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

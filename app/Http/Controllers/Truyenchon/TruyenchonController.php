@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers\Truyenchon;
 
+use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Jobs\Truyenchon\TruyenchonStoryDownload;
@@ -20,6 +21,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -87,11 +89,30 @@ class TruyenchonController extends BaseController
     public function download(string $id): JsonResponse
     {
         $story = Truyenchon::find($id);
+
         $message = sprintf(
             'Added story <span class="badge badge-primary">%s</span> into download queue successfully',
             $story->title
         );
+
         TruyenchonStoryDownload::dispatch($id);
+
+        UserActivity::notify(
+            '%s request %s story',
+            Auth::user(),
+            'download',
+            [
+                \App\Models\Core\UserActivity::OBJECT_ID => $story->_id,
+                \App\Models\Core\UserActivity::OBJECT_TABLE => $story->getTable(),
+                \App\Models\Core\UserActivity::EXTRA => [
+                    'title' => $story->title,
+                    'fields' => [
+                        'ID' => $story->_id,
+                        'Title' => $story->title,
+                    ]
+                ],
+            ]
+        );
 
         return response()->json(['html' => Toast::success('Download', $message)]);
     }
