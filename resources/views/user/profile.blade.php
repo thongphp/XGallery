@@ -55,9 +55,19 @@
                         <div class="row">
                             <div class="col">
                                 <table class="table table-hover table-borderless table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col" colspan="2">
+                                            Services
+                                        </th>
+                                        <th scope="col">
+                                            Status
+                                        </th>
+                                    </tr>
+                                    </thead>
                                     <tbody>
-                                        @include('user.includes.profile_service', ['service' => 'google'])
-                                        @include('user.includes.profile_service', ['service' => 'flickr'])
+                                    @include('user.includes.profile_service', ['service' => 'google'])
+                                    @include('user.includes.profile_service', ['service' => 'flickr'])
                                     </tbody>
                                 </table>
                             </div>
