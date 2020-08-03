@@ -14,6 +14,7 @@ use App\Database\Mongodb;
 /**
  * Class Oauth
  * @property string $remember_token
+ * @property array $credential
  * @package App\Models
  *
  * @property string $id;
@@ -24,5 +25,5 @@ class Oauth extends Mongodb
 
     protected $collection = 'oauths';
 
-    protected $fillable = [self::ID];
+    protected $guarded = [];
 }

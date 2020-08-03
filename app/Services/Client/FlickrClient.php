@@ -14,8 +14,9 @@ use App\Exceptions\Flickr\FlickrApiPhotoGetSizesException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetGetPhotosException;
 use App\Exceptions\Flickr\FlickrApiPhotoSetsGetInfoException;
 use App\Exceptions\Flickr\FlickrApiUrlLookupUserException;
-use App\Repositories\OAuthRepository;
+use App\Models\User;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class FlickrClient
@@ -40,16 +41,19 @@ class FlickrClient
 
     protected function request(string $method, string $uri, array $parameters = [])
     {
-        // @TODO Auth::user()->getOauth('flickr');
-        if (!$client = app(OAuthRepository::class)->findBy(['name' => 'flickr'])) {
+        if (!$user = Auth::user()) {
+            $user = User::find(1);
+        }
+
+        if (!$client = $user->getOauth('flickr')) {
             return null;
         }
 
         $middleware = new Oauth1([
             'consumer_key' => config('auth.flickr.token'),
             'consumer_secret' => config('auth.flickr.token_secret'),
-            'token' => $client->token,
-            'token_secret' => $client->tokenSecret,
+            'token' => $client->credential['token'],
+            'token_secret' => $client->credential['tokenSecret'],
         ]);
 
         // Middleware for validating "stat"

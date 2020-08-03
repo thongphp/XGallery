@@ -4,12 +4,14 @@ namespace App\Oauth;
 
 use App\Exceptions\OAuthClientException;
 use App\Models\Oauth;
-use App\Repositories\OAuthRepository;
+use App\Models\User;
 use DateInterval;
 use DateTime;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use JsonException;
@@ -26,9 +28,9 @@ class GoogleOauthClient
      * @param  string  $method
      * @param  string  $uri
      * @param  array  $parameters
-     *
      * @return mixed|string|null
-     * @throws GuzzleException|OAuthClientException
+     * @throws GuzzleException
+     * @throws OAuthClientException
      */
     public function request(string $method, string $uri, array $parameters = [])
     {
@@ -70,15 +72,15 @@ class GoogleOauthClient
      */
     protected function getClient(): ?Client
     {
-        $repository = app(OAuthRepository::class);
+        if (!$user = Auth::user()) {
+            $user = User::find(1);
+        }
 
-        if (!$oauth = $repository->findBy(['name' => 'google'])) {
-            Log::stack(['oauth'])->warning('Google Oauth not found');
-
+        if (!$client = $user->getOauth('google')) {
             return null;
         }
 
-        if (!$accessToken = $this->getAccessToken($oauth)) {
+        if (!$accessToken = $this->getAccessToken($client)) {
             return null;
         }
 
@@ -99,7 +101,9 @@ class GoogleOauthClient
     {
         try {
             $expiredDate = new DateTime($oauth->getAttributeValue($oauth->getUpdatedAtColumn()));
-            $expiredDate->add(new DateInterval('PT'.$oauth->getAttributeValue('expiresIn').'S'));
+            $credential = $oauth->credential;
+
+            $expiredDate->add(new DateInterval('PT'.$credential['expiresIn'].'S'));
             $current = new DateTime('now');
         } catch (Exception $exception) {
             Log::stack(['oauth'])->warning(
@@ -110,7 +114,7 @@ class GoogleOauthClient
         }
 
         if ($current < $expiredDate) {
-            return $oauth->getAttributeValue('token');
+            return $credential['token'];
         }
 
         $response = (new Client())->post('https://oauth2.googleapis.com/token', [
@@ -119,7 +123,7 @@ class GoogleOauthClient
                 'client_id' => config('auth.google.client_id'),
                 'client_secret' => config('auth.google.client_secret'),
                 'grant_type' => 'refresh_token',
-                'refresh_token' => $oauth->getAttributeValue('refreshToken'),
+                'refresh_token' => $credential['refreshToken'],
             ],
         ]);
 

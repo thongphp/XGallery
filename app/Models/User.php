@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticator;
  * Class User
  * @property string $name
  * @property string $email
- * @property string $oauth_id
+ * @property int $id
  * @property string $remember_token
  * @package App\Models
  */
@@ -20,19 +20,16 @@ class User extends Authenticator
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'oauth_id',
+        'name', 'email',
     ];
 
     /**
+     * @param  string  $service
      * @return Oauth|null
      */
-    public function getGoogleInfo(): ?Oauth
+    public function getOauth(string $service): ?Oauth
     {
-        if (empty($this->oauth_id)) {
-            return null;
-        }
-
-        return app(Oauth::class)->firstWhere([Oauth::ID => $this->oauth_id]);
+        return app(Oauth::class)->firstWhere(['user_id' => $this->id, 'service' => $service]);
     }
 
     /**

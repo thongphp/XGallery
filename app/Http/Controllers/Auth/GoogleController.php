@@ -18,6 +18,6 @@ use Google_Service_PhotosLibrary;
 class GoogleController extends AuthenticateController
 {
     protected array $with = ['access_type' => 'offline', 'prompt' => 'consent select_account'];
-    protected string $drive = 'Google';
+    protected string $drive = 'google';
     protected array $scopes = ['https://www.googleapis.com/auth/drive', Google_Service_PhotosLibrary::PHOTOSLIBRARY];
 }

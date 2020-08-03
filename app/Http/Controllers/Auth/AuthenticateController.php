@@ -51,31 +51,24 @@ class AuthenticateController extends Controller
      */
     public function callback(Request $request): RedirectResponse
     {
-        if (!$user = Socialite::driver($this->drive)->user()) {
+        if (!$oauthUser = Socialite::driver($this->drive)->user()) {
             return redirect()
                 ->route('dashboard.dashboard.view')
                 ->with('danger', 'Authenticate with '.ucfirst($this->drive).' fail.');
         }
 
-        $code = $request->get('code');
-        $oauth = Oauth::updateOrCreate(['id' => $user->getId()]);
-
-        foreach ($user as $key => $value) {
-            if ($key === 'accessTokenResponseBody') {
-                continue;
-            }
-            $oauth->setAttribute($key, $value);
+        if ($this->drive === 'google') {
+            $user = User::firstOrCreate(['name' => $oauthUser->getName(), 'email' => $oauthUser->getEmail()]);
+            Auth::login($user, true);
+        } else {
+            $user = Auth::user();
         }
 
-        $oauth->setAttribute('name', strtolower($this->drive))
-            ->setAttribute('code', $code)
-            ->save();
-
-        $user = User::updateOrCreate([
-            'oauth_id' => $oauth->id, 'name' => $oauth->user['name'], 'email' => $oauth->user['email']
-        ]);
-
-        Auth::login($user, true);
+        $oauth = Oauth::updateOrCreate(['user_id' => $user->id, 'service' => strtolower($this->drive)]);
+        $oauth->credential = $oauthUser;
+        $oauth->credential->code = $request->get('code');
+        $oauth->service = strtolower($this->drive);
+        $oauth->save();
 
         return redirect()
             ->route('user.profile.view')
