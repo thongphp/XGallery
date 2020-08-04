@@ -486,20 +486,20 @@
         },
         {
             "name": "doctrine/event-manager",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/event-manager.git",
-                "reference": "629572819973f13486371cb611386eb17851e85c"
+                "reference": "41370af6a30faa9dc0368c4a6814d596e81aba7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/event-manager/zipball/629572819973f13486371cb611386eb17851e85c",
-                "reference": "629572819973f13486371cb611386eb17851e85c",
+                "url": "https://api.github.com/repos/doctrine/event-manager/zipball/41370af6a30faa9dc0368c4a6814d596e81aba7f",
+                "reference": "41370af6a30faa9dc0368c4a6814d596e81aba7f",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1"
+                "php": "^7.1 || ^8.0"
             },
             "conflict": {
                 "doctrine/common": "<2.9@dev"
@@ -558,7 +558,21 @@
                 "event system",
                 "events"
             ],
-            "time": "2019-11-10T09:48:07+00:00"
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fevent-manager",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-05-29T18:28:51+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -1081,16 +1095,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.141",
+            "version": "v0.142",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "4ba7279b0a56366e4f19b9d1a1b5456f99353b6f"
+                "reference": "3baf0a665cd08975314214b075f28765c97282ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/4ba7279b0a56366e4f19b9d1a1b5456f99353b6f",
-                "reference": "4ba7279b0a56366e4f19b9d1a1b5456f99353b6f",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/3baf0a665cd08975314214b075f28765c97282ae",
+                "reference": "3baf0a665cd08975314214b075f28765c97282ae",
                 "shasum": ""
             },
             "require": {
@@ -1114,7 +1128,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2020-07-27T00:25:27+00:00"
+            "time": "2020-07-28T00:24:58+00:00"
         },
         {
             "name": "google/auth",
@@ -2599,34 +2613,35 @@
         },
         {
             "name": "mongodb/mongodb",
-            "version": "1.6.1",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mongodb/mongo-php-library.git",
-                "reference": "4bb040c620ab95c487d05d5ff50cbc92fa68e920"
+                "reference": "cdeff1d45e4da6c6f70fc495e8e8a628b026b6d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/4bb040c620ab95c487d05d5ff50cbc92fa68e920",
-                "reference": "4bb040c620ab95c487d05d5ff50cbc92fa68e920",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/cdeff1d45e4da6c6f70fc495e8e8a628b026b6d7",
+                "reference": "cdeff1d45e4da6c6f70fc495e8e8a628b026b6d7",
                 "shasum": ""
             },
             "require": {
                 "ext-hash": "*",
                 "ext-json": "*",
-                "ext-mongodb": "^1.7",
-                "php": "^5.6 || ^7.0"
+                "ext-mongodb": "^1.8",
+                "jean85/pretty-package-versions": "^1.2",
+                "php": "^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.7.27 || ^6.4 || ^8.3",
-                "sebastian/comparator": "^1.0 || ^2.0 || ^3.0",
-                "squizlabs/php_codesniffer": "^3.4",
+                "phpunit/phpunit": "^6.4 || ^8.3",
+                "sebastian/comparator": "^2.0 || ^3.0",
+                "squizlabs/php_codesniffer": "^3.5, <3.5.5",
                 "symfony/phpunit-bridge": "^4.4@dev"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6.x-dev"
+                    "dev-master": "1.7.x-dev"
                 }
             },
             "autoload": {
@@ -2649,10 +2664,6 @@
                 {
                     "name": "Jeremy Mikola",
                     "email": "jmikola@gmail.com"
-                },
-                {
-                    "name": "Katherine Walker",
-                    "email": "katherine.walker@mongodb.com"
                 }
             ],
             "description": "MongoDB driver library",
@@ -2663,7 +2674,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2020-07-03T11:35:00+00:00"
+            "time": "2020-07-31T19:48:22+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -8138,16 +8149,16 @@
         },
         {
             "name": "composer/composer",
-            "version": "1.10.9",
+            "version": "1.10.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "83c3250093d5491600a822e176b107a945baf95a"
+                "reference": "32966a3b1d48bc01472a8321fd6472b44fad033a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/83c3250093d5491600a822e176b107a945baf95a",
-                "reference": "83c3250093d5491600a822e176b107a945baf95a",
+                "url": "https://api.github.com/repos/composer/composer/zipball/32966a3b1d48bc01472a8321fd6472b44fad033a",
+                "reference": "32966a3b1d48bc01472a8321fd6472b44fad033a",
                 "shasum": ""
             },
             "require": {
@@ -8228,7 +8239,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-07-16T10:57:00+00:00"
+            "time": "2020-08-03T09:35:19+00:00"
         },
         {
             "name": "composer/semver",

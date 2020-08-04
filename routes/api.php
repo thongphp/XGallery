@@ -16,21 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::namespace('App\Http\Controllers\Apis\Nhaccuatui')
-    ->prefix('v1/nhaccuatui')
+Route::namespace('App\Http\Controllers\Apis')
+    ->prefix('v1/github')
     ->group(function () {
-        Route::get('/', [NhaccuatuiController::class, 'index'])->name('nhaccuatui.dashboard.index');
-        Route::put('/request', [NhaccuatuiController::class, 'request'])->name('nhaccuatui.console.request');
-    });
-
-Route::namespace('App\Http\Controllers\Apis\Batdongsan')
-    ->prefix('v1/batdongsan')
-    ->group(function () {
-        Route::get('/', [BatdongsanController::class, 'index'])->name('batdongsan.dashboard.index');
-    });
-
-Route::namespace('App\Http\Controllers\Apis\Jav')
-    ->prefix('v1/jav')
-    ->group(function () {
-        Route::get('/', [JavController::class, 'index'])->name('jav.dashboard.index');
+        Route::any('/', [\App\Http\Apis\GithubController::class, 'webhook'])->name('webhook');
     });
