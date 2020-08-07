@@ -64,4 +64,9 @@ class UserActivity extends Model
 
         return sprintf($this->text, $actor, $action);
     }
+
+    public function isAction(string $action): bool
+    {
+        return $this->action === $action;
+    }
 }

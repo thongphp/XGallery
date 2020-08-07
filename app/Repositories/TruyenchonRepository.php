@@ -4,32 +4,40 @@ namespace App\Repositories;
 
 use App\Models\Truyenchon\Truyenchon;
 use App\Models\Truyenchon\TruyenchonChapter;
+use App\Traits\Jav\HasOrdering;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class TruyenchonRepository
  * @package App\Repositories
  */
-class TruyenchonRepository extends BaseRepository
+class TruyenchonRepository
 {
-    public function __construct(Truyenchon $model)
-    {
-        parent::__construct($model);
-    }
+    use HasOrdering;
 
-    public function getItems(array $filter = [])
+    public function getItems(Request $request): LengthAwarePaginator
     {
-        if (isset($filter['keyword']) && !empty($filter['keyword'])) {
-            $this->builder->where('title', 'LIKE', '%'.$filter['keyword'].'%');
+        $builder = app(Truyenchon::class)->newQuery();
+
+        if ($keyword = $request->get(ConfigRepository::KEY_KEYWORD)) {
+            $builder->orWhere(Truyenchon::TITLE, 'LIKE', '%'.$keyword.'%');
         }
 
-        return parent::getItems($filter);
+        $this->processOrdering($builder, $request);
+
+        return $builder
+            ->paginate((int) $request->get(ConfigRepository::KEY_PER_PAGE, ConfigRepository::DEFAULT_PER_PAGE))
+            ->appends(request()->except(ConfigRepository::KEY_PAGE, '_token'));
     }
 
     public function firstOrCreate(string $storyUrl, string $storyCover, string $storyTitle)
     {
-        return Truyenchon::firstOrCreate([
-            'url' => $storyUrl, 'cover' => $storyCover, 'title' => $storyTitle
-        ]);
+        return Truyenchon::firstOrCreate(
+            [
+                'url' => $storyUrl, 'cover' => $storyCover, 'title' => $storyTitle,
+            ]
+        );
     }
 
     public function getStoryByState(?int $state = null): ?Truyenchon
@@ -39,9 +47,11 @@ class TruyenchonRepository extends BaseRepository
 
     public function firstOrCreateChapter(string $storyUrl, string $chapterUrl, string $chapter)
     {
-        return TruyenchonChapter::firstOrCreate([
-            'storyUrl' => $storyUrl, 'chapterUrl' => $chapterUrl, 'chapter' => $chapter
-        ]);
+        return TruyenchonChapter::firstOrCreate(
+            [
+                'storyUrl' => $storyUrl, 'chapterUrl' => $chapterUrl, 'chapter' => $chapter,
+            ]
+        );
     }
 
     /**

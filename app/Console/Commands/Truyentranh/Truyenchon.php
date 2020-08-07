@@ -42,7 +42,7 @@ final class Truyenchon extends BaseCommand
             return false;
         }
 
-        $items = app(\App\Crawlers\Crawler\Truyenchon::class)->getStories($endpoint->url . '/?page=' . $endpoint->page);
+        $items = app(\App\Crawlers\Crawler\Truyenchon::class)->getStories($endpoint->url.'/?page='.$endpoint->page);
 
         if ($items->isEmpty()) {
             $endpoint->fail()->save();
@@ -51,12 +51,17 @@ final class Truyenchon extends BaseCommand
 
         $this->progressBarInit($items->count());
         $this->progressBarSetMessage('URLs');
-        $items->each(function ($item) {
-            \App\Models\Truyenchon\Truyenchon::firstOrCreate(['url' => $item['url']], $item);
-            $this->progressBarSetInfo($item['url']);
-            $this->progressBarSetStatus('FINISHED');
-            $this->progressBar->advance();
-        });
+        $items->each(
+            function ($item) {
+                \App\Models\Truyenchon\Truyenchon::firstOrCreate(
+                    [\App\Models\Truyenchon\Truyenchon::URL => $item['url']],
+                    $item
+                );
+                $this->progressBarSetInfo($item['url']);
+                $this->progressBarSetStatus('FINISHED');
+                $this->progressBar->advance();
+            }
+        );
 
         $endpoint->succeed()->save();
 

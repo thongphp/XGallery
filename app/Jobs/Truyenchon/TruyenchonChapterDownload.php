@@ -13,22 +13,14 @@ use App\Exceptions\Truyenchon\TruyenchonChapterDownloadException;
 use App\Exceptions\Truyenchon\TruyenchonChapterDownloadWritePDFException;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
-use App\Mail\TruyenchonDownloadChapterMail;
-use App\Repositories\TruyenchonRepository;
-use Campo\UserAgent;
-use Exception;
-use GuzzleHttp\Client;
+use App\Models\Truyenchon\TruyenchonChapter;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Mail;
-use Imagick;
 use ImagickException;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Process download each book' chapter
@@ -39,16 +31,17 @@ class TruyenchonChapterDownload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $chapterUrl;
+    private TruyenchonChapter $model;
+    private ?string $userId;
 
     /**
-     * TruyenchonChapterDownload constructor.
-     *
-     * @param string $chapterUrl
+     * @param TruyenchonChapter $truyenchonChapter
+     * @param string|null $userId
      */
-    public function __construct(string $chapterUrl)
+    public function __construct(TruyenchonChapter $truyenchonChapter, ?string $userId)
     {
-        $this->chapterUrl = $chapterUrl;
+        $this->model = $truyenchonChapter;
+        $this->userId = $userId;
         $this->onQueue(Queues::QUEUE_DOWNLOADS);
     }
 
@@ -60,75 +53,6 @@ class TruyenchonChapterDownload implements ShouldQueue
      */
     public function handle(): void
     {
-        $chapterModel = app(TruyenchonRepository::class)->getChapterByUrl($this->chapterUrl);
-
-        if (!$chapterModel) {
-            return;
-        }
-
-        // We are using GuzzleHttp instead our Client because it's required for custom header
-        $client = new Client();
-
-        $parts = explode('/', $this->chapterUrl);
-        $savePath = storage_path('app/truyenchon/'.$parts[4].'/'.$parts[5]);
-
-        if (!File::exists($savePath)) {
-            File::makeDirectory($savePath, 0755, true);
-        }
-
-        $images = [];
-        $requestHeaders = [
-            'User-Agent' => UserAgent::random([]),
-            'Cache-Control' => 'no-cache',
-            'Referer' => $chapterModel->chapterUrl,
-        ];
-        foreach ($chapterModel->images as $index => $image) {
-            $filePath = $savePath.'/'.$index.'.jpeg';
-            $resource = fopen($filePath, 'wb');
-
-            try {
-                $response = $client->request('GET', $image, ['headers' => $requestHeaders, 'sink' => $resource]);
-
-                if ($response->getStatusCode() !== Response::HTTP_OK) {
-                    throw new TruyenchonChapterDownloadException(
-                        $filePath,
-                        $chapterModel->chapterUrl,
-                        $response->getBody()
-                    );
-                }
-
-                if (file_exists($filePath)) {
-                    $images[] = $filePath;
-                }
-            } catch (Exception $exception) {
-                throw new TruyenchonChapterDownloadException(
-                    $filePath,
-                    $chapterModel->chapterUrl,
-                    $exception->getMessage()
-                );
-            }
-        }
-
-        if (empty($images)) {
-            return;
-        }
-
-        $pdf = new Imagick($images);
-        $pdf->setImageFormat('pdf');
-
-        $pdfPath = $savePath.'/'.$parts[4].'.pdf';
-
-        if (!$pdf->writeImages($pdfPath, true)) {
-            throw new TruyenchonChapterDownloadWritePDFException($chapterModel->chapterUrl, $pdfPath);
-        }
-
-        foreach ($images as $image) {
-            unlink($image);
-        }
-
-        Mail::to(config('mail.to'))
-            ->send(new TruyenchonDownloadChapterMail($chapterModel, $pdfPath));
-
-        // @TODO: Consider remove PDF file after send mail.
+        $this->model->download($this->userId);
     }
 }

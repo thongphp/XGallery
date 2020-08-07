@@ -12,7 +12,6 @@ namespace App\Jobs\Truyenchon;
 use App\Jobs\Queues;
 use App\Jobs\Traits\HasJob;
 use App\Models\Truyenchon\Truyenchon;
-use App\Models\Truyenchon\TruyenchonChapter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -28,16 +27,17 @@ class TruyenchonStoryDownload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use HasJob;
 
-    private string $id;
+    private Truyenchon $model;
+    private ?string $userId;
 
     /**
-     * Create a new job instance.
-     *
-     * @param string $id
+     * @param Truyenchon $model
+     * @param string|null $userId
      */
-    public function __construct(string $id)
+    public function __construct(Truyenchon $model, ?string $userId = null)
     {
-        $this->id = $id;
+        $this->model = $model;
+        $this->userId = $userId;
         $this->onQueue(Queues::QUEUE_TRUYENTRANH);
     }
 
@@ -48,11 +48,6 @@ class TruyenchonStoryDownload implements ShouldQueue
      */
     public function handle(): void
     {
-        $truyenChonStory = Truyenchon::find($this->id);
-        $chapters = TruyenchonChapter::where(['storyUrl' => $truyenChonStory->url])->get();
-
-        foreach ($chapters as $chapter) {
-            TruyenchonChapterDownload::dispatch($chapter->chapterUrl);
-        }
+        $this->model->download($this->userId);
     }
 }

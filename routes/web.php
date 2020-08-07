@@ -90,11 +90,16 @@ Route::middleware(['auth'])->namespace(TruyenchonController::class)
     ->prefix('truyenchon')
     ->group(
         static function () {
-            Route::get('/', [TruyenchonController::class, 'dashboard'])->name('truyenchon.dashboard.view');
+            Route::match(['GET', 'POST'], '/', [TruyenchonController::class, 'dashboard'])->name(
+                'truyenchon.dashboard.view'
+            );
             Route::get('{id}/{chapter}', [TruyenchonController::class, 'story'])->name('truyenchon.story.view');
             Route::post('search', [TruyenchonController::class, 'search'])->name('truyenchon.search.view');
             Route::post('download/{id}', [TruyenchonController::class, 'download'])->name(
                 'truyenchon.download.request'
+            );
+            Route::post('re-download/{id}', [TruyenchonController::class, 'reDownload'])->name(
+                'truyenchon.re-download.request'
             );
         }
     );

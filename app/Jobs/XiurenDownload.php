@@ -22,7 +22,7 @@ class XiurenDownload implements ShouldQueue
     private Xiuren $xiuren;
 
     /**
-     * @param  Xiuren  $xiuren
+     * @param Xiuren $xiuren
      */
     public function __construct(Xiuren $xiuren)
     {

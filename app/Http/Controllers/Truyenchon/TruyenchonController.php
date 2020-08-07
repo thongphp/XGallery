@@ -12,8 +12,9 @@ namespace App\Http\Controllers\Truyenchon;
 use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
-use App\Jobs\Truyenchon\TruyenchonStoryDownload;
 use App\Models\Truyenchon\Truyenchon;
+use App\Models\Truyenchon\TruyenchonDownload;
+use App\Repositories\ConfigRepository;
 use App\Repositories\TruyenchonRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -23,6 +24,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class TruyenchonController
@@ -33,17 +35,17 @@ class TruyenchonController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * @param TruyenchonRepository $repository
+     * @param Request $request
      *
      * @return Application|Factory|View
      */
-    public function dashboard(TruyenchonRepository $repository)
+    public function dashboard(Request $request)
     {
         return view(
             'truyenchon.index',
             $this->getViewDefaultOptions(
                 [
-                    'items' => $repository->getItems(),
+                    'items' => app(TruyenchonRepository::class)->getItems($request),
                     'title' => 'Truyenchon',
                 ]
             )
@@ -88,19 +90,44 @@ class TruyenchonController extends BaseController
      */
     public function download(string $id): JsonResponse
     {
-        $story = Truyenchon::find($id);
+        return $this->processDownload($id, false);
+    }
 
-        $message = sprintf(
-            'Added story <span class="badge badge-primary">%s</span> into download queue successfully',
-            $story->title
-        );
+    /**
+     * @param string $id
+     *
+     * @return JsonResponse
+     */
+    public function reDownload(string $id): JsonResponse
+    {
+        return $this->processDownload($id, true);
+    }
 
-        TruyenchonStoryDownload::dispatch($id);
+    private function processDownload(string $id, bool $isReDownload): JsonResponse
+    {
+        $downloadModel = TruyenchonDownload::firstOrCreate([
+            TruyenchonDownload::STORY_ID => $id,
+            TruyenchonDownload::USER_ID => Auth::id(),
+        ]);
+
+        if (($isReDownload === true && !$downloadModel->isProcessing())
+            || ($isReDownload === false && $downloadModel->isProcessing())) {
+            $message = sprintf(
+                'Story <span class="badge badge-primary">%s</span> already in download queue',
+                $downloadModel->story->title
+            );
+
+            return response()->json(['html' => Toast::warning('Download', $message)]);
+        }
+
+        $downloadModel->download();
+
+        $story = $downloadModel->story;
 
         UserActivity::notify(
             '%s request %s story',
             Auth::user(),
-            'download',
+            $isReDownload === true ? 're-download' : 'download',
             [
                 \App\Models\Core\UserActivity::OBJECT_ID => $story->_id,
                 \App\Models\Core\UserActivity::OBJECT_TABLE => $story->getTable(),
@@ -109,9 +136,14 @@ class TruyenchonController extends BaseController
                     'fields' => [
                         'ID' => $story->_id,
                         'Title' => $story->title,
-                    ]
+                    ],
                 ],
             ]
+        );
+
+        $message = sprintf(
+            'Added story <span class="badge badge-primary">%s</span> into download queue successfully',
+            $downloadModel->story->title
         );
 
         return response()->json(['html' => Toast::success('Download', $message)]);

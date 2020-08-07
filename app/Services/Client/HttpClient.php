@@ -67,10 +67,15 @@ class HttpClient
     }
 
     /**
+     * @SuppressWarnings("PHPMD.NPathComplexity")
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+     *
      * @param  string  $url
      * @param  string  $saveTo
      * @param  array  $options
+     *
      * @return false|string // False if not succeed and related path if succeed
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function download(string $url, string $saveTo, array $options = [])
@@ -84,15 +89,18 @@ class HttpClient
         $saveToFile = $saveTo.DIRECTORY_SEPARATOR.$fileName;
 
         if (Storage::exists($saveToFile)) {
-            return  $saveToFile;
+            return $saveToFile;
         }
 
-        $resource = fopen('php://temp', 'r+');
+        $hasResources = isset($options['sink']);
+        $resource = $hasResources ? $options['sink'] : fopen('php://temp', 'r+');
+        $extraOptions = $hasResources ? [] : ['sink' => $resource];
+
         $response = $this->client->request(
             'GET',
             $url,
             // @TODO Implement curl options to config
-            array_merge(['sink' => $resource], [
+            array_merge($extraOptions, [
                 'curl' => [
                     CURLOPT_NOBODY => false,
                     CURLOPT_HEADER => false,
@@ -117,12 +125,15 @@ class HttpClient
             return false;
         }
 
+        if ($hasResources) {
+            return true;
+        }
+
         if (!Storage::exists($saveTo)) {
             Storage::makeDirectory($saveTo);
         }
 
         rewind($resource);
-
         file_put_contents(Storage::path($saveToFile), stream_get_contents($resource));
         fclose($resource);
 
