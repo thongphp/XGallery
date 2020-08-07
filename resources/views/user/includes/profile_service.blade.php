@@ -9,7 +9,7 @@
         @if($user->getOAuth($service))
             <label class="text-success mb-0">Authorized <em class="fas fa-check-circle"></em></label>
         @else
-            <label class="text-secondary mb-0">Unauthorized <em class="fas fa-times-circle"></em></label>
+            <label class="text-secondary mb-0 text-danger">Unauthorized <em class="fas fa-times-circle"></em></label>
             <a class="btn btn-outline-primary btn-sm float-right" href="{{ url('oauth/' . $service) }}">
                 <em class="fas fa-globe"></em> Authorize
             </a>

@@ -33,13 +33,13 @@ return [
     'flickr' => [
         'client_id' => env('FLICKR_KEY'),
         'client_secret' => env('FLICKR_SECRET'),
-        'redirect' => env('FLICKR_REDIRECT_URI')
+        'redirect' => env('APP_URL') . '/oauth/flickr/callback'
     ],
 
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_CALLBACK_URL'),
+        'redirect' => env('APP_URL') . '/oauth/google/callback'
     ],
 
     'slack' => [

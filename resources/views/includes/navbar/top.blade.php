@@ -35,7 +35,9 @@
                 @auth
                     <li class="nav-item">
                         <a href="{{route('user.profile.view')}}">
-                            <em class="fas fa-user"></em> {{\Illuminate\Support\Facades\Auth::user()->name}}
+                            <img src="{{\Illuminate\Support\Facades\Auth::user()->avatar}}"
+                                 class="rounded-circle img-fluid rounded" width="48px"
+                                 alt="{{\Illuminate\Support\Facades\Auth::user()->name}}"/>
                         </a>
                     </li>
                 @endauth
