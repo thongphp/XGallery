@@ -28,7 +28,7 @@
                     </div>
                     <div class="row">
                         <div class="col text-right">
-                            @if(config('services.adult.download'))
+                            @if(config('xgallery.adult.download'))
                                  <button type="button" class="btn btn-primary btn-sm ajax-pool"
                                          data-ajax-url="{{route('truyenchon.download.request', $item->id)}}"
                                          data-ajax-command="download"

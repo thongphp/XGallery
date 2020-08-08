@@ -19,7 +19,7 @@
                             Images: <span class="badge badge-primary">{{count($item->images)}}</span>
                         </div>
                         <div class="col text-right">
-                            @if(config('services.adult.download'))
+                            @if(config('xgallery.adult.download'))
                                  <span class="float-right">
                                      <button
                                          type="button"

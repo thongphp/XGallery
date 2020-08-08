@@ -31,7 +31,7 @@ class FlickrDownloadObserver
      */
     public function updated(FlickrDownload $flickrDownload): void
     {
-        if ($flickrDownload->processed !== $flickrDownload->photos_count) {
+        if ($flickrDownload->processed !== $flickrDownload->photos_count || config('xgallery.flickr.sync_google') == false) {
             return;
         }
 

@@ -107,14 +107,17 @@ class FlickrDownloadPhoto implements ShouldQueue
             $this->download->incProcessed();
         }
 
-        /**
-         * @TODO Move to event
-         * Downloaded now upload to Google
-         */
-        $downloadXref->google_photo_token = GooglePhotoClient::uploadMedia($filePath);
-        $downloadXref->file = $filePath;
-        $downloadXref->title = $photo->title;
-        $downloadXref->save();
-        $this->download->incProcessed();
+        if (config('xgallery.flickr.sync_google'))
+        {
+            /**
+             * @TODO Move to event
+             * Downloaded now upload to Google
+             */
+            $downloadXref->google_photo_token = GooglePhotoClient::uploadMedia($filePath);
+            $downloadXref->file = $filePath;
+            $downloadXref->title = $photo->title;
+            $downloadXref->save();
+            $this->download->incProcessed();
+        }
     }
 }
