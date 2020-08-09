@@ -34,6 +34,7 @@ class Update extends Command
         $process = new Process(base_path() . '/update.sh');
         $process->run();
 
+        // @phpstan-ignore-next-line
         $this->notify(new Deploy($process->getOutput()));
     }
 
