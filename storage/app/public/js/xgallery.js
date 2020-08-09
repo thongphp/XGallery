@@ -102,10 +102,23 @@
 
             $body.on('submit', '.ajax-form', function (e) {
                 e.preventDefault();
-                xgallery.ajax.request({ 'url': jQuery(this).find('input[name="url"]').val(), 'ajaxUrl': jQuery(this).attr('action') });
+                xgallery.ajax.request({
+                    'url': jQuery(this).find('input[name="url"]').val(),
+                    'ajaxUrl': jQuery(this).attr('action')
+                });
             })
         }
     };
 
     window.xgallery = xgallery;
 })(window, jQuery);
+
+jQuery(document).ready(function () {
+    xgallery.ajax.init();
+    xgallery.datepicker.init();
+    xgallery.modal.init();
+    var lazyLoadInstance = new LazyLoad({
+        elements_selector: ".lazy"
+        // ... more custom settings?
+    });
+})
