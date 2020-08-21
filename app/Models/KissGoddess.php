@@ -36,7 +36,7 @@ class KissGoddess extends Mongodb
         return $this->title;
     }
 
-    public function download()
+    public function download(): bool
     {
         if (empty($this->images)) {
             return false;

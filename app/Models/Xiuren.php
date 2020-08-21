@@ -12,6 +12,7 @@ namespace App\Models;
 use App\Database\Mongodb;
 use App\Models\Traits\HasCover;
 use App\Services\Client\HttpClient;
+use GuzzleHttp\Exception\GuzzleException;
 use Spatie\Url\Url;
 
 /**
@@ -32,12 +33,12 @@ class Xiuren extends Mongodb
 
     protected $fillable = ['url', 'cover', 'images'];
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return trim(Url::fromString($this->url)->getPath(), '/');
     }
 
-    public function download()
+    public function download(): bool
     {
         if (empty($this->images)) {
             return false;

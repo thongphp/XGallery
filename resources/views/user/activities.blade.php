@@ -26,7 +26,7 @@
                                 </div>
                             @endif
                             <div class="mb-4">
-                                @if($activity->action === 'download')
+                                @if($activity->isAction('download') || $activity->isAction('re-download'))
                                     <em class="fas fa-download bg-gradient-blue mt-2"></em>
                                 @else
                                     <em class="fas fa-briefcase bg-secondary mt-2"></em>

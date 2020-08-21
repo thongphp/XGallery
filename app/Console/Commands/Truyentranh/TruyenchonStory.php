@@ -67,7 +67,7 @@ final class TruyenchonStory extends BaseCommand
 
         foreach ($chapters as $chapter) {
             $model = TruyenchonChapter::firstOrCreate([
-                'storyUrl' => $story->url, 'chapterUrl' => $chapter['chapterUrl']
+                TruyenchonChapter::STORY_URL => $story->url, TruyenchonChapter::CHAPTER_URL => $chapter['chapterUrl']
             ], $chapter);
             TruyenchonChapterGetImages::dispatch($model);
             $this->progressBarSetInfo($chapter['chapterUrl']);

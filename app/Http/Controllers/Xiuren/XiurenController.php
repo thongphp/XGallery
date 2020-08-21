@@ -14,9 +14,11 @@ use App\Http\Controllers\ImagesController;
 use App\Jobs\XiurenDownload;
 use App\Models\Xiuren;
 use App\Repositories\XiurenRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -30,7 +32,7 @@ class XiurenController extends ImagesController
     protected string $title = 'Xiuren';
     protected string $name = 'xiuren';
 
-    protected function getItems(Request $request)
+    protected function getItems(Request $request): LengthAwarePaginator
     {
         return app(XiurenRepository::class)->getItems($request);
     }
@@ -40,7 +42,7 @@ class XiurenController extends ImagesController
         return Xiuren::find($id);
     }
 
-    protected function processDownload($model)
+    protected function processDownload($model): void
     {
         XiurenDownload::dispatch($model);
     }
