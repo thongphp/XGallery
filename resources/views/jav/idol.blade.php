@@ -9,8 +9,8 @@
         <div class="row no-gutters">
             <div class="col-4">
                 <a href="">
-                    <img class="bd-placeholder-img card-img"
-                         width="100%" src="{{$idol->getCover()}}" alt="{{$idol->name}}"/>
+                    <img class="bd-placeholder-img card-img lazy"
+                         width="100%" data-src="{{$idol->getCover()}}" alt="{{$idol->name}}"/>
                 </a>
             </div>
             <div class="col-8">
