@@ -13,19 +13,19 @@
     }
 
     xgallery.lazyload = {
-        lazyloadInstance: false,
+        lazyloadInstance: null,
 
         init: function () {
-            lazyLoadInstance = new LazyLoad({
-                elements_selector: ".lazy"
-                // ... more custom settings?
+            xgallery.lazyload.lazyloadInstance = new LazyLoad({
+                elements_selector: ".lazy",
+                unobserve_entered: true
             });
 
-            lazyLoadInstance.update();
+            xgallery.lazyload.lazyloadInstance.update();
         },
 
         update: function () {
-            lazyLoadInstance.update();
+            xgallery.lazyload.lazyloadInstance.update();
         }
     };
 
@@ -117,8 +117,5 @@ jQuery(document).ready(function () {
     xgallery.ajax.init();
     xgallery.datepicker.init();
     xgallery.modal.init();
-    var lazyLoadInstance = new LazyLoad({
-        elements_selector: ".lazy"
-        // ... more custom settings?
-    });
+    xgallery.lazyload.init();
 })
