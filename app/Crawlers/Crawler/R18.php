@@ -20,30 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
  * Class R18
  * @package App\Services\Crawler
  */
-final class R18
+final class R18 extends AbstractCrawler
 {
-    /**
-     * @return HttpClient
-     */
-    public function getClient(): HttpClient
-    {
-        return new HttpClient();
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  array  $options
-     * @return Crawler
-     */
-    public function crawl(string $uri, array $options = []): ?Crawler
-    {
-        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
-            return null;
-        }
-
-        return new Crawler($response, $uri);
-    }
-
     /**
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      *

@@ -21,51 +21,29 @@ use Symfony\Component\HttpFoundation\Request;
  * Class Onejav
  * @package App\Crawlers\Crawler
  */
-final class Onejav
+final class Onejav extends AbstractCrawler
 {
     public const ENDPOINT = 'https://onejav.com';
-
-    /**
-     * @return HttpClient
-     */
-    public function getClient(): HttpClient
-    {
-        return new HttpClient();
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  array  $options
-     * @return Crawler
-     */
-    public function crawl(string $uri, array $options = []): ?Crawler
-    {
-        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
-            return null;
-        }
-
-        return new Crawler($response, $uri);
-    }
 
     /**
      * @return Collection
      */
     public function getDaily(): Collection
     {
-        $indexUrl = 'https://onejav.com/'.date('Y/m/d');
+        $indexUrl = self::ENDPOINT . '/' . date('Y/m/d');
         $pages = $this->getIndexPagesCount($indexUrl);
 
         $items = collect([]);
 
         for ($page = 1; $page <= $pages; $page++) {
-            $items = $items->merge($this->getItems($indexUrl.'?page'.$page));
+            $items = $items->merge($this->getItems($indexUrl . '?page' . $page));
         }
 
         return $items;
     }
 
     /**
-     * @param  string  $indexUri
+     * @param string $indexUri
      * @return Collection
      */
     public function getItems(string $indexUri): Collection
@@ -80,7 +58,7 @@ final class Onejav
     }
 
     /**
-     * @param  string  $indexUri
+     * @param string $indexUri
      * @return int|null
      */
     public function getIndexPagesCount(string $indexUri): int
@@ -91,13 +69,13 @@ final class Onejav
         }
 
         try {
-            $page = (int) $crawler->filter('a.pagination-link')->last()->text();
+            $page = (int)$crawler->filter('a.pagination-link')->last()->text();
             $class = $crawler->filter('a.pagination-link')->last()->attr('class');
 
             $url = Url::fromString($indexUri);
 
             if (strpos($class, 'is-inverted') !== false) {
-                $url = $url->getScheme().'://'.$url->getHost().$url->getPath().'?page='.$page;
+                $url = $url->getScheme() . '://' . $url->getHost() . $url->getPath() . '?page=' . $page;
                 $page = $this->getIndexPagesCount($url);
             }
 
@@ -108,7 +86,7 @@ final class Onejav
     }
 
     /**
-     * @param  string  $date
+     * @param string $date
      * @return DateTime|null
      */
     private function convertStringToDateTime(string $date): ?DateTime
@@ -126,13 +104,13 @@ final class Onejav
     }
 
     /**
-     * @param  Crawler  $crawler
+     * @param Crawler $crawler
      * @return \App\Models\Jav\Onejav
      */
     private function parse(Crawler $crawler): \App\Models\Jav\Onejav
     {
         $item = app(\App\Models\Jav\Onejav::class);
-        $item->url = self::ENDPOINT.trim($crawler->filter('h5.title a')->attr('href'));
+        $item->url = self::ENDPOINT . trim($crawler->filter('h5.title a')->attr('href'));
 
         if ($crawler->filter('.columns img.image')->count()) {
             $item->cover = trim($crawler->filter('.columns img.image')->attr('src'));
@@ -147,10 +125,10 @@ final class Onejav
             $item->size = trim($crawler->filter('h5 span')->text(null, false));
 
             if (strpos($item->size, 'MB') !== false) {
-                $item->size = (float) trim(str_replace('MB', '', $item->size));
+                $item->size = (float)trim(str_replace('MB', '', $item->size));
                 $item->size = $item->size / 1024;
             } elseif (strpos($item->size, 'GB') !== false) {
-                $item->size = (float) trim(str_replace('GB', '', $item->size));
+                $item->size = (float)trim(str_replace('GB', '', $item->size));
             }
         }
 
@@ -164,7 +142,7 @@ final class Onejav
         })->unique()->toArray();
 
         $description = $crawler->filter('.level.has-text-grey-dark');
-        $item->description = trim($description->count() ? trim($description->text(null, false)) : null);
+        $item->description = $description->count() ? trim($description->text(null, false)) : null;
 
         $item->actresses = collect($crawler->filter('.panel .panel-block')->each(
             function ($actress) {
@@ -174,7 +152,7 @@ final class Onejav
             return null === $value || empty($value);
         })->unique()->toArray();
 
-        $item->torrent = self::ENDPOINT.trim($crawler->filter('.control.is-expanded a')->attr('href'));
+        $item->torrent = self::ENDPOINT . trim($crawler->filter('.control.is-expanded a')->attr('href'));
 
         return $item;
     }

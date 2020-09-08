@@ -9,42 +9,19 @@
 
 namespace App\Crawlers\Crawler;
 
-use App\Services\Client\HttpClient;
 use Exception;
 use Illuminate\Support\Collection;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Kissgoddess
  * @package App\Crawlers\Crawler
  */
-final class Kissgoddess
+final class Kissgoddess extends AbstractCrawler
 {
-    /**
-     * @return HttpClient
-     */
-    public function getClient(): HttpClient
-    {
-        return new HttpClient();
-    }
+    const BASE_URL = 'https://kissgoddess.com';
 
     /**
-     * @param  string  $uri
-     * @param  array  $options
-     * @return Crawler
-     */
-    public function crawl(string $uri, array $options = []): ?Crawler
-    {
-        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
-            return null;
-        }
-
-        return new Crawler($response, $uri);
-    }
-
-    /**
-     * @param  string  $itemUri
+     * @param string $itemUri
      *
      * @return \App\Models\KissGoddess|null
      */
@@ -57,10 +34,8 @@ final class Kissgoddess
 
         $itemUri = str_replace('.html', '', $itemUri);
 
-        // @todo Too much sub-requests. Reduce it later
-
         for ($page = 1; $page <= $pages; $page++) {
-            $crawler = $this->crawl($itemUri.'_'.$page.'.html');
+            $crawler = $this->crawl($itemUri . '_' . $page . '.html');
 
             if (!$crawler) {
                 continue;
@@ -79,7 +54,7 @@ final class Kissgoddess
     }
 
     /**
-     * @param  string|null  $indexUri
+     * @param string|null $indexUri
      * @return Collection
      */
     public function getItemLinks(string $indexUri = null): ?Collection
@@ -91,16 +66,16 @@ final class Kissgoddess
         return collect($crawler->filter('.td-module-image .td-module-thumb a')->each(
             function ($el) {
                 return [
-                    'url' => 'https://kissgoddess.com'.$el->attr('href'),
+                    'url' => self::BASE_URL . $el->attr('href'),
                     'title' => $el->attr('title'),
-                    'cover' => $el->filter('img')->attr('src'),
+                    'cover' => $el->filter('img')->attr('src') ?? $el->filter('img')->attr('data-original'),
                 ];
             }
         ));
     }
 
     /**
-     * @param  string  $indexUri
+     * @param string $indexUri
      * @return int|null
      */
     public function getIndexPagesCount(string $indexUri): int
@@ -117,7 +92,7 @@ final class Kissgoddess
             $page = explode('_', end($page));
             $page = end($page);
 
-            return (int) str_replace('.html', '', $page);
+            return (int)str_replace('.html', '', $page);
         } catch (Exception $exception) {
             return 1;
         }

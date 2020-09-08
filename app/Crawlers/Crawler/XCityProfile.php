@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class XCityProfileModel
  * @package App\Crawlers\Crawler
  */
-final class XCityProfile
+final class XCityProfile extends AbstractCrawler
 {
     protected array $months = [
         'Jan' => '01',
@@ -36,28 +36,6 @@ final class XCityProfile
         'Nov' => '11',
         'Dec' => '12',
     ];
-
-    /**
-     * @return HttpClient
-     */
-    public function getClient(): HttpClient
-    {
-        return new HttpClient();
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  array  $options
-     * @return Crawler
-     */
-    public function crawl(string $uri, array $options = []): ?Crawler
-    {
-        if (!$response = $this->getClient()->request(Request::METHOD_GET, $uri, $options)) {
-            return null;
-        }
-
-        return new Crawler($response, $uri);
-    }
 
     /**
      * @SuppressWarnings("PHPMD.CyclomaticComplexity")
