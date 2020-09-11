@@ -34,6 +34,15 @@ class IdolsController extends BaseController
     {
         $items = $repository->getItems($request);
 
+        $covers = array_map(
+            static function (JavIdol $item) {
+                return $item->getCover();
+            },
+            $items->items()
+        );
+
+        $this->generateMetaTags([], ['og:image' => $covers]);
+
         return view(
             'jav.idols.index',
             [
@@ -52,6 +61,19 @@ class IdolsController extends BaseController
     public function idol(int $id)
     {
         $idol = JavIdol::find($id);
+
+        $this->generateMetaTags(
+            [
+                'twitter:title' => $idol->name,
+                'twitter:description' => $idol->name,
+            ],
+            [
+                'og:title' => $idol->name,
+                'og:description' => $idol->name,
+                'og:image' => $idol->getCover(),
+            ]
+        );
+        $this->meta->setDescription($idol->name);
 
         if (!$idol) {
             return view(

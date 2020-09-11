@@ -45,6 +45,15 @@ class JavController extends BaseController
     {
         $items = $repository->getItems($request);
 
+        $covers = array_map(
+            static function (JavMovie $item) {
+                return $item->getCover();
+            },
+            $items->items()
+        );
+
+        $this->generateMetaTags([], ['og:image' => $covers]);
+
         return view(
             'jav.index',
             [
@@ -88,6 +97,20 @@ class JavController extends BaseController
     public function movie(int $id)
     {
         $movie = JavMovie::find($id);
+
+        $description = $movie->description ?? $movie->name;
+        $this->generateMetaTags(
+            [
+                'twitter:title' => $movie->name,
+                'twitter:description' => $description,
+            ],
+            [
+                'og:title' => $movie->name,
+                'og:description' => $description,
+                'og:image' => $movie->getCover(),
+            ]
+        );
+        $this->meta->setDescription($description);
 
         return view(
             'jav.movie',
@@ -150,7 +173,7 @@ class JavController extends BaseController
                         'DVD-ID' => $movie->dvd_id,
                         'Director' => $movie->director,
                         'Studio' => $movie->studio,
-                    ]
+                    ],
                 ],
             ]
         );

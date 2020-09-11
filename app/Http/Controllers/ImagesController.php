@@ -20,12 +20,23 @@ abstract class ImagesController extends BaseController
 
     public function dashboard(Request $request)
     {
+        $items = $this->getItems($request);
+
+        $covers = array_map(
+            static function ($item) {
+                return $item->cover;
+            },
+            $items->items()
+        );
+
+        $this->generateMetaTags([], ['og:image' => $covers]);
+
         return view(
             $this->name.'.index',
             $this->getViewDefaultOptions(
                 [
-                    'items' => $this->getItems($request),
-                    'title' => $this->title
+                    'items' => $items,
+                    'title' => $this->title,
                 ]
             )
         );
@@ -33,12 +44,16 @@ abstract class ImagesController extends BaseController
 
     public function item(string $id)
     {
+        $item = $this->getItem($id);
+
+        $this->generateMetaTags([], ['og:image' => $item->cover]);
+
         return view(
             $this->name.'.item',
             [
                 'item' => $this->getItem($id),
                 'sidebar' => $this->getMenuItems(),
-                'title' => $this->title
+                'title' => $this->title,
             ]
         );
     }

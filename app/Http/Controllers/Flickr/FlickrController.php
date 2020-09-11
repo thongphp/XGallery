@@ -56,6 +56,8 @@ class FlickrController extends BaseController
             ]));
         }
 
+        $this->generateMetaTags();
+
         $result = UrlExtractor::extract($url);
         try {
             $profile = FlickrClient::getPeopleInfo($result->getOwner());

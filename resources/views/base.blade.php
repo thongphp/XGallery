@@ -2,11 +2,6 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>XGallery - {{$title}}</title>
-
 @section('stylesheets')
     <!-- Fonts -->
         <link href="//fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -30,8 +25,8 @@
               href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
         <link href="{{ asset('storage/css/xgallery.css') }}" rel="stylesheet" type="text/css">
     @show
-    @include('includes.head.metadata')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    {!! \Butschster\Head\Facades\Meta::toHtml() !!}
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <link rel="shortcut icon" type="image/png" href="/favicon.ico"/>
 
 </head>

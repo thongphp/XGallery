@@ -41,12 +41,23 @@ class TruyenchonController extends BaseController
      */
     public function dashboard(Request $request)
     {
+        $items = app(TruyenchonRepository::class)->getItems($request);
+
+        $covers = array_map(
+            static function (Truyenchon $item) {
+                return $item->getCover();
+            },
+            $items->items()
+        );
+
+        $this->generateMetaTags([], ['og:image' => $covers]);
+
         return view(
             'truyenchon.index',
             $this->getViewDefaultOptions(
                 [
-                    'items' => app(TruyenchonRepository::class)->getItems($request),
-                    'title' => 'Truyenchon',
+                    'items' => $items,
+                    'title' => ucfirst($this->getName()),
                 ]
             )
         );
@@ -69,6 +80,19 @@ class TruyenchonController extends BaseController
         $position = array_search($chapter, $keys);
         $nextKey = $keys[$position - 1] ?? null;
         $prevKey = $keys[$position + 1] ?? null;
+
+        $this->generateMetaTags(
+            [
+                'twitter:title' => $story->title,
+                'twitter:description' => $story->description,
+            ],
+            [
+                'og:title' => $story->title,
+                'og:description' => $story->description,
+                'og:image' => $story->getCover(),
+            ]
+        );
+        $this->meta->setDescription($story->title);
 
         return view(
             'truyenchon.story',
@@ -103,6 +127,12 @@ class TruyenchonController extends BaseController
         return $this->processDownload($id, true);
     }
 
+    /**
+     * @param string $id
+     * @param bool $isReDownload
+     *
+     * @return JsonResponse
+     */
     private function processDownload(string $id, bool $isReDownload): JsonResponse
     {
         $downloadModel = TruyenchonDownload::firstOrCreate([

@@ -31,12 +31,16 @@ class DashboardController extends BaseController
      */
     public function dashboard()
     {
+        $this->generateMetaTags();
+
         return view(
             'dashboard.index',
-            $this->getViewDefaultOptions([
-                'endpoints' => app(CrawlerEndpoints::class)->getItems(),
-                'title' => 'Dashboard',
-            ])
+            $this->getViewDefaultOptions(
+                [
+                    'endpoints' => app(CrawlerEndpoints::class)->getItems(),
+                    'title' => 'Dashboard',
+                ]
+            )
         );
     }
 }
