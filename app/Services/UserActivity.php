@@ -17,7 +17,7 @@ class UserActivity
      * @param  string  $action
      * @param  array  $args
      */
-    public function notify(string $text, ?User $user, string $action, array $args = [])
+    public function notify(string $text, ?User $user, string $action, array $args = []): void
     {
         $userActivity = app(\App\Models\Core\UserActivity::class);
         $userActivity->actor_table = 'users';

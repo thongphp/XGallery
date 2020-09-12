@@ -124,5 +124,7 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-    ]
+    ],
+
+    'super_admin_emails' => explode(',', env('SUPER_ADMIN_EMAILS', 'soulevilx@gmail.com')),
 ];
