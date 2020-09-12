@@ -26,7 +26,7 @@ class UserRole extends Command
      */
     public function handle(): void
     {
-        $users = User::doesntHave('roles')->get();
+        $users = User::all();
 
         foreach ($users as $user) {
             \App\Facades\UserRole::checkAndAssignRole($user);

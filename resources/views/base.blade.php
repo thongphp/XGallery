@@ -49,6 +49,16 @@
         </div>
         <div class="row">
             <div class="col-12">
+                @section('guest-notice')
+                    @guest
+                        <div class="alert alert-info text-center">
+                            <div>Please <strong><a class="text-danger"
+                                                   href="{{route('oauth.login')}}">Login</a></strong> with Google to use
+                                features
+                            </div>
+                        </div>
+                    @endguest
+                @stop
                 @include('includes.flash')
             </div>
             <div class="col-12">

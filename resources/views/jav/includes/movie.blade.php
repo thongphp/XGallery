@@ -58,7 +58,7 @@
     </div>
     <div class="card-footer">
         <small class="text-muted"><i class="far fa-calendar-alt mr-1"></i>{{$item->release_date}}</small>
-        @can('jav_download')
+        @can(\App\Services\UserRole::PERMISSION_JAV_DOWNLOAD)
             @if(config('xgallery.adult.download'))
                 <span class="float-right">
                  <button type="button"

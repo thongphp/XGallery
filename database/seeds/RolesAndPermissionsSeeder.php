@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+use App\Services\UserRole;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -14,35 +16,35 @@ class RolesAndPermissionsSeeder extends Seeder
     public function run(): void
     {
         $adminPermissions = [
-            'jav_download',
-            'xiuren_download',
-            'truyenchon_download',
-            'kissgoddess',
-            'flickr_download',
-            'admin_config'
+            UserRole::PERMISSION_JAV_DOWNLOAD,
+            UserRole::PERMISSION_XIUREN_DOWNLOAD,
+            UserRole::PERMISSION_TRUYENCHON_DOWNLOAD,
+            UserRole::PERMISSION_KISSGODDESS_DOWNLOAD,
+            UserRole::PERMISSION_FLICKR_DOWNLOAD,
+            UserRole::PERMISSION_ADMIN_CONFIG,
         ];
 
         // Admin
         $admin = Role::updateOrCreate(
-            ['name' => 'admin', 'guard_name' => 'web'],
-            ['name' => 'admin', 'guard_name' => 'web']
+            ['name' => User::ROLE_ADMIN, 'guard_name' => 'web'],
+            ['name' => User::ROLE_ADMIN, 'guard_name' => 'web']
         );
 
         $this->createAndSyncPermissions($adminPermissions, $admin, 'web');
 
         // User
         $userPermissions = [
-            'jav_download',
-            'xiuren_download',
-            'truyenchon_download',
-            'kissgoddess',
-            'flickr_download',
-            'user_config'
+            UserRole::PERMISSION_JAV_DOWNLOAD,
+            UserRole::PERMISSION_XIUREN_DOWNLOAD,
+            UserRole::PERMISSION_TRUYENCHON_DOWNLOAD,
+            UserRole::PERMISSION_KISSGODDESS_DOWNLOAD,
+            UserRole::PERMISSION_FLICKR_DOWNLOAD,
+            UserRole::PERMISSION_USER_CONFIG,
         ];
 
         $user = Role::updateOrCreate(
-            ['name' => 'user', 'guard_name' => 'web'],
-            ['name' => 'user', 'guard_name' => 'web']
+            ['name' => User::ROLE_USER, 'guard_name' => 'web'],
+            ['name' => User::ROLE_USER, 'guard_name' => 'web']
         );
 
         $this->createAndSyncPermissions($userPermissions, $user, 'web');

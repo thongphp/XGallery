@@ -14,6 +14,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Models\Jav\JavMovie;
 use App\Models\JavDownload;
+use App\Models\User;
 use App\Repositories\ConfigRepository;
 use App\Repositories\JavMoviesRepository;
 use Illuminate\Contracts\Foundation\Application;

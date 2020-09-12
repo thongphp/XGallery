@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticator;
+use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -16,15 +17,16 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticator
 {
+    use HasPermissions;
     use HasRoles;
-
-    public const ROLE_USER = 'user';
-    public const ROLE_ADMIN = 'admin';
 
     public const ID = 'id';
     public const NAME = 'name';
     public const EMAIL = 'email';
     public const AVATAR = 'avatar';
+
+    public const ROLE_USER = 'user';
+    public const ROLE_ADMIN = 'admin';
 
     /**
      * The attributes that are mass assignable.
@@ -36,7 +38,7 @@ class User extends Authenticator
     ];
 
     /**
-     * @param string $service
+     * @param  string  $service
      *
      * @return Oauth|null
      */
