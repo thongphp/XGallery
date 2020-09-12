@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Facades\UserActivity;
+use App\Facades\UserRole;
 use App\Models\Oauth;
 use App\Models\User as UserModel;
 use App\Providers\RouteServiceProvider;
@@ -61,6 +62,8 @@ class AuthenticateController extends Controller
 
         $oauth = $this->processOAuthData($socialiteUser, $request);
         $this->notify($socialiteUser, $oauth);
+
+        UserRole::checkAndAssignRole(Auth::user());
 
         return redirect()
             ->route('user.profile.view')

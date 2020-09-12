@@ -45,7 +45,8 @@ Route::namespace('App\Http\Controllers\Auth')
         }
     );
 
-Route::middleware(['auth'])->namespace(JavController::class)
+Route::middleware(['auth'])
+    ->namespace(JavController::class)
     ->prefix('jav')
     ->group(
         static function () {
@@ -60,7 +61,8 @@ Route::middleware(['auth'])->namespace(JavController::class)
         }
     );
 
-Route::middleware(['auth'])->namespace(XiurenController::class)
+Route::middleware(['auth'])
+    ->namespace(XiurenController::class)
     ->prefix('xiuren')
     ->group(
         static function () {

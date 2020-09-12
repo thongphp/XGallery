@@ -16,7 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             MenuItemsSeeder::class,
-            CrawlerEndpointsSeeder::class
+            CrawlerEndpointsSeeder::class,
+            RolesAndPermissionsSeeder::class
         ]);
     }
 }

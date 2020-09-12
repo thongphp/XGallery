@@ -12,7 +12,6 @@ namespace App\Providers;
 use App\Facades\UserActivity as UserActivityFacade;
 use App\Models\Flickr\FlickrDownload;
 use App\Models\Jav\JavMovie;
-use App\Models\User;
 use App\Observers\FlickrDownloadObserver;
 use App\Observers\JavMovieObserver;
 use App\Services\Client\FlickrClient;
@@ -21,6 +20,8 @@ use App\Services\Flickr\Validation;
 use App\Services\GoogleDrive;
 use App\Services\GooglePhoto;
 use App\Services\UserActivity;
+use App\Services\UserRole;
+use App\Facades\UserRole as UserRoleFacade;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -61,6 +62,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(UserActivityFacade::class, function () {
             return new UserActivity;
+        });
+
+        $this->app->bind(UserRoleFacade::class, function () {
+            return new UserRole();
         });
     }
 

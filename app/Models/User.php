@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticator;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class User
@@ -15,6 +16,11 @@ use Illuminate\Foundation\Auth\User as Authenticator;
  */
 class User extends Authenticator
 {
+    use HasRoles;
+
+    public const ROLE_USER = 'user';
+    public const ROLE_ADMIN = 'admin';
+
     public const ID = 'id';
     public const NAME = 'name';
     public const EMAIL = 'email';
@@ -44,6 +50,6 @@ class User extends Authenticator
      */
     public function isAdmin(): bool
     {
-        return in_array($this->{self::EMAIL}, config('services.authenticated.emails'), true);
+        return $this->hasRole(self::ROLE_ADMIN);
     }
 }
