@@ -2,13 +2,13 @@
 
 namespace App\Facades;
 
-use App\Services\UserRole as UserRoleService;
+use App\Services\FormTool as FormToolService;
 use Illuminate\Support\Facades\Facade;
 
-class UserRole extends Facade
+class FormTool extends Facade
 {
     public static function getFacadeAccessor()
     {
-        return UserRoleService::class;
+        return FormToolService::class;
     }
 }

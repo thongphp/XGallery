@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<form>
+    <field
+        name="album_cover"
+        type="checkbox"
+        label="Album cover 18+"
+        description="Show / Hide album cover 18+"
+        value="1"
+        defaultChecked="false"
+    />
+</form>

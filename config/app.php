@@ -193,6 +193,7 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Studio\Totem\Providers\TotemServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        Kris\LaravelFormBuilder\FormBuilderServiceProvider::class
     ],
 
     /*
@@ -250,5 +251,6 @@ return [
         'GooglePhotoClient' => App\Facades\GooglePhotoClient::class,
         'FlickrClient' => App\Facades\FlickrClient::class,
         'FlickrUrlExtractor' => App\Facades\Flickr\UrlExtractor::class,
+        'FormBuilder' => Kris\LaravelFormBuilder\Facades\FormBuilder::class
     ],
 ];

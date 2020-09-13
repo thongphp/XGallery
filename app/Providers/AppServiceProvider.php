@@ -9,6 +9,8 @@
 
 namespace App\Providers;
 
+use App\Facades\Config as ConfigFacade;
+use App\Facades\FormTool as FormToolFacade;
 use App\Facades\UserActivity as UserActivityFacade;
 use App\Facades\UserRole as UserRoleFacade;
 use App\Models\Flickr\FlickrDownload;
@@ -16,8 +18,10 @@ use App\Models\Jav\JavMovie;
 use App\Observers\FlickrDownloadObserver;
 use App\Observers\JavMovieObserver;
 use App\Services\Client\FlickrClient;
+use App\Services\Config;
 use App\Services\Flickr\UrlExtractor;
 use App\Services\Flickr\Validation;
+use App\Services\FormTool;
 use App\Services\GoogleDrive;
 use App\Services\GooglePhoto;
 use App\Services\UserActivity;
@@ -66,6 +70,14 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(UserRoleFacade::class, function () {
             return new UserRole;
+        });
+
+        $this->app->bind(ConfigFacade::class, function () {
+            return new Config;
+        });
+
+        $this->app->bind(FormToolFacade::class, function () {
+            return new FormTool;
         });
     }
 

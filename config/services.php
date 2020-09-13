@@ -46,11 +46,6 @@ return [
         'webhook_url' => env('SLACK_HOOK')
     ],
 
-    'adult' => [
-        'cover' => env('ADULT_COVER', false),
-        'download' => env('ADULT_DOWNLOAD', false)
-    ],
-
     'httpclient' => [
         'debug' => false,
         'decode_content' => true,

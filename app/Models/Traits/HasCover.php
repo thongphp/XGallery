@@ -9,6 +9,8 @@
 
 namespace App\Models\Traits;
 
+use App\Facades\Config;
+
 /**
  * Trait HasCover
  * @package App\Models\Traits
@@ -21,7 +23,7 @@ trait HasCover
      */
     public function getCover(int $holderSize = 350): string
     {
-        if (empty($this->cover) || !config('xgallery.adult.cover')) {
+        if (empty($this->cover) || !Config::getGlobalConfig('album_cover')) {
             return 'https://via.placeholder.com/'.$holderSize;
         }
 
