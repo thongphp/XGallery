@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\System;
 
+use App\Facades\UserRole;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -12,7 +13,7 @@ class UserRolesAll extends Command
      *
      * @var string
      */
-    protected $signature = 'system:user:roles:force-all';
+    protected $signature = 'system:user:roles-sync-all';
 
     /**
      * The console command description.
@@ -29,7 +30,7 @@ class UserRolesAll extends Command
         $users = User::all();
 
         foreach ($users as $user) {
-            \App\Facades\UserRole::checkAndAssignRole($user);
+            UserRole::checkAndAssignRole($user);
         }
     }
 }
