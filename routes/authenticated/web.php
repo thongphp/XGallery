@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\Config\ConfigController;
+use App\Http\Controllers\Config\UserConfigController;
 use App\Http\Controllers\Flickr\FlickrController;
 use App\Http\Controllers\Jav\JavController;
 use App\Http\Controllers\KissGoddess\KissGoddessController;
@@ -97,10 +98,19 @@ Route::middleware(['auth', 'permission:'.UserRole::PERMISSION_ADMIN_CONFIG])
     ->group(
         static function () {
             Route::post('/config', [ConfigController::class, 'store'])->name(
-                'config.form.view'
+                'config.global.view'
             );
             Route::get('/config', [ConfigController::class, 'show'])->name(
-                'config.form.view'
+                'config.global.view'
             );
+        }
+    );
+
+Route::middleware(['auth', 'permission:'.UserRole::PERMISSION_USER_CONFIG])
+    ->namespace(UserConfigController::class)
+    ->group(
+        static function () {
+            Route::post('/user-config', [UserConfigController::class, 'store'])->name('config.user.view');
+            Route::get('/user-config', [UserConfigController::class, 'show'])->name('config.user.view');
         }
     );

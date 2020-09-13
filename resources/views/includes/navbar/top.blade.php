@@ -13,7 +13,11 @@
                     <a class="nav-link" href="{{route('user.activities.view')}}">Activities</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{route('config.form.view')}}">Config</a>
+                    @can(\App\Services\UserRole::PERMISSION_ADMIN_CONFIG)
+                        <a class="nav-link" href="{{route('config.global.view')}}">Config</a>
+                    @elsecan(\App\Services\UserRole::PERMISSION_USER_CONFIG)
+                        <a class="nav-link" href="{{route('config.user.view')}}">Config</a>
+                    @endcan
                 </li>
             @endauth
         </ul>

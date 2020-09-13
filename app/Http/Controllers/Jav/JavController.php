@@ -133,7 +133,7 @@ class JavController extends BaseController
      */
     public function download(string $itemNumber): JsonResponse
     {
-        if (JavDownload::where(['item_number' => $itemNumber])->first()) {
+        if (JavDownload::where([JavDownload::ITEM_NUMBER => $itemNumber])->first()) {
             return response()->json(
                 [
                     'html' => Toast::warning('Download', 'Item <strong>'.$itemNumber.'</strong> already exists'),
@@ -144,7 +144,7 @@ class JavController extends BaseController
         $this->notify($itemNumber);
 
         $model = app(JavDownload::class);
-        $model->item_number = $itemNumber;
+        $model->{JavDownload::ITEM_NUMBER} = $itemNumber;
         $model->save();
 
         return response()->json(

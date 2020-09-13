@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <form>
     <field
-        name="album_cover"
+        name="automatic_download"
         type="checkbox"
-        label="Album cover 18+"
-        help="Show / Hide album cover 18+"
+        label="Automatic download"
+        help="Enable: Requested movies will automatically download."
         value="1"
         defaultChecked="false"
     />

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticator;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
@@ -13,6 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $email
  * @property string $remember_token
  * @property string $avatar
+ * @property array $configs
  * @package App\Models
  */
 class User extends Authenticator
@@ -53,5 +55,26 @@ class User extends Authenticator
     public function isAdmin(): bool
     {
         return $this->hasRole(self::ROLE_ADMIN);
+    }
+
+    /**
+     * @param  string  $configKey
+     * @param  null|mixed  $default
+     *
+     * @return mixed
+     */
+    public function getConfig(string $configKey, $default = null)
+    {
+        $result = $this->configs()->where(UserConfig::NAME, $configKey)->first();
+
+        return $result ?? $default;
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function configs(): HasMany
+    {
+        return $this->hasMany(UserConfig::class, UserConfig::USER_ID, static::ID);
     }
 }

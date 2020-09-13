@@ -7,11 +7,11 @@ use Kris\LaravelFormBuilder\Form;
 interface FieldInterface
 {
     /**
-     * @param  array  $attributes
+     * @param  array  $field
      * @param  Form  $form
      * @return Form
      */
-    public function processBuildField(array $attributes, Form $form): Form;
+    public function processBuildField(array $field, Form $form): Form;
 
     /**
      * @param  mixed  $fieldValues

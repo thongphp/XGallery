@@ -15,15 +15,18 @@ use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class JavDownload
+ * @property string $item_number
  * @package App
  */
 class JavDownload extends Mongodb
 {
+    public const ITEM_NUMBER = 'item_number';
+
     /**
      * @return Collection
      */
     public function downloads(): Collection
     {
-        return $this->hasMany(Onejav::class, 'title', 'item_number')->orderBy('size', 'desc')->get();
+        return $this->hasMany(Onejav::class, 'title', static::ITEM_NUMBER)->orderBy('size', 'desc')->get();
     }
 }

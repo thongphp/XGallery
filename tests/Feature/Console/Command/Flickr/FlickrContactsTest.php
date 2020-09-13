@@ -3,7 +3,6 @@
 namespace Tests\Feature\Console\Command\Flickr;
 
 use App\Models\Flickr\FlickrContact;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\FlickrClientMock;
@@ -11,7 +10,7 @@ use Tests\Traits\FlickrMongoDatabase;
 
 class FlickrContactsTest extends TestCase
 {
-    use RefreshDatabase, DatabaseMigrations, FlickrClientMock, FlickrMongoDatabase;
+    use RefreshDatabase, FlickrClientMock, FlickrMongoDatabase;
 
     public function testExecuteGetAllContactOfCurrentUser(): void
     {
