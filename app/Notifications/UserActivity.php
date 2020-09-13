@@ -2,7 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Mail\UserActivityMail;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Notifications\Messages\SlackAttachment;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
@@ -16,13 +19,13 @@ class UserActivity extends Notification
      *
      * @SuppressWarnings("unused")
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      *
      * @return array
      */
     public function via($notifiable): array
     {
-        return ['slack', 'database'];
+        return ['slack', 'mail', 'database'];
     }
 
     /**
@@ -30,7 +33,7 @@ class UserActivity extends Notification
      *
      * @SuppressWarnings("unused")
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      *
      * @return array
      */
@@ -72,5 +75,19 @@ class UserActivity extends Notification
         });
 
         return $slackMessage;
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     *
+     * @return Mailable
+     */
+    public function toMail(\App\Models\Core\UserActivity $notifiable): Mailable
+    {
+        $actor = User::find($notifiable->actor_id);
+
+        return (new UserActivityMail($notifiable, $actor))->to($actor->email);
     }
 }

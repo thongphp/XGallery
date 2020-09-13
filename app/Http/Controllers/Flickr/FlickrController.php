@@ -13,10 +13,12 @@ namespace App\Http\Controllers\Flickr;
 use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
 use App\Facades\Flickr\UrlExtractor;
 use App\Facades\FlickrClient;
+use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
 use App\Services\Flickr\Objects\FlickrAlbum;
+use App\Services\Flickr\Objects\FlickrDownload;
 use App\Services\Flickr\Objects\FlickrGallery;
 use App\Services\Flickr\Objects\FlickrProfile;
 use App\Services\Flickr\Url\FlickrUrlInterface;
@@ -28,6 +30,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -136,6 +139,8 @@ class FlickrController extends BaseController
             ]);
         }
 
+        $this->notify($flickr);
+
         $flickr->download();
 
         return response()->json([
@@ -149,5 +154,31 @@ class FlickrController extends BaseController
                 )
             )
         ]);
+    }
+
+    /**
+     * @param  FlickrDownload  $flickrDownload
+     */
+    private function notify(FlickrDownload $flickrDownload): void
+    {
+        UserActivity::notify(
+            '%s request %s '.ucfirst($flickrDownload->getType()),
+            Auth::user(),
+            'download',
+            [
+                \App\Models\Core\UserActivity::OBJECT_ID => $flickrDownload->getId(),
+                \App\Models\Core\UserActivity::OBJECT_TABLE => 'flickr_'.$flickrDownload->getType(),
+                \App\Models\Core\UserActivity::EXTRA => [
+                    'title' => $flickrDownload->getTitle(),
+                    'fields' => [
+                        'Title' => $flickrDownload->getTitle(),
+                        'Description' => $flickrDownload->getDescription(),
+                        'Nsid' => $flickrDownload->getOwner(),
+                        'Photos count' => $flickrDownload->getPhotosCount(),
+                    ],
+                    'footer' => $flickrDownload->getUrl(),
+                ],
+            ]
+        );
     }
 }
