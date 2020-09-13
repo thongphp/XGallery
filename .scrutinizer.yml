@@ -2,6 +2,12 @@ build:
   environment:
     php: 7.4.7
     variables:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: xgallery_db
+      DB_USERNAME: root
+      DB_PASSWORD:
       MONGO_DB_HOST: 127.0.0.1
       MONGO_DB_PORT: 27017
       MONGO_DB_DATABASE: xgallery_test
@@ -12,3 +18,8 @@ build:
     analysis:
       services:
         mongo: 4
+        mysql: 5.7
+  project_setup:
+    before:
+      - mysql -e "CREATE DATABASE xgallery_db"
+

@@ -4,7 +4,6 @@ namespace Tests\Feature\Console\Command\Flickr;
 
 use App\Jobs\Flickr\FlickrPhotoSizes;
 use App\Models\Flickr\FlickrPhoto;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\FlickrClientMock;
@@ -12,7 +11,7 @@ use Tests\Traits\FlickrMongoDatabase;
 
 class FlickrPhotoSizesTest extends TestCase
 {
-    use RefreshDatabase, DatabaseMigrations, FlickrClientMock, FlickrMongoDatabase;
+    use RefreshDatabase, FlickrClientMock, FlickrMongoDatabase;
 
     public function setUp(): void
     {
@@ -36,7 +35,7 @@ class FlickrPhotoSizesTest extends TestCase
     }
 
     /**
-     * @param array $photo
+     * @param  array  $photo
      *
      * @return FlickrPhoto
      */

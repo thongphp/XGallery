@@ -4,12 +4,13 @@ namespace App\Services;
 
 use App\Forms\Fields\Checkbox;
 use App\Forms\Fields\FieldInterface;
+use App\Forms\Fields\Radio;
 use Kris\LaravelFormBuilder\Form;
 
 class FormTool
 {
     public const MAPPING = [
-        self::TYPE_CHECKBOX => Checkbox::class
+        self::TYPE_CHECKBOX => Checkbox::class,
     ];
 
     public const TYPE_CHECKBOX = 'checkbox';
@@ -22,10 +23,10 @@ class FormTool
      */
     public function parseXML(string $xmlPath): array
     {
-        $object = simplexml_load_string(file_get_contents($xmlPath));
+        $formXML = simplexml_load_string(file_get_contents($xmlPath));
 
         return json_decode(
-            json_encode((array) $object, JSON_THROW_ON_ERROR),
+            json_encode((array) $formXML, JSON_THROW_ON_ERROR),
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -33,24 +34,23 @@ class FormTool
     }
 
     /**
-     * @param  array  $attributes
+     * @param  array  $field
      * @param  Form  $form
      *
      * @return Form
      */
-    public function buildField(array $attributes, Form $form): Form
+    public function buildField(array $field, Form $form): Form
     {
-        if (empty($attributes)
-            || !isset($attributes['type'])
-            || in_array($attributes['type'], self::MAPPING, true)
+        if (empty($field['@attributes'])
+            || !isset($field['@attributes']['type'])
+            || in_array($field['@attributes']['type'], self::MAPPING, true)
         ) {
             return $form;
         }
 
-        /** @var FieldInterface $field */
-        $field = app(self::MAPPING[$attributes['type']]);
+        $fieldInstance = app(self::MAPPING[$field['@attributes']['type']]);
 
-        $form = $field->processBuildField($attributes, $form);
+        $form = $fieldInstance->processBuildField($field, $form);
 
         return $form;
     }

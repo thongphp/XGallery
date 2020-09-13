@@ -2,9 +2,8 @@
 
 namespace Tests\Feature\Console\Command\Flickr;
 
-use App\Models\Flickr\FlickrContact as FlickrContactModel;
 use App\Jobs\Flickr\FlickrContact;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use App\Models\Flickr\FlickrContact as FlickrContactModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\FlickrClientMock;
@@ -12,7 +11,7 @@ use Tests\Traits\FlickrMongoDatabase;
 
 class FlickrContactTest extends TestCase
 {
-    use RefreshDatabase, DatabaseMigrations, FlickrClientMock, FlickrMongoDatabase;
+    use RefreshDatabase, FlickrClientMock, FlickrMongoDatabase;
 
     public function setUp(): void
     {
