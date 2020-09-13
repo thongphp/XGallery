@@ -28,7 +28,7 @@ class TruyenchonDownloadChapterMail extends Mailable
 
         return $this->from(config('mail.from.address'), config('mail.from.name'))
             ->subject($subject)
-            ->markdown('truyenchon.email.downloadChapter')
+            ->markdown('emails.truyenchon.downloadChapter')
             ->with(
                 [
                     'chapter' => $this->chapterModel,

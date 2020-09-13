@@ -83,6 +83,11 @@ services:
       - xgallery_services
     environment:
       - 'REDIS_HOSTS=local:key_value_store:6379'
+  maildev:
+    build: ./maildev
+    ports:
+      - "1080:80"
+      - "1025:25"
 volumes:
   database-mariadb-data:
     external: false

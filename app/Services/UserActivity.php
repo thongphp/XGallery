@@ -21,7 +21,7 @@ class UserActivity
     {
         $userActivity = app(\App\Models\Core\UserActivity::class);
         $userActivity->actor_table = 'users';
-        $userActivity->actor_id = $user ? $user->id : null;
+        $userActivity->actor_id = $user->id ?? null;
         $userActivity->action = $action;
         $userActivity->text = $text;
         if (!empty($args)) {
