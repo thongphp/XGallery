@@ -10,6 +10,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\HasMenu;
+use App\Models\User;
 use App\Traits\HasObject;
 use Auth;
 use Butschster\Head\Contracts\MetaTags\MetaInterface;
@@ -71,7 +72,9 @@ class BaseController extends Controller
      */
     protected function validateAuthenticate()
     {
+        /** @var User $user */
         $user = Auth::user();
+
         $flickrOAuth = $user->getOAuth('flickr');
         $googleOAuth = $user->getOAuth('google');
 

@@ -28,22 +28,27 @@
                     </div>
                     <div class="row">
                         <div class="col text-right">
-                            @if(config('xgallery.adult.download'))
-                                @if(!count($item->chapters))
-                                    <div class="btn btn-secondary btn-sm disabled"><em class="fas fa-download mr-1"></em>Download</div>
-                                @elseif($item->isDownloading())
-                                    <button type="button" class="btn btn-warning btn-sm ajax-pool"
-                                            data-ajax-url="{{route('truyenchon.re-download.request', $item->id)}}"
-                                            data-ajax-command="download"
-                                    > <em class="fas fa-download mr-1"></em>Re-download</button>
-                                @else
-                                    <button type="button" class="btn btn-primary btn-sm ajax-pool"
-                                            data-ajax-url="{{route('truyenchon.download.request', $item->id)}}"
-                                            data-ajax-command="download"
-                                    >
-                                    @include('includes.general.download')
+                            @can(\App\Services\UserRole::PERMISSION_TRUYENCHON_DOWNLOAD)
+                                @if(config('xgallery.adult.download'))
+                                    @if(!count($item->chapters))
+                                        <div class="btn btn-secondary btn-sm disabled"><em
+                                                class="fas fa-download mr-1"></em>Download
+                                        </div>
+                                    @elseif($item->isDownloading())
+                                        <button type="button" class="btn btn-warning btn-sm ajax-pool"
+                                                data-ajax-url="{{route('truyenchon.re-download.request', $item->id)}}"
+                                                data-ajax-command="download"
+                                        ><em class="fas fa-download mr-1"></em>Re-download
+                                        </button>
+                                    @else
+                                        <button type="button" class="btn btn-primary btn-sm ajax-pool"
+                                                data-ajax-url="{{route('truyenchon.download.request', $item->id)}}"
+                                                data-ajax-command="download"
+                                        >
+                                        @include('includes.general.download')
+                                    @endif
                                 @endif
-                            @endif
+                            @endcan
                         </div>
                     </div>
                 </div>

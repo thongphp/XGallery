@@ -19,8 +19,9 @@
                             Images: <span class="badge badge-primary">{{count($item->images)}}</span>
                         </div>
                         <div class="col text-right">
-                            @if(config('xgallery.adult.download'))
-                                 <span class="float-right">
+                            @can(\App\Services\UserRole::PERMISSION_KISSGODDESS_DOWNLOAD)
+                                @if(config('xgallery.adult.download'))
+                                    <span class="float-right">
                                      <button
                                          type="button"
                                          class="btn btn-primary btn-sm ajax-pool"
@@ -29,7 +30,8 @@
                                      >
                                      @include('includes.general.download')
                                 </span>
-                            @endif
+                                @endif
+                            @endcan
                         </div>
                     </div>
                 </div>

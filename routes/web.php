@@ -2,12 +2,10 @@
 
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Dashboard\DashboardController;
-use App\Http\Controllers\Flickr\FlickrController;
 use App\Http\Controllers\Jav\IdolsController;
 use App\Http\Controllers\Jav\JavController;
 use App\Http\Controllers\KissGoddess\KissGoddessController;
 use App\Http\Controllers\Truyenchon\TruyenchonController;
-use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Xiuren\XiurenController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,16 +22,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard.view')->middleware([]);
 
-Route::middleware(['auth'])
-    ->namespace(UserController::class)
-    ->group(
-        static function () {
-            Route::get('/profile', [UserController::class, 'profile'])->name('user.profile.view');
-            Route::get('/activities', [UserController::class, 'activities'])->name('user.activities.view');
-            Route::get('/logout', [UserController::class, 'logout'])->name('user.logout');
-        }
-    );
-
 Route::namespace('App\Http\Controllers\Auth')
     ->prefix('oauth')
     ->group(
@@ -45,8 +33,7 @@ Route::namespace('App\Http\Controllers\Auth')
         }
     );
 
-Route::middleware(['auth'])
-    ->namespace(JavController::class)
+Route::namespace(JavController::class)
     ->prefix('jav')
     ->group(
         static function () {
@@ -57,12 +44,10 @@ Route::middleware(['auth'])
                 'jav.idols.dashboard.view'
             );
             Route::get('idol/{id}', [IdolsController::class, 'idol'])->name('jav.idol.view');
-            Route::post('download/{itemNumber}', [JavController::class, 'download'])->name('jav.download.request');
         }
     );
 
-Route::middleware(['auth'])
-    ->namespace(XiurenController::class)
+Route::namespace(XiurenController::class)
     ->prefix('xiuren')
     ->group(
         static function () {
@@ -74,7 +59,7 @@ Route::middleware(['auth'])
         }
     );
 
-Route::middleware(['auth'])->namespace(KissGoddessController::class)
+Route::namespace(KissGoddessController::class)
     ->prefix('kissgoddess')
     ->group(
         static function () {
@@ -82,13 +67,10 @@ Route::middleware(['auth'])->namespace(KissGoddessController::class)
                 'kissgoddess.dashboard.view'
             );
             Route::get('{id}', [KissGoddessController::class, 'item'])->name('kissgoddess.item.view');
-            Route::post('download/{id}', [KissGoddessController::class, 'download'])->name(
-                'kissgoddess.download.request'
-            );
         }
     );
 
-Route::middleware(['auth'])->namespace(TruyenchonController::class)
+Route::namespace(TruyenchonController::class)
     ->prefix('truyenchon')
     ->group(
         static function () {
@@ -97,21 +79,5 @@ Route::middleware(['auth'])->namespace(TruyenchonController::class)
             );
             Route::get('{id}/{chapter}', [TruyenchonController::class, 'story'])->name('truyenchon.story.view');
             Route::post('search', [TruyenchonController::class, 'search'])->name('truyenchon.search.view');
-            Route::post('download/{id}', [TruyenchonController::class, 'download'])->name(
-                'truyenchon.download.request'
-            );
-            Route::post('re-download/{id}', [TruyenchonController::class, 'reDownload'])->name(
-                'truyenchon.re-download.request'
-            );
-        }
-    );
-
-Route::middleware(['auth'])->namespace(FlickrController::class)
-    ->prefix('flickr')
-    ->group(
-        static function () {
-            Route::get('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
-            Route::post('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
-            Route::post('download', [FlickrController::class, 'download'])->name('flickr.download.request');
         }
     );
