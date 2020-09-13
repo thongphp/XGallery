@@ -5,14 +5,14 @@ namespace App\Console\Commands\System;
 use App\Models\User;
 use Illuminate\Console\Command;
 
-class UserRole extends Command
+class UserRolesAll extends Command
 {
     /**
-     * Command for assign roles to user whom is not has role yet.
+     * Command for re-assign roles to all users.
      *
      * @var string
      */
-    protected $signature = 'system:user:roles:sync';
+    protected $signature = 'system:user:roles:force-all';
 
     /**
      * The console command description.
@@ -26,7 +26,7 @@ class UserRole extends Command
      */
     public function handle(): void
     {
-        $users = User::doesntHave('roles')->get();
+        $users = User::all();
 
         foreach ($users as $user) {
             \App\Facades\UserRole::checkAndAssignRole($user);

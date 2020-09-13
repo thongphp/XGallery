@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\Config\ConfigController;
 use App\Http\Controllers\Flickr\FlickrController;
 use App\Http\Controllers\Jav\JavController;
 use App\Http\Controllers\KissGoddess\KissGoddessController;
@@ -88,5 +89,18 @@ Route::middleware(['auth'])
         static function () {
             Route::get('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
             Route::post('/', [FlickrController::class, 'dashboard'])->name('flickr.dashboard.view');
+        }
+    );
+
+Route::middleware(['auth', 'permission:'.UserRole::PERMISSION_ADMIN_CONFIG])
+    ->namespace(ConfigController::class)
+    ->group(
+        static function () {
+            Route::post('/config', [ConfigController::class, 'store'])->name(
+                'config.form.view'
+            );
+            Route::get('/config', [ConfigController::class, 'show'])->name(
+                'config.form.view'
+            );
         }
     );

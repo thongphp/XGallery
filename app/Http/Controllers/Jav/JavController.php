@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers\Jav;
 
+use App\Facades\Config;
 use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;

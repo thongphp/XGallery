@@ -12,6 +12,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('user.activities.view')}}">Activities</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('config.form.view')}}">Config</a>
+                </li>
             @endauth
         </ul>
         <div class="collapse navbar-collapse" id="navbarText">
