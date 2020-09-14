@@ -1,6 +1,7 @@
 <?php
 /**
  * Copyright (c) 2020 JOOservices Ltd
+ *
  * @author Viet Vu <jooservices@gmail.com>
  * @package XGallery
  * @license GPL
@@ -11,18 +12,17 @@ namespace App\Http\Controllers\Xiuren;
 
 use App\Database\Mongodb;
 use App\Http\Controllers\ImagesController;
-use App\Jobs\XiurenDownload;
 use App\Models\Xiuren;
 use App\Repositories\XiurenRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class XiurenController
+ *
  * @package App\Http\Controllers\Xiuren
  */
 class XiurenController extends ImagesController
@@ -40,10 +40,5 @@ class XiurenController extends ImagesController
     protected function getItem(string $id): Mongodb
     {
         return Xiuren::find($id);
-    }
-
-    protected function processDownload($model): void
-    {
-        XiurenDownload::dispatch($model);
     }
 }

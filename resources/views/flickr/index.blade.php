@@ -60,7 +60,7 @@
                                 <div class="card-body">
                                     {!! $message !!}
                                 </div>
-                                @if($data)
+                                @if($data && $data->photoset)
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item">{{$data->photoset->title}}</li>
                                     <li class="list-group-item">{{$data->photoset->id}}</li>

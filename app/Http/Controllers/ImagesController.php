@@ -67,31 +67,12 @@ abstract class ImagesController extends BaseController
                 );
         }
 
-        UserActivity::notify(
-            '%s request %s gallery',
-            Auth::user(),
-            'download',
-            [
-                \App\Models\Core\UserActivity::OBJECT_ID => $item->_id,
-                \App\Models\Core\UserActivity::OBJECT_TABLE => $item->getTable(),
-                \App\Models\Core\UserActivity::EXTRA => [
-                    'title' => $item->getTitle(),
-                    'fields' => [
-                        'ID' => $item->_id,
-                        'Title' => $item->getTitle(),
-                        'Photos count' => count($item->images),
-                    ],
-                    'footer' => $item->url,
-                ],
-            ]
-        );
+        $item->startDownload();
 
         $message = sprintf(
             'Added <span class="badge badge-primary">%s</span> into download queue successfully',
             $item->getTitle()
         );
-
-        $this->processDownload($item);
 
         return response()->json(['html' => Toast::success('Download', $message)]);
     }
@@ -99,6 +80,4 @@ abstract class ImagesController extends BaseController
     abstract protected function getItems(Request $request);
 
     abstract protected function getItem(string $id): Mongodb;
-
-    abstract protected function processDownload(Mongodb $model);
 }

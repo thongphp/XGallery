@@ -150,26 +150,7 @@ class TruyenchonController extends BaseController
             return response()->json(['html' => Toast::warning('Download', $message)]);
         }
 
-        $downloadModel->download();
-
-        $story = $downloadModel->story;
-
-        UserActivity::notify(
-            '%s request %s story',
-            Auth::user(),
-            $isReDownload === true ? 're-download' : 'download',
-            [
-                \App\Models\Core\UserActivity::OBJECT_ID => $story->_id,
-                \App\Models\Core\UserActivity::OBJECT_TABLE => $story->getTable(),
-                \App\Models\Core\UserActivity::EXTRA => [
-                    'title' => $story->title,
-                    'fields' => [
-                        'ID' => $story->_id,
-                        'Title' => $story->title,
-                    ],
-                ],
-            ]
-        );
+        $downloadModel->download($isReDownload);
 
         $message = sprintf(
             'Added story <span class="badge badge-primary">%s</span> into download queue successfully',

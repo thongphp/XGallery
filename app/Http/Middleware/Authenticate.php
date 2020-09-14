@@ -19,7 +19,7 @@ class Authenticate extends Middleware
      *
      * @SuppressWarnings("unused")
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return string
      */

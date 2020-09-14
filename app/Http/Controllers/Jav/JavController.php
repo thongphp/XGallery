@@ -1,6 +1,7 @@
 <?php
 /**
  * Copyright (c) 2020 JOOservices Ltd
+ *
  * @author Viet Vu <jooservices@gmail.com>
  * @package XGallery
  * @license GPL
@@ -9,13 +10,9 @@
 
 namespace App\Http\Controllers\Jav;
 
-use App\Facades\Config;
-use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Models\Jav\JavMovie;
-use App\Models\JavDownload;
-use App\Models\User;
 use App\Repositories\ConfigRepository;
 use App\Repositories\JavMoviesRepository;
 use Illuminate\Contracts\Foundation\Application;
@@ -24,13 +21,13 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 /**
  * Class JavController
+ *
  * @package App\Http\Controllers
  */
 class JavController extends BaseController
@@ -133,7 +130,9 @@ class JavController extends BaseController
      */
     public function download(string $itemNumber): JsonResponse
     {
-        if (JavDownload::where([JavDownload::ITEM_NUMBER => $itemNumber])->first()) {
+        $movie = JavMovie::firstWhere(JavMovie::DVD_ID, '=', $itemNumber);
+
+        if ($movie->isDownloading()) {
             return response()->json(
                 [
                     'html' => Toast::warning('Download', 'Item <strong>'.$itemNumber.'</strong> already exists'),
@@ -141,42 +140,11 @@ class JavController extends BaseController
             );
         }
 
-        $this->notify($itemNumber);
-
-        $model = app(JavDownload::class);
-        $model->{JavDownload::ITEM_NUMBER} = $itemNumber;
-        $model->save();
+        $movie->startDownload();
 
         return response()->json(
             [
                 'html' => Toast::success('Download', 'Item <strong>'.$itemNumber.'</strong> added to queue'),
-            ]
-        );
-    }
-
-    /**
-     * @param string $itemNumber
-     */
-    private function notify(string $itemNumber): void
-    {
-        $movie = JavMovie::where([JavMovie::DVD_ID => $itemNumber])->first();
-
-        UserActivity::notify(
-            '%s request %s movie',
-            Auth::user(),
-            'download',
-            [
-                \App\Models\Core\UserActivity::OBJECT_ID => $movie->id,
-                \App\Models\Core\UserActivity::OBJECT_TABLE => $movie->getTable(),
-                \App\Models\Core\UserActivity::EXTRA => [
-                    'title' => $movie->name,
-                    'fields' => [
-                        'Title' => $movie->name,
-                        'DVD-ID' => $movie->dvd_id,
-                        'Director' => $movie->director,
-                        'Studio' => $movie->studio,
-                    ],
-                ],
             ]
         );
     }

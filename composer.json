@@ -92,8 +92,7 @@
     "prefer-stable": true,
     "scripts": {
         "pre-commit": [
-            "composer test-phpstan",
-            "composer test-phpmd"
+            "composer test-phpstan"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

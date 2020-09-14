@@ -10,8 +10,11 @@
 namespace App\Models;
 
 use App\Database\Mongodb;
+use App\Facades\UserActivity;
+use App\Jobs\KissGoddessDownload;
 use App\Models\Traits\HasCover;
 use App\Services\Client\HttpClient;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Kissgoddess
@@ -21,7 +24,7 @@ use App\Services\Client\HttpClient;
  * @property array $images
  * @package App\Models
  */
-class KissGoddess extends Mongodb
+class KissGoddess extends Mongodb implements DownloadableInterface
 {
     use HasCover;
 
@@ -49,5 +52,33 @@ class KissGoddess extends Mongodb
         }
 
         return true;
+    }
+
+    /**
+     * Noncompliant@+1
+     * @param User|null $author
+     */
+    public function startDownload(?User $author = null): void
+    {
+        UserActivity::notify(
+            '%s request %s gallery',
+            $author ?? Auth::user(),
+            'download',
+            [
+                \App\Models\Core\UserActivity::OBJECT_ID => $this->_id,
+                \App\Models\Core\UserActivity::OBJECT_TABLE => $this->getTable(),
+                \App\Models\Core\UserActivity::EXTRA => [
+                    'title' => $this->getTitle(),
+                    'fields' => [
+                        'ID' => $this->_id,
+                        'Title' => $this->title,
+                        'Photos count' => count($this->images),
+                    ],
+                    'footer' => $this->url,
+                ],
+            ]
+        );
+
+        KissGoddessDownload::dispatch($this);
     }
 }

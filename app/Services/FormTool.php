@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Forms\Fields\Checkbox;
 use App\Forms\Fields\FieldInterface;
-use App\Forms\Fields\Radio;
 use Kris\LaravelFormBuilder\Form;
 
 class FormTool

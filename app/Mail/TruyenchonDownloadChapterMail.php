@@ -32,7 +32,7 @@ class TruyenchonDownloadChapterMail extends Mailable
             ->with(
                 [
                     'chapter' => $this->chapterModel,
-                    'name' => $user ? $user->name : 'Guest',
+                    'name' => $user->name ?? 'Guest',
                 ]
             )
             ->attach($this->pdfFile);

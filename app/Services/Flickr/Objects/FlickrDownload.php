@@ -2,6 +2,7 @@
 
 namespace App\Services\Flickr\Objects;
 
+use App\Facades\UserActivity;
 use App\Jobs\Flickr\FlickrContact;
 use App\Jobs\Flickr\FlickrDownloadPhoto;
 use App\Repositories\Flickr\ContactRepository;
@@ -37,6 +38,26 @@ abstract class FlickrDownload implements FlickrObjectInterface
 
     public function download(): bool
     {
+        UserActivity::notify(
+            '%s request %s '.ucfirst($this->getType()),
+            Auth::user(),
+            'download',
+            [
+                \App\Models\Core\UserActivity::OBJECT_ID => $this->getId(),
+                \App\Models\Core\UserActivity::OBJECT_TABLE => 'flickr_'.$this->getType(),
+                \App\Models\Core\UserActivity::EXTRA => [
+                    'title' => $this->getTitle(),
+                    'fields' => [
+                        'Title' => $this->getTitle(),
+                        'Description' => $this->getDescription(),
+                        'Nsid' => $this->getOwner(),
+                        'Photos count' => $this->getPhotosCount(),
+                    ],
+                    'footer' => $this->getUrl(),
+                ],
+            ]
+        );
+
         // If owner is not exist, start new queue for getting this contact information.
         if (!app(ContactRepository::class)->isExist($this->getOwner())) {
             FlickrContact::dispatch($this->getOwner());

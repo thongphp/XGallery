@@ -14,7 +14,6 @@ use App\Models\User;
 use Google_Service_PhotosLibrary;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Request;
-use function GuzzleHttp\Psr7\str;
 
 /**
  * Class GoogleController
