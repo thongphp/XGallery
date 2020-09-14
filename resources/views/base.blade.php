@@ -30,7 +30,7 @@
     <link rel="shortcut icon" type="image/png" href="/favicon.ico"/>
 
 </head>
-<body class="app-{{App::environment()}} sidebar-mini layout-fixed sidebar-open">
+<body class="app-{{App::environment()}} sidebar-mini @if(\Illuminate\Support\Facades\Route::is('jav.*')) sidebar-collapse @endif layout-fixed sidebar-open">
 @include('includes.navbar.top')
 @include('includes.navbar.sidebar')
 
