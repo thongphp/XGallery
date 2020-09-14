@@ -20,7 +20,7 @@
                     @if(!empty($item->director))
                         <li class="list-group-item director">
                             <i class="fas fa-user mr-2"></i><strong class="mr-1">Director</strong>
-                            <a href="{{jav_build_route_with_filter_param(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DIRECTOR, $item->director)}}">
+                            <a href="{{jav_build_route_has_filter(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_DIRECTOR, $item->director)}}">
                                 <span class="text-info">{{$item->director}}</span>
                             </a>
                         </li>
@@ -28,7 +28,7 @@
                     @if(!empty($item->studio))
                         <li class="list-group-item studio">
                             <i class="fas fa-tag mr-2"></i><strong class="mr-1">Studio</strong>
-                            <a href="{{jav_build_route_with_filter_param(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_STUDIO, $item->studio)}}">
+                            <a href="{{jav_build_route_has_filter(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_STUDIO, $item->studio)}}">
                                 <span class="text-info">{{$item->studio}}</span>
                             </a>
                         </li>
@@ -43,7 +43,7 @@
                         <li class="list-group-item tag">
                             <i class="fas fa-tags"></i>
                             @foreach ($item->genres as $genre)
-                                <a href="{{jav_build_route_with_filter_param(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_GENRE, $genre->id)}}">
+                                <a href="{{jav_build_route_has_filter(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_GENRE, $genre->id)}}">
                                     <span class="badge badge-pill badge-dark">{{$genre->name}}</span>
                                 </a>
                             @endforeach
@@ -53,7 +53,7 @@
                         <li class="list-group-item actress">
                             <em class="fas fa-female"></em>
                             @foreach ($item->idols as $idol)
-                                <a href="{{jav_build_route_with_filter_param(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL, $idol->id)}}">
+                                <a href="{{jav_build_route_has_filter(\App\Repositories\ConfigRepository::KEY_JAV_MOVIES_FILTER_IDOL, $idol->id)}}">
                                     <span class="badge badge-pill badge-info">{{$idol->name}}</span>
                                 </a>
                             @endforeach

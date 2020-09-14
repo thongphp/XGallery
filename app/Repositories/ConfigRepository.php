@@ -21,6 +21,7 @@ final class ConfigRepository
     public const JAV_IDOLS_FILTER_BREAST = 'filter_breast';
     public const JAV_IDOLS_FILTER_WAIST = 'filter_waist';
     public const JAV_IDOLS_FILTER_HIPS = 'filter_hips';
+    public const JAV_IDOLS_FILTER_CITY = 'filter_city';
 
     /* JAV Movies */
     public const KEY_JAV_MOVIES_FILTER_DIRECTOR = 'filter_director';
