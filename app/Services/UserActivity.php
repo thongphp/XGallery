@@ -7,15 +7,16 @@ use App\Notifications\UserActivity as UserActivityNotification;
 
 /**
  * Class UserActivity
+ *
  * @package App\Services
  */
 class UserActivity
 {
     /**
-     * @param  string  $text // Usually follow format SOMEONE do ACTION on SOMETHING
-     * @param  User|null  $user
-     * @param  string  $action
-     * @param  array  $args
+     * @param string $text // Usually follow format SOMEONE do ACTION on SOMETHING
+     * @param User|null $user
+     * @param string $action
+     * @param array $args
      */
     public function notify(string $text, ?User $user, string $action, array $args = []): void
     {
