@@ -56,4 +56,18 @@
             </div>
         </div>
     </div>
+    @if($idol->movies()->count())
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-bold text-primary mb-0">Movies</h3>
+            </div>
+            <div class="card-body">
+                <div class="card-columns">
+                    @foreach ($idol->movies as $item)
+                        @include('jav.idols.includes.movie-mini')
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
 @stop
