@@ -1,3 +1,0 @@
-[submodule "storage/app/public/vendor/AdminLTE"]
-	path = storage/app/public/vendor/AdminLTE
-	url = https://github.com/ColorlibHQ/AdminLTE.git

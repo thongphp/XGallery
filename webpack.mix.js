@@ -11,5 +11,38 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+// Disable OS notification when build
+mix.disableNotifications();
+
+mix.copy('node_modules/admin-lte/dist/img', 'public/img');
+mix.js(
+    [
+        'node_modules/admin-lte/dist/js/adminlte.min.js',
+        'node_modules/admin-lte/dist/js/demo.js',
+        'node_modules/admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'
+    ],
+    'public/js/vendor.js'
+);
+
+mix.styles(
+    [
+        'node_modules/admin-lte/dist/css/adminlte.css',
+        'node_modules/admin-lte/plugins/overlayScrollbars/css/OverlayScrollbars.css'
+    ],
+    'public/css/vendor.css'
+);
+
+
+mix.js('resources/js/xgallery.js', 'public/js');
+
+mix.sass('resources/sass/xgallery.scss', 'public/css')
+    .options({
+        postCss: [
+            require('postcss-css-variables')()
+        ],
+        outputStyle: 'compress'
+    });
+
+if (mix.inProduction()) {
+    mix.version();
+}
