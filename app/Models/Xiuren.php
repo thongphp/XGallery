@@ -58,6 +58,7 @@ class Xiuren extends Mongodb implements DownloadableInterface
     }
 
     /**
+     * Noncompliant@+1
      * @param User|null $author
      */
     public function startDownload(?User $author = null): void
