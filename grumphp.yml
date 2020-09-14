@@ -11,6 +11,8 @@ grumphp:
     composer_script:
       script: "pre-commit"
     git_blacklist:
+      whitelist_patterns:
+        - ./vendor/*
       keywords:
         - "die;"
         - "die("
