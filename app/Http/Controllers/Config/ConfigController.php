@@ -20,8 +20,8 @@ class ConfigController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * @param  FormBuilder  $formBuilder
-     * @param  Config  $configModel
+     * @param FormBuilder $formBuilder
+     * @param Config $configModel
      *
      * @return Application|Factory|View
      */
@@ -51,8 +51,8 @@ class ConfigController extends BaseController
     }
 
     /**
-     * @param  FormBuilder  $formBuilder
-     * @param  Config  $configModel
+     * @param FormBuilder $formBuilder
+     * @param Config $configModel
      *
      * @return RedirectResponse
      */

@@ -10,9 +10,13 @@
 namespace App\Models;
 
 use App\Database\Mongodb;
+use App\Facades\UserActivity;
+use App\Jobs\KissGoddessDownload;
+use App\Jobs\XiurenDownload;
 use App\Models\Traits\HasCover;
 use App\Services\Client\HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Url\Url;
 
 /**
@@ -22,7 +26,7 @@ use Spatie\Url\Url;
  * @property array $images
  * @package App\Models
  */
-class Xiuren extends Mongodb
+class Xiuren extends Mongodb implements DownloadableInterface
 {
     use HasCover;
 
@@ -51,5 +55,32 @@ class Xiuren extends Mongodb
         }
 
         return true;
+    }
+
+    /**
+     * @param User|null $author
+     */
+    public function startDownload(?User $author = null): void
+    {
+        UserActivity::notify(
+            '%s request %s gallery',
+            $author ?? Auth::user(),
+            'download',
+            [
+                \App\Models\Core\UserActivity::OBJECT_ID => $this->_id,
+                \App\Models\Core\UserActivity::OBJECT_TABLE => $this->getTable(),
+                \App\Models\Core\UserActivity::EXTRA => [
+                    'title' => $this->getTitle(),
+                    'fields' => [
+                        'ID' => $this->_id,
+                        'Title' => $this->getTitle(),
+                        'Photos count' => count($this->images),
+                    ],
+                    'footer' => $this->url,
+                ],
+            ]
+        );
+
+        XiurenDownload::dispatch($this);
     }
 }

@@ -9,9 +9,14 @@
 
 namespace App\Models\Jav;
 
+use App\Facades\UserActivity;
+use App\Models\DownloadableInterface;
+use App\Models\JavDownload;
 use App\Models\Traits\HasCover;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use JustBetter\PaginationWithHavings\PaginationWithHavings;
 
 /**
@@ -33,7 +38,7 @@ use JustBetter\PaginationWithHavings\PaginationWithHavings;
  * @property int $is_downloadable
  * @package App\Models\Jav
  */
-class JavMovie extends Model
+class JavMovie extends Model implements DownloadableInterface
 {
     use HasCover, PaginationWithHavings;
 
@@ -72,5 +77,44 @@ class JavMovie extends Model
     public function genres(): BelongsToMany
     {
         return $this->belongsToMany(JavGenre::class, 'jav_genres_xref', 'movie_id', 'genre_id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDownloading(): bool
+    {
+        return null !== JavDownload::where([JavDownload::ITEM_NUMBER => $this->dvd_id])->first();
+    }
+
+    /**
+     * @param User|null $author
+     *
+     * @return void
+     */
+    public function startDownload(?User $author = null): void
+    {
+        $model = app(JavDownload::class);
+        $model->{JavDownload::ITEM_NUMBER} = $this->{self::DVD_ID};
+        $model->save();
+
+        UserActivity::notify(
+            '%s request %s movie',
+            $author ?? Auth::user(),
+            'download',
+            [
+                \App\Models\Core\UserActivity::OBJECT_ID => $this->id,
+                \App\Models\Core\UserActivity::OBJECT_TABLE => $this->getTable(),
+                \App\Models\Core\UserActivity::EXTRA => [
+                    'title' => $this->name,
+                    'fields' => [
+                        'Title' => $this->name,
+                        'DVD-ID' => $this->dvd_id,
+                        'Director' => $this->director,
+                        'Studio' => $this->studio,
+                    ],
+                ],
+            ]
+        );
     }
 }

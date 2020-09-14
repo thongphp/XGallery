@@ -6,7 +6,6 @@ use App\Http\Controllers\BaseController;
 use App\Models\Core\UserActivity;
 use App\Repositories\UserActivitiesRepository;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;

@@ -20,8 +20,8 @@ class UserConfigController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * @param  FormBuilder  $formBuilder
-     * @param  UserConfig  $configModel
+     * @param FormBuilder $formBuilder
+     * @param UserConfig $configModel
      *
      * @return Application|Factory|View
      */
@@ -51,8 +51,8 @@ class UserConfigController extends BaseController
     }
 
     /**
-     * @param  FormBuilder  $formBuilder
-     * @param  UserConfig  $userConfig
+     * @param FormBuilder $formBuilder
+     * @param UserConfig $userConfig
      *
      * @return RedirectResponse
      */

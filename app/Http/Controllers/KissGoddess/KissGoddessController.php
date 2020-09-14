@@ -4,7 +4,6 @@ namespace App\Http\Controllers\KissGoddess;
 
 use App\Database\Mongodb;
 use App\Http\Controllers\ImagesController;
-use App\Jobs\KissGoddessDownload;
 use App\Models\KissGoddess;
 use App\Repositories\KissGoddessRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -27,10 +26,5 @@ class KissGoddessController extends ImagesController
     protected function getItem(string $id): Mongodb
     {
         return KissGoddess::find($id);
-    }
-
-    protected function processDownload($model)
-    {
-        KissGoddessDownload::dispatch($model);
     }
 }

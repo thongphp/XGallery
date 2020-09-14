@@ -72,7 +72,6 @@ class BaseController extends Controller
      */
     protected function validateAuthenticate()
     {
-        /** @var User $user */
         $user = Auth::user();
 
         $flickrOAuth = $user->getOAuth('flickr');

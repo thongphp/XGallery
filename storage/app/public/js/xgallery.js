@@ -97,7 +97,8 @@
 
             $body.on('click', '.ajax-pool', function (e) {
                 e.preventDefault();
-                xgallery.ajax.request(jQuery(this).data());
+                const ajaxData = { ...{}, ...jQuery(this).data()};
+                xgallery.ajax.request(ajaxData);
             });
 
             $body.on('submit', '.ajax-form', function (e) {

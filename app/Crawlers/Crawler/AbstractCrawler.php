@@ -11,7 +11,7 @@ abstract class AbstractCrawler
     /**
      * @return HttpClient
      */
-    protected function getClient(): HttpClient
+    public function getClient(): HttpClient
     {
         return new HttpClient();
     }

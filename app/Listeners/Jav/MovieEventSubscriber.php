@@ -27,7 +27,7 @@ class MovieEventSubscriber
             return;
         }
 
-        $downloads = JavDownload::where(['item_number' => $movie->dvd_id]);
+        $downloads = JavDownload::where([JavDownload::ITEM_NUMBER => $movie->dvd_id]);
         $downloads->each(
             static function (JavDownload $download) {
                 if (!$item = $download->downloads()->first()) {

@@ -13,14 +13,9 @@ namespace App\Http\Controllers\Flickr;
 use App\Exceptions\Flickr\FlickrApiPeopleGetInfoUserDeletedException;
 use App\Facades\Flickr\UrlExtractor;
 use App\Facades\FlickrClient;
-use App\Facades\UserActivity;
 use App\Http\Controllers\BaseController;
 use App\Http\Helpers\Toast;
 use App\Http\Requests\FlickrDownloadRequest;
-use App\Services\Flickr\Objects\FlickrAlbum;
-use App\Services\Flickr\Objects\FlickrDownload;
-use App\Services\Flickr\Objects\FlickrGallery;
-use App\Services\Flickr\Objects\FlickrProfile;
 use App\Services\Flickr\Url\FlickrUrlInterface;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -30,12 +25,12 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class FlickrController
+ *
  * @package App\Http\Controllers\Flickr
  */
 class FlickrController extends BaseController
@@ -43,7 +38,7 @@ class FlickrController extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * @param  Request  $request
+     * @param Request $request
      *
      * @return Application|Factory|RedirectResponse|View
      */
@@ -62,6 +57,11 @@ class FlickrController extends BaseController
         $this->generateMetaTags();
 
         $result = UrlExtractor::extract($url);
+
+        if (!$result) {
+            return redirect()->route('flickr.dashboard.view')->with('warning', 'Could not detect type of URL');
+        }
+
         try {
             $profile = FlickrClient::getPeopleInfo($result->getOwner());
             $message = 'URL type is <span class="badge badge-primary">%s</span>';
@@ -69,6 +69,20 @@ class FlickrController extends BaseController
                 case FlickrUrlInterface::TYPE_ALBUM:
                     $message = sprintf($message, FlickrUrlInterface::TYPE_ALBUM);
                     $data = FlickrClient::getPhotoSetInfo($result->getId());
+                    break;
+                case FlickrUrlInterface::TYPE_GALLERY:
+                    $message = sprintf($message, FlickrUrlInterface::TYPE_GALLERY);
+                    $data = FlickrClient::getGalleryInformation($result->getId());
+                    break;
+                case FlickrUrlInterface::TYPE_PROFILE:
+                    $message = sprintf($message, FlickrUrlInterface::TYPE_PROFILE);
+                    $data = FlickrClient::getPeopleInfo($result->getOwner());
+                    break;
+                case FlickrUrlInterface::TYPE_PHOTO:
+                    $message = sprintf($message, FlickrUrlInterface::TYPE_PHOTO);
+                    $data = FlickrClient::getPeopleInfo($result->getOwner());
+                    break;
+                default:
                     break;
             }
         } catch (FlickrApiPeopleGetInfoUserDeletedException $exception) {
@@ -87,14 +101,14 @@ class FlickrController extends BaseController
     }
 
     /**
-     * @param  FlickrDownloadRequest  $request
+     * @param FlickrDownloadRequest $request
      *
      * @return JsonResponse
      * @throws Exception
      */
     public function download(FlickrDownloadRequest $request): JsonResponse
     {
-        if (!$result = $request->getUrl()) {
+        if (!$flickrDownload = $request->getUrl()) {
             return response()->json([
                 'html' => Toast::warning('Download', 'Could not detect type of URL')
             ]);
@@ -103,82 +117,36 @@ class FlickrController extends BaseController
         // @TODO Move to layout
         $flashMessage = 'Added <span class="badge badge-primary">%d</span> photos of %s <strong>%s</strong>';
 
-        switch ($result->getType()) {
-            case FlickrUrlInterface::TYPE_ALBUM:
-                // @TODO Actually it should be model instead
-                $flickr = new FlickrAlbum($result);
-                break;
-
-            case FlickrUrlInterface::TYPE_GALLERY:
-                $flickr = new FlickrGallery($result);
-                break;
-
-            case FlickrUrlInterface::TYPE_PROFILE:
-                $flickr = new FlickrProfile($result);
-                break;
-
-            default:
-                throw new Exception();
-        }
-
-        if (!$flickr->isValid()) {
+        if (!$flickrDownload->isValid()) {
             return response()->json([
                 'html' => Toast::warning(
                     'Download',
-                    'Can not get '.ucfirst($result->getType()).' information'
+                    'Can not get '.ucfirst($flickrDownload->getType()).' information'
                 )
             ]);
         }
 
-        if ($flickr->getPhotosCount() === 0) {
+        if ($flickrDownload->getPhotosCount() === 0) {
             return response()->json([
                 'html' => Toast::warning(
                     'Download',
-                    ucfirst($result->getType()).' has no photos'
+                    ucfirst($flickrDownload->getType()).' has no photos'
                 )
             ]);
         }
 
-        $this->notify($flickr);
-
-        $flickr->download();
+        $flickrDownload->download();
 
         return response()->json([
             'html' => Toast::success(
                 'Download',
                 sprintf(
                     $flashMessage,
-                    $flickr->getPhotosCount(),
-                    ucfirst($result->getType()),
-                    $flickr->getTitle()
+                    $flickrDownload->getPhotosCount(),
+                    ucfirst($flickrDownload->getType()),
+                    $flickrDownload->getTitle()
                 )
             )
         ]);
-    }
-
-    /**
-     * @param  FlickrDownload  $flickrDownload
-     */
-    private function notify(FlickrDownload $flickrDownload): void
-    {
-        UserActivity::notify(
-            '%s request %s '.ucfirst($flickrDownload->getType()),
-            Auth::user(),
-            'download',
-            [
-                \App\Models\Core\UserActivity::OBJECT_ID => $flickrDownload->getId(),
-                \App\Models\Core\UserActivity::OBJECT_TABLE => 'flickr_'.$flickrDownload->getType(),
-                \App\Models\Core\UserActivity::EXTRA => [
-                    'title' => $flickrDownload->getTitle(),
-                    'fields' => [
-                        'Title' => $flickrDownload->getTitle(),
-                        'Description' => $flickrDownload->getDescription(),
-                        'Nsid' => $flickrDownload->getOwner(),
-                        'Photos count' => $flickrDownload->getPhotosCount(),
-                    ],
-                    'footer' => $flickrDownload->getUrl(),
-                ],
-            ]
-        );
     }
 }
