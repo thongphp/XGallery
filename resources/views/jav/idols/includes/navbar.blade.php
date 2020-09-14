@@ -5,7 +5,7 @@
                 @csrf
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-3">
                             <input
                                 class="form-control input-sm"
                                 type="text"
@@ -15,6 +15,15 @@
                                 value="{{request()->request->get(\App\Repositories\ConfigRepository::KEY_KEYWORD)}}"
                                 style="width: 100%"
                             />
+                        </div>
+                        <div class="col-3">
+                            @include('includes.form.filter',
+                                [
+                                    'name'=> \App\Repositories\ConfigRepository::JAV_IDOLS_FILTER_CITY,
+                                    'options' => $cities,
+                                    'title' => 'Choose city'
+                                ]
+                            )
                         </div>
                         <div class="col text-right">
                             @include(

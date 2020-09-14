@@ -3,15 +3,17 @@
 namespace App\Repositories;
 
 use App\Models\Jav\JavIdol;
+use App\Objects\Option;
 use App\Traits\Jav\HasFilterValues;
 use App\Traits\Jav\HasOrdering;
+use App\Traits\Jav\HasSortOptions;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Request;
 
 class JavIdolsRepository
 {
-    use HasOrdering, HasFilterValues;
+    use HasOrdering, HasFilterValues, HasSortOptions;
 
     private array $filterFields = [
         'name', 'alias', 'city',
@@ -38,6 +40,11 @@ class JavIdolsRepository
             );
         }
 
+        $this->processFilterValues(
+            $builder,
+            'jav_idols.city',
+            $request->get(ConfigRepository::JAV_IDOLS_FILTER_CITY, []),
+        );
         $this->processFilterValues(
             $builder,
             'jav_idols.height',
@@ -82,5 +89,20 @@ class JavIdolsRepository
         return $builder->select($select)
             ->paginate($request->get(ConfigRepository::KEY_PER_PAGE, ConfigRepository::DEFAULT_PER_PAGE))
             ->appends(request()->except('page', '_token'));
+    }
+
+    /**
+     * @param array $selectedOptions
+     *
+     * @return Option[]
+     */
+    public function populateCityOptions(array $selectedOptions): array
+    {
+        $results = DB::table('jav_idols')->select('city')
+            ->whereNotNull('city')
+            ->groupBy('city')
+            ->get('city');
+
+        return $this->sortOptions($results, $selectedOptions, 'city');
     }
 }

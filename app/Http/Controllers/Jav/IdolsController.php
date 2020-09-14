@@ -1,6 +1,7 @@
 <?php
 /**
  * Copyright (c) 2020 JOOservices Ltd
+ *
  * @author Viet Vu <jooservices@gmail.com>
  * @package XGallery
  * @license GPL
@@ -11,6 +12,7 @@ namespace App\Http\Controllers\Jav;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Jav\JavIdol;
+use App\Repositories\ConfigRepository;
 use App\Repositories\JavIdolsRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -49,6 +51,9 @@ class IdolsController extends BaseController
                 'items' => $items,
                 'sidebar' => $this->getMenuItems(),
                 'title' => 'JAV - '.$items->total().' Idols - '.$items->currentPage().' / '.$items->lastPage(),
+                'cities' => $repository->populateCityOptions(
+                    $request->get(ConfigRepository::JAV_IDOLS_FILTER_CITY, [])
+                ),
             ]
         );
     }

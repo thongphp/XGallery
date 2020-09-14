@@ -15,13 +15,20 @@
                         </li>
                     @endif
                     @if ($item->getAge())
+                        @php
+                            $age = $item->getAge();
+                        @endphp
                         <li class="list-group-item">
-                            Age: {{$item->getAge()}}
+                            Age: <a href="{{jav_build_route_has_filter(\App\Repositories\ConfigRepository::JAV_IDOLS_FILTER_AGE_FROM, $age, false, false)}}">
+                                {{$age}}
+                            </a>
                         </li>
                     @endif
                     @if ($item->city)
                         <li class="list-group-item">
-                            City: {{$item->city}}
+                            City: <a href="{{jav_build_route_has_filter(\App\Repositories\ConfigRepository::JAV_IDOLS_FILTER_CITY, $item->city, true, false)}}">
+                                {{$item->city}}
+                            </a>
                         </li>
                     @endif
                 </ul>
